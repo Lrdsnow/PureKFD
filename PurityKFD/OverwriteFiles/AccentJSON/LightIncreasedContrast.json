@@ -1,0 +1,92 @@
+{ "data": [
+	{
+		"keyName": "systemBlueColor",
+		"hexColorValue": "dd4000ff",
+		"startingOffset": "16360"
+	},
+	{
+		"keyName": "systemBrownColor",
+		"hexColorValue": "45657fff",
+		"startingOffset": "16520"
+	},
+	{
+		"keyName": "systemCyanColor",
+		"hexColorValue": "a47100ff",
+		"startingOffset": "17160"
+	},
+	{
+		"keyName": "systemGrayColor",
+		"hexColorValue": "706c6cff",
+		"startingOffset": "18440"
+	},
+	{
+		"keyName": "systemGreenColor",
+		"hexColorValue": "3d8a24ff",
+		"startingOffset": "17480"
+	},
+	{
+		"keyName": "systemIndigoColor",
+		"hexColorValue": "a33436ff",
+		"startingOffset": "15880"
+	},
+	{
+		"keyName": "systemMintColor",
+		"hexColorValue": "7b810cff",
+		"startingOffset": "18700"
+	},
+	{
+		"keyName": "systemOrangeColor",
+		"hexColorValue": "0034c9ff",
+		"startingOffset": "17640"
+	},
+	{
+		"keyName": "systemPinkColor",
+		"hexColorValue": "450fd3ff",
+		"startingOffset": "16200"
+	},
+	{
+		"keyName": "systemPurpleColor",
+		"hexColorValue": "ab4489ff",
+		"startingOffset": "18600"
+	},
+	{
+		"keyName": "systemRedColor",
+		"hexColorValue": "1500d7ff",
+		"startingOffset": "18120"
+	},
+	{
+		"keyName": "systemTealColor",
+		"hexColorValue": "998200ff",
+		"startingOffset": "16040"
+	},
+	{
+		"keyName": "systemYellowColor",
+		"hexColorValue": "0050b2ff",
+		"startingOffset": "17000"
+	},
+	{
+		"keyName": "labelColor",
+		"hexColorValue": "000000ff",
+		"startingOffset": "17960"
+	},
+	{
+		"keyName": "secondaryLabelColor",
+		"hexColorValue": "433c3ccc",
+		"startingOffset": "18280"
+	},
+	{
+		"keyName": "tertiaryLabelColor",
+		"hexColorValue": "433c3cb2",
+		"startingOffset": "17320"
+	},
+	{
+		"keyName": "quinaryLabelColor",
+		"hexColorValue": "433c3c66",
+		"startingOffset": "16680"
+	},
+	{
+		"keyName": "quaternaryLabelColor",
+		"hexColorValue": "433c3c8c",
+		"startingOffset": "16840"
+	}
+]}

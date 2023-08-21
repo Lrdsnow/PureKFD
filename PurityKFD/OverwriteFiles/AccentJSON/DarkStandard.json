@@ -1,0 +1,197 @@
+{ "data": [
+	{
+		"keyName": "systemBlueColor",
+		"hexColorValue": "ff840aff",
+		"startingOffset": "19128"
+	},
+	{
+		"keyName": "systemBrownColor",
+		"hexColorValue": "688eacff",
+		"startingOffset": "19288"
+	},
+	{
+		"keyName": "systemCyanColor",
+		"hexColorValue": "ffd264ff",
+		"startingOffset": "19928"
+	},
+	{
+		"keyName": "systemGrayColor",
+		"hexColorValue": "938e8eff",
+		"startingOffset": "21208"
+	},
+	{
+		"keyName": "systemGreenColor",
+		"hexColorValue": "58d130ff",
+		"startingOffset": "20248"
+	},
+	{
+		"keyName": "systemIndigoColor",
+		"hexColorValue": "e65c5eff",
+		"startingOffset": "18648"
+	},
+	{
+		"keyName": "systemMintColor",
+		"hexColorValue": "e2e663ff",
+		"startingOffset": "20568"
+	},
+	{
+		"keyName": "systemOrangeColor",
+		"hexColorValue": "0a9fffff",
+		"startingOffset": "20408"
+	},
+	{
+		"keyName": "systemPinkColor",
+		"hexColorValue": "5f37ffff",
+		"startingOffset": "18968"
+	},
+	{
+		"keyName": "systemPurpleColor",
+		"hexColorValue": "f25abfff",
+		"startingOffset": "21368"
+	},
+	{
+		"keyName": "systemRedColor",
+		"hexColorValue": "3a45ffff",
+		"startingOffset": "20888"
+	},
+	{
+		"keyName": "systemTealColor",
+		"hexColorValue": "e0c840ff",
+		"startingOffset": "18808"
+	},
+	{
+		"keyName": "systemYellowColor",
+		"hexColorValue": "0ad6ffff",
+		"startingOffset": "19768"
+	},
+	{
+		"keyName": "productivityBlueColor",
+		"hexColorValue": "ffc378ff",
+		"startingOffset": "21688"
+	},
+	{
+		"keyName": "productivityBrownColor",
+		"hexColorValue": "75a6c9ff",
+		"startingOffset": "21528"
+	},
+	{
+		"keyName": "productivityGreenColor",
+		"hexColorValue": "8ae6abff",
+		"startingOffset": "22008"
+	},
+	{
+		"keyName": "productivityOrangeColor",
+		"hexColorValue": "4aaaffff",
+		"startingOffset": "21848"
+	},
+	{
+		"keyName": "productivityPurpleColor",
+		"hexColorValue": "f57fd5ff",
+		"startingOffset": "22168"
+	},
+	{
+		"keyName": "productivityRedColor",
+		"hexColorValue": "794fffff",
+		"startingOffset": "22328"
+	},
+	{
+		"keyName": "productivityYellowColor",
+		"hexColorValue": "69dbfbff",
+		"startingOffset": "22488"
+	},
+	{
+		"keyName": "workoutBlueColor",
+		"hexColorValue": "ffbe00ff",
+		"startingOffset": "23448"
+	},
+	{
+		"keyName": "workoutGreenColor",
+		"hexColorValue": "00ffa6ff",
+		"startingOffset": "22808"
+	},
+	{
+		"keyName": "workoutOrangeColor",
+		"hexColorValue": "15aeffff",
+		"startingOffset": "24568"
+	},
+	{
+		"keyName": "workoutPinkColor",
+		"hexColorValue": "8877ffff",
+		"startingOffset": "23608"
+	},
+	{
+		"keyName": "workoutPurpleColor",
+		"hexColorValue": "e18cdcff",
+		"startingOffset": "24248"
+	},
+	{
+		"keyName": "workoutRedColor",
+		"hexColorValue": "1938ffff",
+		"startingOffset": "23928"
+	},
+	{
+		"keyName": "workoutTealColor",
+		"hexColorValue": "e6e93aff",
+		"startingOffset": "22968"
+	},
+	{
+		"keyName": "workoutYellowColor",
+		"hexColorValue": "20e6faff",
+		"startingOffset": "24728"
+	},
+	{
+		"keyName": "activityBlueColor",
+		"hexColorValue": "f6ff00ff",
+		"startingOffset": "23128"
+	},
+	{
+		"keyName": "activityGreenColor",
+		"hexColorValue": "5eff81ff",
+		"startingOffset": "23768"
+	},
+	{
+		"keyName": "activityOrangeColor",
+		"hexColorValue": "3970ffff",
+		"startingOffset": "24408"
+	},
+	{
+		"keyName": "activityPinkColor",
+		"hexColorValue": "4f11faff",
+		"startingOffset": "22648"
+	},
+	{
+		"keyName": "activityPurpleColor",
+		"hexColorValue": "e18ba2ff",
+		"startingOffset": "24088"
+	},
+	{
+		"keyName": "activityYellowColor",
+		"hexColorValue": "56f5ffff",
+		"startingOffset": "23288"
+	},
+	{
+		"keyName": "labelColor",
+		"hexColorValue": "ffffffff",
+		"startingOffset": "20728"
+	},
+	{
+		"keyName": "secondaryLabelColor",
+		"hexColorValue": "f5ebeb99",
+		"startingOffset": "21048"
+	},
+	{
+		"keyName": "tertiaryLabelColor",
+		"hexColorValue": "f5ebeb4c",
+		"startingOffset": "20088"
+	},
+	{
+		"keyName": "quinaryLabelColor",
+		"hexColorValue": "f5ebeb14",
+		"startingOffset": "19448"
+	},
+	{
+		"keyName": "quaternaryLabelColor",
+		"hexColorValue": "f5ebeb28",
+		"startingOffset": "19608"
+	}
+]}

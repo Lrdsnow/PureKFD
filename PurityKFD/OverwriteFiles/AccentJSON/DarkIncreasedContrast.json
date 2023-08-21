@@ -1,0 +1,157 @@
+{ "data": [
+	{
+		"keyName": "systemBlueColor",
+		"hexColorValue": "ff9c40ff",
+		"startingOffset": "18200"
+	},
+	{
+		"keyName": "systemBrownColor",
+		"hexColorValue": "6994b5ff",
+		"startingOffset": "18360"
+	},
+	{
+		"keyName": "systemCyanColor",
+		"hexColorValue": "ffd770ff",
+		"startingOffset": "19000"
+	},
+	{
+		"keyName": "systemGrayColor",
+		"hexColorValue": "b2aeaeff",
+		"startingOffset": "20280"
+	},
+	{
+		"keyName": "systemGreenColor",
+		"hexColorValue": "5bdb30ff",
+		"startingOffset": "19320"
+	},
+	{
+		"keyName": "systemIndigoColor",
+		"hexColorValue": "ff7a7dff",
+		"startingOffset": "17720"
+	},
+	{
+		"keyName": "systemMintColor",
+		"hexColorValue": "e2e663ff",
+		"startingOffset": "19640"
+	},
+	{
+		"keyName": "systemOrangeColor",
+		"hexColorValue": "40b3ffff",
+		"startingOffset": "19480"
+	},
+	{
+		"keyName": "systemPinkColor",
+		"hexColorValue": "8264ffff",
+		"startingOffset": "18040"
+	},
+	{
+		"keyName": "systemPurpleColor",
+		"hexColorValue": "ff8fdaff",
+		"startingOffset": "20440"
+	},
+	{
+		"keyName": "systemRedColor",
+		"hexColorValue": "6169ffff",
+		"startingOffset": "19960"
+	},
+	{
+		"keyName": "systemTealColor",
+		"hexColorValue": "ffe65dff",
+		"startingOffset": "17880"
+	},
+	{
+		"keyName": "systemYellowColor",
+		"hexColorValue": "26d4ffff",
+		"startingOffset": "18840"
+	},
+	{
+		"keyName": "workoutBlueColor",
+		"hexColorValue": "ffbe00ff",
+		"startingOffset": "21560"
+	},
+	{
+		"keyName": "workoutGreenColor",
+		"hexColorValue": "00ffa6ff",
+		"startingOffset": "21720"
+	},
+	{
+		"keyName": "workoutOrangeColor",
+		"hexColorValue": "15aeffff",
+		"startingOffset": "21880"
+	},
+	{
+		"keyName": "workoutPinkColor",
+		"hexColorValue": "8877ffff",
+		"startingOffset": "22040"
+	},
+	{
+		"keyName": "workoutPurpleColor",
+		"hexColorValue": "e18cdcff",
+		"startingOffset": "22360"
+	},
+	{
+		"keyName": "workoutRedColor",
+		"hexColorValue": "1938ffff",
+		"startingOffset": "22200"
+	},
+	{
+		"keyName": "workoutTealColor",
+		"hexColorValue": "e6e93aff",
+		"startingOffset": "22520"
+	},
+	{
+		"keyName": "workoutYellowColor",
+		"hexColorValue": "20e6faff",
+		"startingOffset": "22680"
+	},
+	{
+		"keyName": "activityBlueColor",
+		"hexColorValue": "f6ff00ff",
+		"startingOffset": "20600"
+	},
+	{
+		"keyName": "activityGreenColor",
+		"hexColorValue": "5eff81ff",
+		"startingOffset": "20760"
+	},
+	{
+		"keyName": "activityPinkColor",
+		"hexColorValue": "3970ffff",
+		"startingOffset": "20920"
+	},
+	{
+		"keyName": "activityPurpleColor",
+		"hexColorValue": "e18ba2ff",
+		"startingOffset": "21080"
+	},
+	{
+		"keyName": "activityYellowColor",
+		"hexColorValue": "56f5ffff",
+		"startingOffset": "21400"
+	},
+	{
+		"keyName": "labelColor",
+		"hexColorValue": "ffffffff",
+		"startingOffset": "19800"
+	},
+	{
+		"keyName": "secondaryLabelColor",
+		"hexColorValue": "f5ebebb2",
+		"startingOffset": "20120"
+	},
+	{
+		"keyName": "tertiaryLabelColor",
+		"hexColorValue": "f5ebeb8c",
+		"startingOffset": "19160"
+	},
+	{
+		"keyName": "quinaryLabelColor",
+		"hexColorValue": "f5ebeb66",
+		"startingOffset": "18680"
+	},
+	{
+		"keyName": "quaternaryLabelColor",
+		"hexColorValue": "f5ebeb33",
+		"startingOffset": "18520"
+	}
+]}
