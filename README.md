@@ -1,11 +1,10 @@
-# PurityKFD
- A KFD Tweaks app
+# PureKFD
+ A KFD Tweaks app with Picasso & Misaka Support
 
 ### A KFD Tweaks app that supports misaka & picasso repos
 - Only supports Picasso Packages atm Misaka package support coming soon
 
 ### Todo:
-- Fix Prefs (Only color prefs save correctly)
+- Fix Prefs (Only color prefs save correctly & they dont load at all to the ui)
 - Fix AccentColorOperation
-- Add Repo Caching Bcuz my first attempt was garbage
-- Add Indexed package Search
+
