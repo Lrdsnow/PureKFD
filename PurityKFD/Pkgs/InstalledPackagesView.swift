@@ -13,6 +13,7 @@ struct InstalledPackagesView: View {
     
     init(installedPackages: [InstalledPackage]) {
         self._installedPackages = State(initialValue: installedPackages)
+        print(installedPackages)
     }
     
     var body: some View {
@@ -57,8 +58,13 @@ struct InstalledPackagesView: View {
         let fileManager = FileManager.default
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
         let pkg = installedPackages[index]
-        let path = documentsDirectory.appendingPathComponent("Installed").appendingPathComponent(pkg.bundleID)
-        try? fileManager.removeItem(at: path)
+        if pkg.type == "misaka" {
+            let path = documentsDirectory.appendingPathComponent("Misaka/Installed").appendingPathComponent(pkg.bundleID)
+            try? fileManager.removeItem(at: path)
+        } else {
+            let path = documentsDirectory.appendingPathComponent("Installed").appendingPathComponent(pkg.bundleID)
+            try? fileManager.removeItem(at: path)
+        }
         installedPackages.remove(at: index)
     }
     
@@ -140,6 +146,8 @@ enum PreferenceValue: Codable {
     case double(Double)
     case string(String)
     case color(Color)
+    case colorHex(String)
+
     case picker(Int)
     case resfield([String: Int])
 
@@ -165,6 +173,9 @@ enum PreferenceValue: Codable {
         case .color(let value):
             try container.encode("color", forKey: .type)
             try container.encode(value.toHex(), forKey: .value)
+        case .colorHex(let value):
+            try container.encode("colorHex", forKey: .type)
+            try container.encode(value, forKey: .value)
         case .picker(let value):
             try container.encode("picker", forKey: .type)
             try container.encode(value, forKey: .value)
@@ -189,6 +200,8 @@ enum PreferenceValue: Codable {
         case "color":
             let hexString = try container.decode(String.self, forKey: .value)
             self = .color(Color(hex: hexString))
+        case "colorHex":
+            self = .colorHex(try container.decode(String.self, forKey: .value))
         case "picker":
             self = .picker(try container.decode(Int.self, forKey: .value))
         case "resfield":
@@ -221,7 +234,6 @@ struct PreferencesView: View {
     }
     
     var body: some View {
-        NavigationView {
             List {
                 ForEach(preferences.indices, id: \.self) { index in
                     let preference = preferences[index]
@@ -231,14 +243,13 @@ struct PreferencesView: View {
                     }
                 }
             }
-
-            .navigationBarTitle("Preferences")
-        }.navigationBarItems(trailing: applyButton)
+            .navigationBarTitle("Preferences", displayMode: .large)
+            .navigationBarItems(trailing: applyButton)
             .navigationBarTitleDisplayMode(.inline)
             .alert(isPresented: $showAlert) {
                 Alert(
                     title: Text("Success"),
-                    message: Text("Preferences have been successfully saved."),
+                    message: Text("Preferences have been successfully saved. These will persist till you Apply new ones."),
                     dismissButton: .default(Text("OK"))
                 )
             }
@@ -250,18 +261,31 @@ struct PreferencesView: View {
     }
     
     private func header(for preference: InstalledPackage.Preference) -> some View {
-        Text(preference.title)
+            Group {
+            if preference.valueType == "String" {
+                Text("Notice")
+            } else if false /* Your condition here */ {
+                Text(preference.title)
+            } else {
+                EmptyView()
+            }
+        }
     }
     
     private func footer(for preference: InstalledPackage.Preference) -> some View {
-        Text(preference.description)
-            .font(.subheadline)
-            .foregroundColor(.gray)
+        Group {
+            if preference.valueType != "String" && preference.valueType != "NavigationLink" {
+                Text(preference.description)
+                    .font(.subheadline)
+            } else {
+                EmptyView()
+            }
+        }
     }
     
     private func preferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
             switch preference.valueType {
-            case "color":
+            case "color", "Color_Hex":
                 return AnyView(colorPreferenceView(for: preference, at: index))
             case "resfield":
                 return AnyView(resfieldPreferenceView(for: preference, at: index))
@@ -275,10 +299,36 @@ struct PreferencesView: View {
                 return AnyView(doublePreferenceView(for: preference, at: index))
             case "string":
                 return AnyView(stringPreferenceView(for: preference, at: index))
+            case "String":
+                return AnyView(noticePreferenceView(for: preference, at: index))
+            case "NavigationLink":
+                return AnyView(navLinkPreferenceView(for: preference, at: index))
+            case "Link":
+                return AnyView(linkPreferenceView(for: preference, at: index))
             default:
                 return AnyView(unsupportedPreferenceView(preference.valueType))
             }
         }
+    
+    private func testView() -> some View {
+        Text("Test")
+    }
+    
+    private func autoGenView(for preference: InstalledPackage.Preference) -> some View {
+        Text(preference.title)
+    }
+    
+    private func navLinkPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
+        NavigationLink(preference.title, destination: autoGenView(for: preference))
+    }
+    
+    private func linkPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
+        Text(preference.title)
+    }
+    
+    private func noticePreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
+        Text(preference.title)
+    }
     
     private func resfieldPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
         HStack {
@@ -324,12 +374,36 @@ struct PreferencesView: View {
     }
     
     private func colorPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
+        if preference.valueType == "color" {
+            return AnyView(regularColorPreferenceView(for: preference, at: index))
+        } else if preference.valueType == "Color_Hex" {
+            return AnyView(hexColorPreferenceView(for: preference, at: index))
+        } else {
+            return AnyView(Text("Unsupported preference type: \(preference.valueType)"))
+        }
+    }
+
+    private func regularColorPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
         ColorPicker(selection: Binding<Color>(
             get: {
                 tempPreferences[preference.key] as? Color ?? (installedPackage.savedPreferences[preference.key] as? Color ?? Color.white)
             },
             set: { newValue in
                 tempPreferences[preference.key] = newValue
+            }
+        ), label: {
+            Text(preference.title)
+        })
+    }
+
+    private func hexColorPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
+        ColorPicker(selection: Binding<Color>(
+            get: {
+                let hexValue = tempPreferences[preference.key] as? String ?? ""
+                return Color(hex: hexValue)
+            },
+            set: { newValue in
+                tempPreferences[preference.key] = newValue.toHex()
             }
         ), label: {
             Text(preference.title)
@@ -474,23 +548,31 @@ struct PreferencesView: View {
         let fileManager = FileManager.default
         let packageFolder = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Installed").appendingPathComponent(installedPackage.bundleID)
         let configURL = packageFolder.appendingPathComponent("config.json")
-        
+
         do {
             if fileManager.fileExists(atPath: configURL.path) {
                 let configData = try Data(contentsOf: configURL)
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase // If your keys are in snake_case format
-                
+
                 // Decode the preferences dictionary from the config.json data
                 let preferencesDict = try decoder.decode([String: PreferenceValue].self, from: configData)
-                
+
                 // Apply the decoded preferences to tempPreferences
-                tempPreferences = preferencesDict
+                tempPreferences = [:] // Clear tempPreferences first
+                for (key, value) in preferencesDict {
+                    if key == "color" {
+                        tempPreferences[key] = Color(UIColor(hex: value as? String ?? "#FF0000") ?? UIColor.red)
+                    } else {
+                        tempPreferences[key] = value
+                    }
+                }
             }
         } catch {
             print("Error loading preferences from config.json: \(error)")
         }
     }
+
 }
 
 struct InstalledPackageRow: View {
@@ -537,6 +619,7 @@ struct InstalledPackage: Identifiable, Equatable {
     let version: String
     let bundleID: String
     let icon: URL
+    let type: String?
     struct Preference: Codable, Hashable {
         let valueType: String
         let key: String
@@ -544,6 +627,7 @@ struct InstalledPackage: Identifiable, Equatable {
         let optionValues: Array<Int>?
         let title: String
         let description: String
+        let extra_json_data: String?
     }
     
     var savedPreferences: [String: PreferenceValue] = [:]
@@ -554,12 +638,42 @@ struct InstalledPackage: Identifiable, Equatable {
     }
 }
 
-func getInstalledPackages() -> [InstalledPackage] {
-    let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Installed")
+struct TweakCategory: Codable {
+    let category: String?
+    let tweaks: [Tweak]?
     
+    enum CodingKeys: String, CodingKey {
+        case category = "Category"
+        case tweaks = "Tweaks"
+    }
+}
+
+struct Tweak: Codable {
+    let label: String?
+    let type: String?
+    let ui: String?
+    let identifier: String?
+    let value: String?
+    // Include other properties as needed based on your actual structure
+    
+    enum CodingKeys: String, CodingKey {
+        case label = "Label"
+        case type = "Type"
+        case ui = "UI"
+        case identifier = "Identifier"
+        case value = "Value"
+        // Include other coding keys as needed
+    }
+}
+
+func getInstalledPackages() -> [InstalledPackage] {
+    let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    var installedPackages: [InstalledPackage] = []
+
+    // Get Picasso Packages
+    let picassoFolderPath = installedFolderPath.appendingPathComponent("Installed")
     do {
-        let installedFolders = try FileManager.default.contentsOfDirectory(at: installedFolderPath, includingPropertiesForKeys: nil, options: [])
-        var installedPackages: [InstalledPackage] = []
+        let installedFolders = try FileManager.default.contentsOfDirectory(at: picassoFolderPath, includingPropertiesForKeys: nil, options: [])
         
         for folderURL in installedFolders {
             if let infoURL = URL(string: folderURL.appendingPathComponent("info.json").absoluteString),
@@ -593,19 +707,148 @@ func getInstalledPackages() -> [InstalledPackage] {
                             optionValues = optionValuesArray
                         }
                         
-                        let preference = InstalledPackage.Preference(valueType: valueType, key: key, options: options, optionValues: optionValues, title: title, description: description)
+                        let preference = InstalledPackage.Preference(valueType: valueType, key: key, options: options, optionValues: optionValues, title: title, description: description, extra_json_data: "")
                         preferences.append(preference)
                     }
                 }
                 
-                let installedPackage = InstalledPackage(name: name, author: author, version: version, bundleID: bundleID, icon: iconURL, preferences: preferences)
+                let installedPackage = InstalledPackage(name: name, author: author, version: version, bundleID: bundleID, icon: iconURL, type: "picasso", preferences: preferences)
                 installedPackages.append(installedPackage)
             }
         }
-        
-        return installedPackages
     } catch {
-        print("Error fetching installed packages: \(error)")
-        return []
+        print("Error fetching Picasso packages: \(error)")
     }
+
+    // Get Misaka Packages
+    let misakaFolderPath = installedFolderPath.appendingPathComponent("Misaka/Installed")
+
+    do {
+        let misakaPackageFolders = try FileManager.default.contentsOfDirectory(at: misakaFolderPath, includingPropertiesForKeys: nil, options: [])
+        
+        for packageFolderURL in misakaPackageFolders {
+            let infoURL = packageFolderURL.appendingPathComponent("info.json")
+            
+            if let infoData = try? Data(contentsOf: infoURL),
+               let infoJSON = try? JSONSerialization.jsonObject(with: infoData, options: []) as? [String: Any],
+               let name = infoJSON["Name"] as? String,
+               let bundleID = infoJSON["PackageID"] as? String,
+               let iconURLString = infoJSON["Icon"] as? String,
+               let iconURL = URL(string: iconURLString) {
+                
+                let prefsURL = packageFolderURL.appendingPathComponent("config.plist")
+                var prefsData: Data? = nil
+                var prefsArray: [[String: Any]] = []
+                
+                if FileManager.default.fileExists(atPath: prefsURL.path) {
+                    prefsData = try? Data(contentsOf: prefsURL)
+                    
+                    if let plistData = try? PropertyListSerialization.propertyList(from: prefsData!, options: [], format: nil),
+                       let prefsArrayFromPlist = plistData as? [[String: Any]] {
+                        prefsArray = prefsArrayFromPlist
+                    } else {
+                        print("Failed to parse plist data")
+                    }
+                }
+                
+                var preferences: [InstalledPackage.Preference] = []
+                
+                for categoryDict in prefsArray {
+                    if let tweaksArray = categoryDict["Tweaks"] as? [[String: Any]] {
+                        for tweakDict in tweaksArray {
+                            if let label = tweakDict["Label"] as? String,
+                               var type = tweakDict["Type"] as? String?,
+                               let ui = tweakDict["UI"] as? String? {
+                                
+                                var identifier: String?
+                                                                   
+                                if let identifierFromDict = tweakDict["Identifier"] as? String {
+                                                                       identifier = identifierFromDict
+                                                                   } else if let keyFromDict = tweakDict["key"] as? String {
+                                                                       identifier = keyFromDict
+                                                                   }
+                                                                   
+                                                                   var options: [String] = []
+                                                                   var optionValues: [Int] = []
+                                                                   var extra_json_data: String = ""
+                                                                   
+                                                                   if type == "Color_Hex", let value = tweakDict["Value"] as? String {
+                                                                       var colorValue = value
+                                                                       if colorValue.hasPrefix("#") {
+                                                                           colorValue = String(colorValue.dropFirst())
+                                                                       }
+                                                                       
+                                                                       options.append(colorValue)
+                                                                       optionValues.append(0)
+                                                                   }
+                                                                   
+                                                                   print("\n", ui ?? "noUI", "\n")
+                                                                   if let ui = tweakDict["UI"] as? String, ui == "NavigationLink" {
+                                                                       type = ui
+                                                                       var extra_data: [String: Any] = [:]  // Changed to use [String: Any]
+                                                                       
+                                                                       if let categoriesArray = tweakDict["Categories"] as? [[String: Any]] {
+                                                                           var categoriesInfo: [[String: Any]] = []
+                                                                           
+                                                                           for categoryInfo in categoriesArray {
+                                                                               if let categoryName = categoryInfo["Category"] as? String,
+                                                                                  let tweaksArray = categoryInfo["Tweaks"] as? [[String: Any]] {
+                                                                                   var tweaksInfo: [[String: Any]] = []
+                                                                                   
+                                                                                   for tweakInfo in tweaksArray {
+                                                                                       if let tweakLabel = tweakInfo["Label"] as? String,
+                                                                                          let tweakUI = tweakInfo["UI"] as? String,
+                                                                                          let tweakURLString = tweakInfo["URL"] as? String,
+                                                                                          let tweakURL = URL(string: tweakURLString)?.absoluteString {
+                                                                                           let tweak = [
+                                                                                               "Label": tweakLabel,
+                                                                                               "UI": tweakUI,
+                                                                                               "URL": tweakURL
+                                                                                           ] as [String : Any]
+                                                                                           tweaksInfo.append(tweak)
+                                                                                       }
+                                                                                   }
+                                                                                   
+                                        let category = [
+                                            "Category": categoryName,
+                                            "Tweaks": tweaksInfo
+                                        ] as [String : Any]
+                                            categoriesInfo.append(category)
+                                            }
+                                        }
+                                                                
+                                            extra_data["Categories"] = categoriesInfo
+                                        }
+                                        let jsonData = try JSONSerialization.data(withJSONObject: extra_data, options: [])
+                                        if let jsonString = String(data: jsonData, encoding: .utf8) {
+                                                                           extra_json_data = jsonString
+                                    }
+                                }
+                                                                   
+                                
+                                let preference = InstalledPackage.Preference(valueType: type ?? "", key: identifier ?? "", options: options, optionValues: optionValues, title: label, description: ui ?? "", extra_json_data: extra_json_data)
+                                preferences.append(preference)
+                            }
+                        }
+                    }
+                }
+                
+                let authorDict = infoJSON["Author"] as? [String: Any] ?? ["Label": "Unknown Author"]
+                let authorLabel = authorDict["Label"] as? String
+                let version = infoJSON["MinIOSVersion"] as? String ?? "15.0"
+                
+                let installedPackage = InstalledPackage(name: name, author: authorLabel!, version: version, bundleID: bundleID, icon: iconURL, type: "misaka", preferences: preferences)
+                installedPackages.append(installedPackage)
+                
+            } else {
+                print("Failed to get data from info.json")
+            }
+        }
+    } catch {
+        print("Error fetching Misaka packages: \(error)")
+    }
+
+
+    return installedPackages
 }
+

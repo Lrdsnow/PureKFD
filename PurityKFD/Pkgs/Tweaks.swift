@@ -74,6 +74,34 @@ struct ClearSMSOperation: OperationType {
     }
 }
 
+struct DynamicIslandOperation: OperationType {
+    let pkg: [String: Any]
+
+    func apply() {
+        DynamicKFD(2796)
+    }
+
+    static func create(from dictionary: [String: Any], pkg: [String: Any]) -> OperationType? {
+        return DynamicIslandOperation(
+            pkg: pkg
+        )
+    }
+}
+
+struct FixDynamicIslandOperation: OperationType {
+    let pkg: [String: Any]
+
+    func apply() {
+        DynamicKFD(Int32(UIScreen.main.nativeBounds.height))
+    }
+
+    static func create(from dictionary: [String: Any], pkg: [String: Any]) -> OperationType? {
+        return DynamicIslandOperation(
+            pkg: pkg
+        )
+    }
+}
+
 struct RegionChangerOperation: OperationType {
     let pkg: [String: Any]
 
@@ -154,6 +182,24 @@ struct AccentColorOperation: OperationType {
 
     static func create(from dictionary: [String: Any], pkg: [String: Any]) -> OperationType? {
         return AccentColorOperation(pkg: pkg)
+    }
+}
+
+struct HideOperation: OperationType {
+    let originPath: String
+    let pkg: [String: Any]
+
+    func apply() {
+        funVnodeHide(strdup(originPath))
+    }
+
+    static func create(from dictionary: [String: Any], pkg: [String: Any]) -> OperationType? {
+        guard
+            let originPath = dictionary["originPath"] as? String
+        else {
+            return nil
+        }
+        return HideOperation(originPath: originPath, pkg: pkg)
     }
 }
 
@@ -253,6 +299,9 @@ let operationHandlers: [String: OperationType.Type] = [
     "changeregion": RegionChangerOperation.self,
     "whitelist": WhiteListOperation.self,
     "clearsms": ClearSMSOperation.self,
+    "dynamicIsland": DynamicIslandOperation.self,
+    "fixdynamicIsland": FixDynamicIslandOperation.self,
+    "removing": HideOperation.self,
     // Add other operation type mappings here
 ]
 
@@ -317,10 +366,60 @@ func applyTweaks(from fileURL: URL) {
 
 func applyAllTweaks() {
     let installedPackages = getInstalledPackages()
-    let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Installed")
     for installedPackage in installedPackages {
-        let packageFolderPath = installedFolderPath.appendingPathComponent(installedPackage.bundleID).appendingPathComponent("tweak.json")
-        print("Applying", installedPackage.bundleID)
-        applyTweaks(from: packageFolderPath)
+        if installedPackage.type == "picasso" {
+            let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Installed")
+            let packageFolderPath = installedFolderPath.appendingPathComponent(installedPackage.bundleID).appendingPathComponent("tweak.json")
+            print("Applying", installedPackage.bundleID)
+            applyTweaks(from: packageFolderPath)
+        } else if installedPackage.type == "misaka" {
+            let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Misaka/Installed")
+            let overwriteFolderPath = installedFolderPath.appendingPathComponent(installedPackage.bundleID).appendingPathComponent("Overwrite")
+            overwriteMisaka(sourceFolderURL: overwriteFolderPath)
+        } else {
+            print("Unsupported Package")
+        }
     }
+}
+
+func replaceBeforeAndSubstring(in input: String, targetSubstring: String, with replacement: String) -> String {
+    if let range = input.range(of: targetSubstring) {
+        let startIndex = input.startIndex
+        let substringStartIndex = range.lowerBound
+        let contentAfter = input[range.upperBound...]
+        
+        return replacement + contentAfter
+    }
+    return input
+}
+
+func overwriteMisaka(sourceFolderURL: URL) {
+    let fileManager = FileManager.default
+    let rootURL = URL(fileURLWithPath: "/")
+    
+    func processItem(at itemURL: URL, relativeTo baseURL: URL) {
+        var isDirectory: ObjCBool = false
+        if fileManager.fileExists(atPath: itemURL.path, isDirectory: &isDirectory) {
+            let itemName = itemURL.lastPathComponent
+            let targetItemURL = rootURL.appendingPathComponent(itemName)
+            
+            if isDirectory.boolValue {
+                do {
+                    let subContents = try fileManager.contentsOfDirectory(at: itemURL, includingPropertiesForKeys: nil, options: [])
+                    for subItemURL in subContents {
+                        processItem(at: subItemURL, relativeTo: baseURL)
+                    }
+                } catch {
+                    print("Error reading subdirectory: \(error)")
+                }
+            } else {
+                let relativePath = replaceBeforeAndSubstring(in: itemURL.path, targetSubstring: "/Overwrite", with: "")
+                overwriteWithFileImpl(replacementURL: itemURL, pathToTargetFile: relativePath)
+            }
+        } else {
+            print("\(itemURL) does not exist.")
+        }
+    }
+    
+    processItem(at: sourceFolderURL, relativeTo: sourceFolderURL)
 }

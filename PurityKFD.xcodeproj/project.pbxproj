@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		65017B1E2A9514E3007729A6 /* Images.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65017B1D2A9514E3007729A6 /* Images.swift */; };
 		653CCBFF2A91DD5A00217B79 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 653CCBFE2A91DD5A00217B79 /* ZIPFoundation */; };
 		6550FDF62A93D27F00EBEF3C /* Accent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6550FDF52A93D27F00EBEF3C /* Accent.swift */; };
 		6550FDFE2A93D43300EBEF3C /* LightVibrantStandard.json in Resources */ = {isa = PBXBuildFile; fileRef = 6550FDF82A93D43300EBEF3C /* LightVibrantStandard.json */; };
@@ -15,6 +16,10 @@
 		6550FE012A93D43300EBEF3C /* DarkIncreasedContrast.json in Resources */ = {isa = PBXBuildFile; fileRef = 6550FDFB2A93D43300EBEF3C /* DarkIncreasedContrast.json */; };
 		6550FE022A93D43300EBEF3C /* LightIncreasedContrast.json in Resources */ = {isa = PBXBuildFile; fileRef = 6550FDFC2A93D43300EBEF3C /* LightIncreasedContrast.json */; };
 		6550FE032A93D43300EBEF3C /* DarkVibrantStandard.json in Resources */ = {isa = PBXBuildFile; fileRef = 6550FDFD2A93D43300EBEF3C /* DarkVibrantStandard.json */; };
+		6591DA712A944A91002D4243 /* pkgs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6591DA702A944A91002D4243 /* pkgs.swift */; };
+		6591DA742A9474C4002D4243 /* encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6591DA732A9474C4002D4243 /* encrypt.swift */; };
+		6591DA762A9474CA002D4243 /* encryptkey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6591DA752A9474CA002D4243 /* encryptkey.swift */; };
+		6591DA792A947A22002D4243 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 6591DA782A947A22002D4243 /* Zip */; };
 		65CE898B2A9329A4000CE1BC /* Misaka.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CE89812A9329A4000CE1BC /* Misaka.swift */; };
 		65CE898C2A9329A4000CE1BC /* Picasso.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CE89822A9329A4000CE1BC /* Picasso.swift */; };
 		65CE898D2A9329A4000CE1BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65CE89832A9329A4000CE1BC /* Assets.xcassets */; };
@@ -74,7 +79,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		65310BB32A9161E000C993DD /* PurityKFD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PurityKFD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		65017B1D2A9514E3007729A6 /* Images.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Images.swift; sourceTree = "<group>"; };
+		65310BB32A9161E000C993DD /* PureKFD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PureKFD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6550FDF52A93D27F00EBEF3C /* Accent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accent.swift; sourceTree = "<group>"; };
 		6550FDF82A93D43300EBEF3C /* LightVibrantStandard.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = LightVibrantStandard.json; sourceTree = "<group>"; };
 		6550FDF92A93D43300EBEF3C /* LightStandard.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = LightStandard.json; sourceTree = "<group>"; };
@@ -82,6 +88,9 @@
 		6550FDFB2A93D43300EBEF3C /* DarkIncreasedContrast.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DarkIncreasedContrast.json; sourceTree = "<group>"; };
 		6550FDFC2A93D43300EBEF3C /* LightIncreasedContrast.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = LightIncreasedContrast.json; sourceTree = "<group>"; };
 		6550FDFD2A93D43300EBEF3C /* DarkVibrantStandard.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DarkVibrantStandard.json; sourceTree = "<group>"; };
+		6591DA702A944A91002D4243 /* pkgs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pkgs.swift; sourceTree = "<group>"; };
+		6591DA732A9474C4002D4243 /* encrypt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = encrypt.swift; sourceTree = "<group>"; };
+		6591DA752A9474CA002D4243 /* encryptkey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = encryptkey.swift; sourceTree = "<group>"; };
 		65CE89812A9329A4000CE1BC /* Misaka.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Misaka.swift; sourceTree = "<group>"; };
 		65CE89822A9329A4000CE1BC /* Picasso.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Picasso.swift; sourceTree = "<group>"; };
 		65CE89832A9329A4000CE1BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -156,6 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6591DA792A947A22002D4243 /* Zip in Frameworks */,
 				653CCBFF2A91DD5A00217B79 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -163,6 +173,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		65017B1C2A9514D8007729A6 /* Extras */ = {
+			isa = PBXGroup;
+			children = (
+				65017B1D2A9514E3007729A6 /* Images.swift */,
+			);
+			path = Extras;
+			sourceTree = "<group>";
+		};
 		65310BAA2A9161E000C993DD = {
 			isa = PBXGroup;
 			children = (
@@ -174,7 +192,7 @@
 		65310BB42A9161E000C993DD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				65310BB32A9161E000C993DD /* PurityKFD.app */,
+				65310BB32A9161E000C993DD /* PureKFD.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -192,9 +210,20 @@
 			path = AccentJSON;
 			sourceTree = "<group>";
 		};
+		6591DA722A9474B4002D4243 /* Misaka */ = {
+			isa = PBXGroup;
+			children = (
+				6591DA752A9474CA002D4243 /* encryptkey.swift */,
+				6591DA732A9474C4002D4243 /* encrypt.swift */,
+			);
+			path = Misaka;
+			sourceTree = "<group>";
+		};
 		65CE897F2A9329A4000CE1BC /* PurityKFD */ = {
 			isa = PBXGroup;
 			children = (
+				65017B1C2A9514D8007729A6 /* Extras */,
+				6591DA722A9474B4002D4243 /* Misaka */,
 				65CE8A492A937066000CE1BC /* OverwriteFiles */,
 				65CE8A252A93584D000CE1BC /* Cluckabunga */,
 				65CE89972A93430C000CE1BC /* Exploit */,
@@ -230,6 +259,7 @@
 			children = (
 				65CE89872A9329A4000CE1BC /* InstalledPackagesView.swift */,
 				65CE89882A9329A4000CE1BC /* Tweaks.swift */,
+				6591DA702A944A91002D4243 /* pkgs.swift */,
 			);
 			path = Pkgs;
 			sourceTree = "<group>";
@@ -455,9 +485,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		65310BB22A9161E000C993DD /* PurityKFD */ = {
+		65310BB22A9161E000C993DD /* PureKFD */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 65310BD82A9161E300C993DD /* Build configuration list for PBXNativeTarget "PurityKFD" */;
+			buildConfigurationList = 65310BD82A9161E300C993DD /* Build configuration list for PBXNativeTarget "PureKFD" */;
 			buildPhases = (
 				65310BAF2A9161E000C993DD /* Sources */,
 				65310BB02A9161E000C993DD /* Frameworks */,
@@ -467,12 +497,13 @@
 			);
 			dependencies = (
 			);
-			name = PurityKFD;
+			name = PureKFD;
 			packageProductDependencies = (
 				653CCBFE2A91DD5A00217B79 /* ZIPFoundation */,
+				6591DA782A947A22002D4243 /* Zip */,
 			);
 			productName = test;
-			productReference = 65310BB32A9161E000C993DD /* PurityKFD.app */;
+			productReference = 65310BB32A9161E000C993DD /* PureKFD.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -501,12 +532,13 @@
 			mainGroup = 65310BAA2A9161E000C993DD;
 			packageReferences = (
 				653CCBFD2A91DD5A00217B79 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				6591DA772A947A22002D4243 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			productRefGroup = 65310BB42A9161E000C993DD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				65310BB22A9161E000C993DD /* PurityKFD */,
+				65310BB22A9161E000C993DD /* PureKFD */,
 			);
 		};
 /* End PBXProject section */
@@ -570,8 +602,10 @@
 				65CE89ED2A934350000CE1BC /* helpers.m in Sources */,
 				65CE89912A9329A4000CE1BC /* ContentView.swift in Sources */,
 				65CE898B2A9329A4000CE1BC /* Misaka.swift in Sources */,
+				65017B1E2A9514E3007729A6 /* Images.swift in Sources */,
 				65CE89F32A934350000CE1BC /* proc.c in Sources */,
 				65CE8A342A9358D9000CE1BC /* SpringboardColorManager.swift in Sources */,
+				6591DA742A9474C4002D4243 /* encrypt.swift in Sources */,
 				65CE8A352A9358D9000CE1BC /* ColorSwapManager.swift in Sources */,
 				65CE89EE2A934350000CE1BC /* utils.m in Sources */,
 				65CE89F12A934350000CE1BC /* offsets.m in Sources */,
@@ -584,11 +618,13 @@
 				6550FDF62A93D27F00EBEF3C /* Accent.swift in Sources */,
 				65CE8A1F2A934599000CE1BC /* ezkfd.swift in Sources */,
 				65CE89EC2A934350000CE1BC /* grant_full_disk_access.m in Sources */,
+				6591DA712A944A91002D4243 /* pkgs.swift in Sources */,
 				65CE89902A9329A4000CE1BC /* Tweaks.swift in Sources */,
 				65CE898F2A9329A4000CE1BC /* InstalledPackagesView.swift in Sources */,
 				65CE8A322A9358D9000CE1BC /* OtherModsManager.swift in Sources */,
 				65CE89F22A934350000CE1BC /* vnode.m in Sources */,
 				65CE89EB2A934350000CE1BC /* fun.m in Sources */,
+				6591DA762A9474CA002D4243 /* encryptkey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -724,7 +760,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = PurityKFD;
+				INFOPLIST_KEY_CFBundleDisplayName = PureKFD;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -741,7 +777,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lrdsnow.PurityKFD;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lrdsnow.PureKFD;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -766,7 +802,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = PurityKFD;
+				INFOPLIST_KEY_CFBundleDisplayName = PureKFD;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -783,7 +819,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lrdsnow.PurityKFD;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lrdsnow.PureKFD;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -807,7 +843,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		65310BD82A9161E300C993DD /* Build configuration list for PBXNativeTarget "PurityKFD" */ = {
+		65310BD82A9161E300C993DD /* Build configuration list for PBXNativeTarget "PureKFD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				65310BD92A9161E300C993DD /* Debug */,
@@ -827,6 +863,14 @@
 				minimumVersion = 0.9.16;
 			};
 		};
+		6591DA772A947A22002D4243 /* XCRemoteSwiftPackageReference "Zip" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marmelroy/Zip";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -834,6 +878,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 653CCBFD2A91DD5A00217B79 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		6591DA782A947A22002D4243 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6591DA772A947A22002D4243 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 import ZIPFoundation
 
-struct Package: Codable {
+struct Package: Codable, Identifiable {
+    let id = UUID()
     let name: String
     let bundleid: String
     let author: String
@@ -17,6 +18,11 @@ struct Package: Codable {
     let version: String
     let icon: String
     let path: String
+    var repo: Repo?
+    let MisakaReleases: [Release]?
+    let MinIOSVersion: String?
+    let MaxIOSVersion: String?
+    let type: String?
 }
 
 struct Repo: Codable, Identifiable, Hashable {
@@ -26,6 +32,7 @@ struct Repo: Codable, Identifiable, Hashable {
     let icon: String
     let packages: [Package]
     var url: URL?
+    let type: String?
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -166,24 +173,40 @@ func downloadAndExtractJSONFiles(from url: URL, icon iconurl: URL, completion: @
     task.resume()
 }
 
+class AppState: ObservableObject {
+    @Published var imageCacheData: [String: Data] = [:]
+    
+    func saveImageToCache(_ data: Data, forKey key: String) {
+        imageCacheData[key] = data
+    }
+    
+    func loadImageFromCache(forKey key: String) -> Data? {
+        return imageCacheData[key]
+    }
+}
+
 struct PicassoContentRow: View {
     let name: String
     let author: String
     let icon: String
     let repo: Repo
+    
+    @StateObject private var appState = AppState() // Create an AppState instance
+    
     @State private var contentIcon: UIImage? = nil
     
     var body: some View {
         HStack {
-            if let icon = contentIcon { // Display the fetched icon if available
+            if let icon = contentIcon {
                 Image(uiImage: icon)
                     .resizable()
-                    .frame(width: 30, height: 30) // Adjust the size as needed
+                    .frame(width: 30, height: 30)
                     .cornerRadius(5)
             } else {
                 Image(systemName: "doc.text.fill")
                     .foregroundColor(.purple)
             }
+            
             VStack(alignment: .leading) {
                 Text(name)
                     .font(.headline)
@@ -191,20 +214,29 @@ struct PicassoContentRow: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
-        }.onAppear {
-            if let iconURL = URL(string: repo.url!.appendingPathComponent(icon).absoluteString) { do {
-                fetchImage(from: iconURL) { result in
-                    switch result {
-                    case .success(let image):
-                        DispatchQueue.main.async {
-                            contentIcon = image // Update the fetched image
-                        }
-                    case .failure(let error):
-                        print("Error fetching image: \(error)")
-                    }
+        }
+        .onAppear {
+            if let iconURL = URL(string: repo.url!.appendingPathComponent(icon).absoluteString) {
+                if let cachedImageData = appState.loadImageFromCache(forKey: iconURL.absoluteString) {
+                    // Use cached image data
+                    contentIcon = UIImage(data: cachedImageData)
+                } else {
+                    // Download and cache the image
+                    downloadAndCacheImage(from: iconURL)
                 }
-            }
             }
         }
     }
+    
+    private func downloadAndCacheImage(from url: URL) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    contentIcon = image
+                    appState.saveImageToCache(data, forKey: url.absoluteString)
+                }
+            }
+        }.resume()
+    }
 }
+
