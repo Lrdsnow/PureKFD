@@ -1,5 +1,5 @@
 # PureKFD
- A KFD Tweaks app with Picasso & Misaka Support
+ A KFD Tweaks app with Picasso & Misaka Support\
  Supported Versions: 16.2-16.5 & 16.6b1
 
 ### A KFD Tweaks app that supports misaka & picasso repos
