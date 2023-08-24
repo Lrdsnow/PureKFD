@@ -15,7 +15,7 @@
 
 #
 
-### Supported Versions: 16.2-16.5 & 16.6b1
+### Supported Versions: Arm64e 15.0-16.5 & 16.6b1, Arm64 15.0-15.7.1
 
 ### A KFD Tweaks app that supports misaka & picasso repos/packages
 - Fully supports picasso packages & Has rudementary support for misaka packages
@@ -25,4 +25,3 @@
 - Fix AccentColorOperation
 - Improve Misaka Packages
 - Add MDC?
-
