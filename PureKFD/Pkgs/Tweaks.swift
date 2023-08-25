@@ -256,6 +256,9 @@ struct SpringboardColorOperation: OperationType {
                 color = Color(UIColor(hex: color_conf["value"]! as! String)!)
             }
             
+            NSLog("Color")
+            print("Color")
+            
             if let name = pkg["name"] as? String {
                 let succeeded = sb_apply(SpringboardColorManager.convertStringToSpringboardType(springboardElement)!, color, blur, exploit_method: exploit_method)
                 if !succeeded {
@@ -346,33 +349,51 @@ func readJSON(from fileURL: URL) -> [String: Any]? {
 }
 
 func applyTweaks(from fileURL: URL, exploit_method: Int) {
-    guard let jsonData = try? Data(contentsOf: fileURL),
-          let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-          let operations = jsonDictionary["operations"] as? [[String: Any]],
-          let pkg = readJSON(from: fileURL.deletingLastPathComponent().appendingPathComponent("info.json"))
-    else {
-        print("Error parsing tweak JSON")
-        return
-    }
-    
-    for operationData in operations {
-        guard let operationType = operationData["type"] as? String,
-              let operationTypeClass = operationHandlers[operationType],
-              let operation = operationTypeClass.create(from: operationData, pkg: pkg)
-        else {
-            print("Error creating operation")
-            continue
+    do {
+        let jsonData = try Data(contentsOf: fileURL)
+        
+        guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
+            print("Invalid JSON format")
+            return
+        }
+
+        guard let operations = jsonDictionary["operations"] as? [[String: Any]] else {
+            print("Missing 'operations' in JSON")
+            return
         }
         
-        operation.apply(exploit_method: exploit_method)
+        guard let pkg = readJSON(from: fileURL.deletingLastPathComponent().appendingPathComponent("info.json")) else {
+            print("Missing info.json")
+            return
+        }
+        
+        for operationData in operations {
+            guard let operationType = operationData["type"] as? String else {
+                print("Missing 'type' for operation")
+                continue
+            }
+
+            if let operationTypeClass = operationHandlers[operationType] {
+                if let operation = operationTypeClass.create(from: operationData, pkg: pkg) {
+                    operation.apply(exploit_method: exploit_method)
+                } else {
+                    print("Error creating operation for type:", operationType)
+                }
+            } else {
+                print("Unknown or unsupported operation type:", operationType)
+                print("Possible operations are:", operationHandlers.keys)
+            }
+        }
+
+        print("Tweak applied successfully.")
+    } catch {
+        print("Error applying tweaks: \(error)")
     }
-    
-    print("Tweak applied successfully.")
 }
 
 func getPackageFolderPath(for package: InstalledPackage) -> URL {
     let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    return installedFolderPath.appendingPathComponent(package.bundleID)
+    return installedFolderPath.appendingPathComponent("Installed").appendingPathComponent(package.bundleID)
 }
 
 func getMisakaOverwriteFolderPath(for package: InstalledPackage) -> URL {
@@ -387,21 +408,19 @@ func getMisakaOverwriteFolderPath(for package: InstalledPackage) -> URL {
 func applyAllTweaks(exploit_method: Int) {
     let installedPackages = getInstalledPackages()
     for installedPackage in installedPackages {
-        if installedPackage.type == "picasso" {
-            let packageFolderPath = getPackageFolderPath(for: installedPackage)
-            print("Applying", installedPackage.bundleID)
-            applyTweaks(from: packageFolderPath.appendingPathComponent("tweak.json"), exploit_method: exploit_method)
-            DispatchQueue.global(qos: .utility).async {
-                FetchLog()
-            }
-        } else if installedPackage.type == "misaka" {
+        if installedPackage.type == "misaka" {
             let overwriteFolderPath = getMisakaOverwriteFolderPath(for: installedPackage)
             overwriteMisaka(sourceFolderURL: overwriteFolderPath, exploit_method: exploit_method)
             DispatchQueue.global(qos: .utility).async {
                 FetchLog()
             }
         } else {
-            print("Unsupported Package")
+            let packageFolderPath = getPackageFolderPath(for: installedPackage)
+            print("Applying", installedPackage.bundleID)
+            applyTweaks(from: packageFolderPath.appendingPathComponent("tweak.json"), exploit_method: exploit_method)
+            DispatchQueue.global(qos: .utility).async {
+                FetchLog()
+            }
         }
     }
 }

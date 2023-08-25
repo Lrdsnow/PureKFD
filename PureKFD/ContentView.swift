@@ -61,29 +61,29 @@ class LogStream {
             close(self.errFd[1])
         }
         let bufsiz = Int(BUFSIZ)
-//        outputSource.setEventHandler {
-//            let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufsiz)
-//            defer { buffer.deallocate() }
-//            let bytesRead = read(self.outputFd[0], buffer, bufsiz)
-//            guard bytesRead > 0 else {
-//                if bytesRead == -1 && errno == EAGAIN {
-//                    return
-//                }
-//                self.outputSource.cancel()
-//                return
-//            }
-//            write(origOutput, buffer, bytesRead)
-//            let array = Array(UnsafeBufferPointer(start: buffer, count: bytesRead)) + [UInt8(0)]
-//            array.withUnsafeBufferPointer { ptr in
-//                let str = String(cString: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self))
-//                let textColor = UIColor.white
-//                let substring = NSMutableAttributedString(string: str, attributes: [NSAttributedString.Key.foregroundColor: textColor])
-//                self.outputString.append(substring)
-//                DispatchQueue.main.async {
-//                    NotificationCenter.default.post(name: self.reloadNotification, object: nil)
-//                }
-//            }
-//        }
+        outputSource.setEventHandler {
+            let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufsiz)
+            defer { buffer.deallocate() }
+            let bytesRead = read(self.outputFd[0], buffer, bufsiz)
+            guard bytesRead > 0 else {
+                if bytesRead == -1 && errno == EAGAIN {
+                    return
+                }
+                self.outputSource.cancel()
+                return
+            }
+            write(origOutput, buffer, bytesRead)
+            let array = Array(UnsafeBufferPointer(start: buffer, count: bytesRead)) + [UInt8(0)]
+            array.withUnsafeBufferPointer { ptr in
+                let str = String(cString: unsafeBitCast(ptr.baseAddress, to: UnsafePointer<CChar>.self))
+                let textColor = UIColor.white
+                //let substring = NSMutableAttributedString(string: str, attributes: [NSAttributedString.Key.foregroundColor: textColor])
+                //self.outputString.append(substring)
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: self.reloadNotification, object: nil)
+                }
+            }
+        }
         errorSource.setEventHandler {
             let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufsiz)
             defer { buffer.deallocate() }
@@ -194,14 +194,14 @@ struct RepoApp: App {
             print("")
         }
         // MDC Grant Full Disk
-        if checkiOSVersionRange() == .mdc {
-            grant_full_disk_access() { error in
-                if (error != nil) {
-                    UIApplication.shared.alert(body: "\(String(describing: error?.localizedDescription))\nPlease close the app and retry.")
-                    return
-                }
-            }
-        }
+//        if checkiOSVersionRange() == .mdc {
+//            grant_full_disk_access() { error in
+//                if (error != nil) {
+//                    UIApplication.shared.alert(body: "\(String(describing: error?.localizedDescription))\nPlease close the app and retry.")
+//                    return
+//                }
+//            }
+//        }
     }
     var body: some Scene {
         WindowGroup {
@@ -578,34 +578,74 @@ struct RepoRow: View {
 
 
 struct LogView: View {
+    @State private var isSharing: Bool = false
     
     var body: some View {
-        ScrollView {
-            ScrollViewReader { scroll in
-                VStack(alignment: .leading) {
-                    ForEach(0..<LogItems.count, id: \.self) { LogItem in
-                        Text("[*] \(String(LogItems[LogItem]))")
-                            .textSelection(.enabled)
-                            .font(.custom("Menlo", size: 15))
+        VStack {
+            ScrollView {
+                ScrollViewReader { scroll in
+                    VStack(alignment: .leading) {
+                        ForEach(0..<LogItems.count, id: \.self) { LogItem in
+                            Text("[*] \(String(LogItems[LogItem]))")
+                                .textSelection(.enabled)
+                                .font(.custom("Menlo", size: 15))
+                        }
                     }
-                }
-                .onReceive(NotificationCenter.default.publisher(for: LogStream.shared.reloadNotification)) { obj in
-                    DispatchQueue.global(qos: .utility).async {
-                        FetchLog()
-                        scroll.scrollTo(LogItems.count - 1)
+                    .onReceive(NotificationCenter.default.publisher(for: LogStream.shared.reloadNotification)) { obj in
+                        DispatchQueue.global(qos: .utility).async {
+                            FetchLog()
+                            scroll.scrollTo(LogItems.count - 1)
+                        }
                     }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(Color(UIColor.systemGray6))
+            .cornerRadius(20)
+            
+            Button(action: {
+                isSharing = true
+            }) {
+                Text("Share Log")
+                    .padding()
+                    .foregroundColor(.purple) // Set the text color to purple
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.purple, lineWidth: 2) // Add purple outline
+                    )
+            }
         }
         .padding()
         .frame(width: UIScreen.main.bounds.width - 50, height: 600)
-        .background(Color(UIColor.systemGray6))
-        .cornerRadius(20)
-        
-        
+        .sheet(isPresented: $isSharing, onDismiss: {
+            // Optional: Add any cleanup or actions after sharing is dismissed
+        }) {
+            // Content of the share sheet
+            ActivityView(activityItems: [shareableLogContent()])
+        }
     }
+    
+    private func shareableLogContent() -> String {
+        // Generate a shareable string from LogItems
+        let logContent = LogItems.map { "[*] \($0)" }.joined(separator: "\n")
+        return logContent
     }
+}
+
+struct ActivityView: UIViewControllerRepresentable {
+    typealias UIViewControllerType = UIActivityViewController
+    
+    let activityItems: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {
+        // Update the view controller if needed
+    }
+}
 
 enum iOSVersionRange {
     case mdc
@@ -698,6 +738,24 @@ class UserSettings: ObservableObject {
         self.kwriteMethod = UserDefaults.standard.integer(forKey: "kwriteMethod")
         self.puafPages = UserDefaults.standard.integer(forKey: "puafPages")
         self.RespringMode = UserDefaults.standard.integer(forKey: "RespringMode")
+        if UserDefaults.standard.object(forKey: "puafPagesIndex") == nil {
+            self.puafPagesIndex = 7
+        }
+        if UserDefaults.standard.object(forKey: "puafPages") == nil {
+            self.puafPages = 0
+        }
+        if UserDefaults.standard.object(forKey: "puafMethod") == nil {
+            self.puafMethod = 1
+        }
+        if UserDefaults.standard.object(forKey: "kreadMethod") == nil {
+            self.kreadMethod = 1
+        }
+        if UserDefaults.standard.object(forKey: "kwriteMethod") == nil {
+            self.kwriteMethod = 1
+        }
+        if UserDefaults.standard.object(forKey: "RespringMode") == nil {
+            self.RespringMode = 0
+        }
     }
 }
 
@@ -755,7 +813,7 @@ struct HomeView: View {
                                     
                                     UIApplication.shared.dismissAlert(animated: false)
                                     
-                                    if autoRespring {
+                                    if userSettings.autoRespring {
                                         if RespringMode == 0 {
                                             backboard_respring()
                                         } else if RespringMode == 1 {
@@ -766,7 +824,7 @@ struct HomeView: View {
                             }
                         }
                     }) {
-                        if autoRespring {
+                        if userSettings.autoRespring {
                             Text("Apply & Respring")
                                 .settingButtonStyle()
                         } else {
