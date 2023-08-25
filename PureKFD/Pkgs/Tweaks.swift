@@ -142,6 +142,8 @@ struct ResSetOperation: OperationType {
         }
         if exploit_method == 0 {
             ResSet16(res["height"]!, res["width"]!)
+        } else if exploit_method == 1 {
+            MDC.setResolution(height: res["height"]!, width: res["width"]!)
         }
     }
 
@@ -334,84 +336,71 @@ let operationHandlers: [String: OperationType.Type] = [
 ]
 
 func readJSON(from fileURL: URL) -> [String: Any]? {
-    do {
-        let jsonData = try Data(contentsOf: fileURL)
-        
-        guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
-            print("Invalid JSON format")
-            return nil
-        }
-        
-        return jsonDictionary
-    } catch {
-        print("Error reading json: \(error)")
+    guard let jsonData = try? Data(contentsOf: fileURL),
+          let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+    else {
+        print("Error reading JSON from \(fileURL)")
         return nil
     }
+    return jsonDictionary
 }
 
 func applyTweaks(from fileURL: URL, exploit_method: Int) {
-    do {
-        let jsonData = try Data(contentsOf: fileURL)
-        
-        guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
-            print("Invalid JSON format")
-            return
-        }
-
-        guard let operations = jsonDictionary["operations"] as? [[String: Any]] else {
-            print("Missing 'operations' in JSON")
-            return
-        }
-        
-        guard let pkg = readJSON(from: fileURL.deletingLastPathComponent().appendingPathComponent("info.json")) else {
-            print("Missing info.json")
-            return
-        }
-        
-        for operationData in operations {
-            guard let operationType = operationData["type"] as? String else {
-                print("Missing 'type' for operation")
-                continue
-            }
-
-            if let operationTypeClass = operationHandlers[operationType] {
-                if let operation = operationTypeClass.create(from: operationData, pkg: pkg) {
-                    operation.apply(exploit_method: exploit_method)
-                } else {
-                    print("Error creating operation for type:", operationType)
-                }
-            } else {
-                print("Unknown or unsupported operation type:", operationType)
-                print("Possible operations are:", operationHandlers.keys)
-            }
-        }
-
-        print("Tweak applied successfully.")
-    } catch {
-        print("Error applying tweaks: \(error)")
+    guard let jsonData = try? Data(contentsOf: fileURL),
+          let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
+          let operations = jsonDictionary["operations"] as? [[String: Any]],
+          let pkg = readJSON(from: fileURL.deletingLastPathComponent().appendingPathComponent("info.json"))
+    else {
+        print("Error parsing tweak JSON")
+        return
     }
+    
+    for operationData in operations {
+        guard let operationType = operationData["type"] as? String,
+              let operationTypeClass = operationHandlers[operationType],
+              let operation = operationTypeClass.create(from: operationData, pkg: pkg)
+        else {
+            print("Error creating operation")
+            continue
+        }
+        
+        operation.apply(exploit_method: exploit_method)
+    }
+    
+    print("Tweak applied successfully.")
+}
+
+func getPackageFolderPath(for package: InstalledPackage) -> URL {
+    let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    return installedFolderPath.appendingPathComponent(package.bundleID)
+}
+
+func getMisakaOverwriteFolderPath(for package: InstalledPackage) -> URL {
+    let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    return installedFolderPath
+        .appendingPathComponent("Misaka")
+        .appendingPathComponent("Installed")
+        .appendingPathComponent(package.bundleID)
+        .appendingPathComponent("Overwrite")
 }
 
 func applyAllTweaks(exploit_method: Int) {
     let installedPackages = getInstalledPackages()
     for installedPackage in installedPackages {
         if installedPackage.type == "picasso" {
-            let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Installed")
-            let packageFolderPath = installedFolderPath.appendingPathComponent(installedPackage.bundleID).appendingPathComponent("tweak.json")
+            let packageFolderPath = getPackageFolderPath(for: installedPackage)
             print("Applying", installedPackage.bundleID)
-            applyTweaks(from: packageFolderPath, exploit_method: exploit_method)
+            applyTweaks(from: packageFolderPath.appendingPathComponent("tweak.json"), exploit_method: exploit_method)
             DispatchQueue.global(qos: .utility).async {
-                                 FetchLog()
-                             }
+                FetchLog()
+            }
         } else if installedPackage.type == "misaka" {
-            let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Misaka/Installed")
-            let overwriteFolderPath = installedFolderPath.appendingPathComponent(installedPackage.bundleID).appendingPathComponent("Overwrite")
+            let overwriteFolderPath = getMisakaOverwriteFolderPath(for: installedPackage)
             overwriteMisaka(sourceFolderURL: overwriteFolderPath, exploit_method: exploit_method)
             DispatchQueue.global(qos: .utility).async {
-                                 FetchLog()
-                             }
-        }
-        else {
+                FetchLog()
+            }
+        } else {
             print("Unsupported Package")
         }
     }
@@ -466,6 +455,15 @@ func overwriteMisaka(sourceFolderURL: URL, exploit_method: Int) {
                         try MDC.overwriteFile(at: relativePath, with: readFileAsData(atURL: itemURL)!)
                     } catch {
                         print("Failed to copy \(itemName): \(error)")
+                    }
+                } else if exploit_method == 2 { // TrollStore
+                    do {
+                        let data = try Data(contentsOf: itemURL)
+                        let destinationPath = relativePath
+                        try data.write(to: URL(fileURLWithPath: destinationPath), options: .atomic)
+                        print("File was successfully copied.")
+                    } catch {
+                        print("Error: \(error)")
                     }
                 }
             }

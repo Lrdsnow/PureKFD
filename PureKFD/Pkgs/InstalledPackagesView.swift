@@ -554,23 +554,34 @@ struct PreferencesView: View {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase // If your keys are in snake_case format
 
-                // Decode the preferences dictionary from the config.json data
-                let preferencesDict = try decoder.decode([String: PreferenceValue].self, from: configData)
+                do {
+                    let preferencesDict = try decoder.decode([String: [String: String]].self, from: configData)
 
-                // Apply the decoded preferences to tempPreferences
-                tempPreferences = [:] // Clear tempPreferences first
-                for (key, value) in preferencesDict {
-                    if key == "color" {
-                        tempPreferences[key] = Color(UIColor(hex: value as? String ?? "#FF0000") ?? UIColor.red)
-                    } else {
-                        tempPreferences[key] = value
+                    tempPreferences = [:] // Clear tempPreferences first
+                    
+                    for (key, valueDict) in preferencesDict {
+                        if let valueType = valueDict["type"], let value = valueDict["value"] {
+                            if valueType == "color" {
+                                if let color = UIColor(hex: value) {
+                                    tempPreferences[key] = Color(color) // Convert UIColor to Color here
+                                } else {
+                                    print("Invalid hex color value: \(value)")
+                                }
+                            } else {
+                                // Handle other value types as needed
+                                // For example, boolean, string, etc.
+                            }
+                        }
                     }
+                } catch {
+                    print("Error decoding preferences from config.json: \(error)")
                 }
             }
         } catch {
             print("Error loading preferences from config.json: \(error)")
         }
     }
+
 
 }
 

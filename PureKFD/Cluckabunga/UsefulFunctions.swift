@@ -76,7 +76,7 @@ class UsefulFunctions {
                 //respring()
             }
             
-            sleep(2) // give the springboard some time to restart before exiting
+            //sleep(2) // give the springboard some time to restart before exiting
             exit(0)
         }
         

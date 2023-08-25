@@ -27,6 +27,8 @@
 		65EE9D1F2A976C360053E865 /* offsets.m in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CCD2A976C360053E865 /* offsets.m */; };
 		65EE9D202A976C360053E865 /* vnode.m in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CCE2A976C360053E865 /* vnode.m */; };
 		65EE9D212A976C360053E865 /* proc.c in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CCF2A976C360053E865 /* proc.c */; };
+		65EE9D222A976C360053E865 /* encryptkey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CD62A976C360053E865 /* encryptkey.swift */; };
+		65EE9D232A976C360053E865 /* encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CD72A976C360053E865 /* encrypt.swift */; };
 		65EE9D242A976C360053E865 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65EE9CD82A976C360053E865 /* Assets.xcassets */; };
 		65EE9D252A976C360053E865 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65EE9CDA2A976C360053E865 /* Preview Assets.xcassets */; };
 		65EE9D262A976C360053E865 /* pkgs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CDC2A976C360053E865 /* pkgs.swift */; };
@@ -116,6 +118,8 @@
 		65EE9CD12A976C360053E865 /* helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = helpers.h; sourceTree = "<group>"; };
 		65EE9CD22A976C360053E865 /* grant_full_disk_access.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = grant_full_disk_access.h; sourceTree = "<group>"; };
 		65EE9CD32A976C360053E865 /* libkfd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkfd.h; sourceTree = "<group>"; };
+		65EE9CD62A976C360053E865 /* encryptkey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = encryptkey.swift; sourceTree = "<group>"; };
+		65EE9CD72A976C360053E865 /* encrypt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = encrypt.swift; sourceTree = "<group>"; };
 		65EE9CD82A976C360053E865 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		65EE9CDA2A976C360053E865 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		65EE9CDC2A976C360053E865 /* pkgs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = pkgs.swift; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 			children = (
 				65EE9C9C2A976C360053E865 /* Repos */,
 				65EE9C9F2A976C360053E865 /* Exploit */,
+				65EE9CD52A976C360053E865 /* Misaka */,
 				65EE9CD82A976C360053E865 /* Assets.xcassets */,
 				65EE9CD92A976C360053E865 /* Preview Content */,
 				65EE9CDB2A976C360053E865 /* Pkgs */,
@@ -325,6 +330,15 @@
 				65EE9CD22A976C360053E865 /* grant_full_disk_access.h */,
 			);
 			path = fun;
+			sourceTree = "<group>";
+		};
+		65EE9CD52A976C360053E865 /* Misaka */ = {
+			isa = PBXGroup;
+			children = (
+				65EE9CD62A976C360053E865 /* encryptkey.swift */,
+				65EE9CD72A976C360053E865 /* encrypt.swift */,
+			);
+			path = Misaka;
 			sourceTree = "<group>";
 		};
 		65EE9CD92A976C360053E865 /* Preview Content */ = {
@@ -592,6 +606,7 @@
 			files = (
 				65EE9D2F2A976C360053E865 /* Alert++.swift in Sources */,
 				65EE9D122A976C360053E865 /* jit.m in Sources */,
+				65EE9D232A976C360053E865 /* encrypt.swift in Sources */,
 				65EE9D1D2A976C360053E865 /* thanks_opa334dev_htrowii.m in Sources */,
 				65EE9D152A976C360053E865 /* helpers.m in Sources */,
 				65EE9D1E2A976C360053E865 /* krw.c in Sources */,
@@ -616,6 +631,7 @@
 				65EE9D132A976C360053E865 /* vm_unaligned_copy_switch_race.c in Sources */,
 				65EE9D4B2A976C360053E865 /* Images.swift in Sources */,
 				65EE9D2A2A976C360053E865 /* deps.swift in Sources */,
+				65EE9D222A976C360053E865 /* encryptkey.swift in Sources */,
 				65EE9D192A976C360053E865 /* fun.m in Sources */,
 				65EE9D1C2A976C360053E865 /* utils.m in Sources */,
 				65EE9D102A976C360053E865 /* Misaka.swift in Sources */,

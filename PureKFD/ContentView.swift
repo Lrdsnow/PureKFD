@@ -171,6 +171,38 @@ enum SelectedItem: Hashable {
 
 @main
 struct RepoApp: App {
+    init() {
+        // CleanUP
+        let fileManager = FileManager.default
+        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let extractedFolderPath = documentsDirectory.appendingPathComponent("Misaka/Extracted")
+        let downloadFolderPath = documentsDirectory.appendingPathComponent("Misaka/Download")
+        let zipFileURL = documentsDirectory.appendingPathComponent("Misaka/downloaded.zip")
+        do {
+            try fileManager.removeItem(atPath: extractedFolderPath.path)
+        } catch {
+            print("")
+        }
+        do {
+            try fileManager.removeItem(at: downloadFolderPath)
+        } catch {
+            print("")
+        }
+        do {
+            try fileManager.removeItem(at: zipFileURL)
+        } catch {
+            print("")
+        }
+        // MDC Grant Full Disk
+        if checkiOSVersionRange() == .mdc {
+            grant_full_disk_access() { error in
+                if (error != nil) {
+                    UIApplication.shared.alert(body: "\(String(describing: error?.localizedDescription))\nPlease close the app and retry.")
+                    return
+                }
+            }
+        }
+    }
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -602,10 +634,77 @@ func checkiOSVersionRange() -> iOSVersionRange {
     return .other
 }
 
+class UserSettings: ObservableObject {
+    @Published var autoRespring: Bool {
+        didSet {
+            UserDefaults.standard.set(autoRespring, forKey: "autoRespring")
+        }
+    }
+    @Published var dev: Bool {
+        didSet {
+            UserDefaults.standard.set(dev, forKey: "dev")
+        }
+    }
+    @Published var exploit_method: Int {
+        didSet {
+            UserDefaults.standard.set(exploit_method, forKey: "exploit_method")
+        }
+    }
+    @Published var enforce_exploit_method: Bool {
+        didSet {
+            UserDefaults.standard.set(enforce_exploit_method, forKey: "enforce_exploit_method")
+        }
+    }
+    
+    @Published var puafPagesIndex: Int {
+        didSet {
+            UserDefaults.standard.set(puafPagesIndex, forKey: "puafPagesIndex")
+        }
+    }
+    @Published var puafMethod: Int {
+        didSet {
+            UserDefaults.standard.set(puafMethod, forKey: "puafMethod")
+        }
+    }
+    @Published var kreadMethod: Int {
+        didSet {
+            UserDefaults.standard.set(kreadMethod, forKey: "kreadMethod")
+        }
+    }
+    @Published var kwriteMethod: Int {
+        didSet {
+            UserDefaults.standard.set(kwriteMethod, forKey: "kwriteMethod")
+        }
+    }
+    @Published var puafPages: Int {
+        didSet {
+            UserDefaults.standard.set(puafPages, forKey: "puafPages")
+        }
+    }
+    @Published var RespringMode: Int {
+        didSet {
+            UserDefaults.standard.set(RespringMode, forKey: "RespringMode")
+        }
+    }
+
+    init() {
+        self.autoRespring = UserDefaults.standard.bool(forKey: "autoRespring")
+        self.dev = UserDefaults.standard.bool(forKey: "dev")
+        self.exploit_method = UserDefaults.standard.integer(forKey: "exploit_method")
+        self.enforce_exploit_method = UserDefaults.standard.bool(forKey: "enforce_exploit_method")
+        self.puafPagesIndex = UserDefaults.standard.integer(forKey: "puafPagesIndex")
+        self.puafMethod = UserDefaults.standard.integer(forKey: "puafMethod")
+        self.kreadMethod = UserDefaults.standard.integer(forKey: "kreadMethod")
+        self.kwriteMethod = UserDefaults.standard.integer(forKey: "kwriteMethod")
+        self.puafPages = UserDefaults.standard.integer(forKey: "puafPages")
+        self.RespringMode = UserDefaults.standard.integer(forKey: "RespringMode")
+    }
+}
+
+
 struct HomeView: View {
+    @StateObject private var userSettings = UserSettings()
     @State private var autoRespring = true
-    @State private var kopened = false
-    @State private var enableResSet = false
     @State private var exploit_method = 0
     @State private var enforce_exploit_method = false
     
@@ -622,8 +721,8 @@ struct HomeView: View {
     var body: some View {
             Form {
                 Section(header: Text("General Options")) {
-                    ToggleSettingView(title: "Respring on Apply", isOn: $autoRespring)
-                    ToggleSettingView(title: "Developer Mode", isOn: $dev)
+                    ToggleSettingView(title: "Respring on Apply", isOn: $userSettings.autoRespring)
+                    ToggleSettingView(title: "Developer Mode", isOn: $userSettings.dev)
                 }
                 
                 Section(header: Text("Actions")) {
@@ -637,11 +736,7 @@ struct HomeView: View {
                                     } else if checkiOSVersionRange() == .kfd {
                                         exploit_method = 0
                                     } else {
-                                        exploit_method = -1
-                                        UIApplication.shared.dismissAlert(animated: false)
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            UIApplication.shared.alert(title: "Unsupported!!!", body: "Device not in support range!", animated: false, withButton: true)
-                                        }
+                                        exploit_method = 2
                                     }
                                 }
                                 
@@ -650,7 +745,6 @@ struct HomeView: View {
                                         exploit(puaf_pages: UInt64(puafPagesOptions[puafPagesIndex]), puaf_method: UInt64(puafMethod), kread_method: UInt64(kreadMethod), kwrite_method: UInt64(kwriteMethod)) //kopen
                                         fix_exploit()
                                     }
-                                    
                                     
                                     applyAllTweaks(exploit_method: exploit_method)
                                     
@@ -664,7 +758,7 @@ struct HomeView: View {
                                     if autoRespring {
                                         if RespringMode == 0 {
                                             backboard_respring()
-                                        } else {
+                                        } else if RespringMode == 1 {
                                             respring()
                                         }
                                     }
@@ -705,14 +799,14 @@ struct HomeView: View {
                             .tint(.purple)
                     }
                     NavigationLink(destination: SettingsView(
-                        puafPagesIndex: $puafPagesIndex,
-                        puafMethod: $puafMethod,
-                        kreadMethod: $kreadMethod,
-                        kwriteMethod: $kwriteMethod,
-                        puafPages: $puafPages,
-                        RespringMode: $RespringMode,
-                        exploit_method: $exploit_method, 
-                        enforce_exploit_method: $enforce_exploit_method
+                        puafPagesIndex: $userSettings.puafPagesIndex,
+                        puafMethod: $userSettings.puafMethod,
+                        kreadMethod: $userSettings.kreadMethod,
+                        kwriteMethod: $userSettings.kwriteMethod,
+                        puafPages: $userSettings.puafPages,
+                        RespringMode: $userSettings.RespringMode,
+                        exploit_method: $userSettings.exploit_method,
+                        enforce_exploit_method: $userSettings.enforce_exploit_method
                     )) {
                         Image(systemName: "gearshape.fill")
                             .font(.system(size: 20))
@@ -822,7 +916,7 @@ struct SettingsView: View {
     private let kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
     private let kwriteMethodOptions = ["dup", "sem_open"]
     private let RespringOptions = ["Backboard Respring", "Frontboard Respring"]
-    private let ExploitOptions = ["KFD", "MDC"]
+    private let ExploitOptions = ["KFD", "MDC", "TrollStore"]
 
     var body: some View {
         Form {
