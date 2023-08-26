@@ -178,6 +178,9 @@ struct RepoApp: App {
         let extractedFolderPath = documentsDirectory.appendingPathComponent("Misaka/Extracted")
         let downloadFolderPath = documentsDirectory.appendingPathComponent("Misaka/Download")
         let zipFileURL = documentsDirectory.appendingPathComponent("Misaka/downloaded.zip")
+        let PicassoExtractedFolderPath = documentsDirectory.appendingPathComponent("Extracted")
+        let PicassoTempPath = documentsDirectory.appendingPathComponent("TempOverwriteFile")
+        let PicassoBackgroundFolderPath = documentsDirectory.appendingPathComponent("Background_Files")
         do {
             try fileManager.removeItem(atPath: extractedFolderPath.path)
         } catch {
@@ -762,7 +765,7 @@ class UserSettings: ObservableObject {
 
 struct HomeView: View {
     @StateObject private var userSettings = UserSettings()
-    @State private var autoRespring = true
+    @State private var autoRespring = false
     @State private var exploit_method = 0
     @State private var enforce_exploit_method = false
     
@@ -778,10 +781,10 @@ struct HomeView: View {
   
     var body: some View {
             Form {
-                Section(header: Text("General Options")) {
-                    ToggleSettingView(title: "Respring on Apply", isOn: $userSettings.autoRespring)
-                    ToggleSettingView(title: "Developer Mode", isOn: $userSettings.dev)
-                }
+//                Section(header: Text("General Options")) {
+//                    ToggleSettingView(title: "Respring on Apply", isOn: $userSettings.autoRespring)
+//                    ToggleSettingView(title: "Developer Mode", isOn: $userSettings.dev)
+//                }
                 
                 Section(header: Text("Actions")) {
                     Button(action: {
@@ -813,19 +816,21 @@ struct HomeView: View {
                                     
                                     UIApplication.shared.dismissAlert(animated: false)
                                     
-                                    if userSettings.autoRespring {
-                                        if RespringMode == 0 {
-                                            backboard_respring()
-                                        } else if RespringMode == 1 {
-                                            respring()
-                                        }
-                                    }
+//                                    if userSettings.autoRespring {
+//                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                                            if RespringMode == 0 {
+//                                                backboard_respring()
+//                                            } else if RespringMode == 1 {
+//                                                respring()
+//                                            }
+//                                        }
+//                                    }
                                 }
                             }
                         }
                     }) {
                         if userSettings.autoRespring {
-                            Text("Apply & Respring")
+                            Text("Apply")
                                 .settingButtonStyle()
                         } else {
                             Text("Apply")
@@ -847,6 +852,9 @@ struct HomeView: View {
                         Text("Exit")
                             .settingButtonStyle()
                     }
+                }
+                Section("Notice") {
+                    Text("Version: 3.3\n\nNotes: Misaka package support is in its early stages\n\nUsage: Install a package (I recommend the NothingOS font), Hit apply & then hit respring")
                 }
             }
             .navigationBarItems(
