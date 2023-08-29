@@ -24,19 +24,18 @@ func overwriteWithFileImpl(
     pathToTargetFile: String
 ) {
 //    var replacementData: Data = try! Data(contentsOf: replacementURL)
-    
-    let cPathtoTargetFile = pathToTargetFile.withCString { ptr in
+        let cPathtoTargetFile = pathToTargetFile.withCString { ptr in
             return strdup(ptr)
         }
-    
-    let mutablecPathtoTargetFile = UnsafeMutablePointer<Int8>(mutating: cPathtoTargetFile)
-    
-    let cFileURL = replacementURL.path.withCString { ptr in
+        
+        let mutablecPathtoTargetFile = UnsafeMutablePointer<Int8>(mutating: cPathtoTargetFile)
+        
+        let cFileURL = replacementURL.path.withCString { ptr in
             return strdup(ptr)
         }
-    let mutablecFileURL = UnsafeMutablePointer<Int8>(mutating: cFileURL)
-    
-    funVnodeOverwrite2(cPathtoTargetFile, mutablecFileURL) // the magic is here
+        let mutablecFileURL = UnsafeMutablePointer<Int8>(mutating: cFileURL)
+        
+        funVnodeOverwrite2(cPathtoTargetFile, mutablecFileURL) // the magic is here
 }
 
 func overwriteFile(at filePath: String, with newData: Data) throws {

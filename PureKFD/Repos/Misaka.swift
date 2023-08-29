@@ -81,9 +81,10 @@ struct RepositoryRow: View {
             VStack(alignment: .leading) {
                 Text(repository.RepositoryName)
                     .font(.headline)
+                    .foregroundColor(.purple)
                 Text(repository.RepositoryDescription)
                     .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.purple.opacity(0.7))
             }
         }
         .onAppear {
@@ -113,7 +114,7 @@ struct ContentDetailsView: View {
         List(contents) { content in
             NavigationLink(destination: destinationView(for: content)) {
                 ContentRow(content: content, repo: repository)
-            }
+            }.listRowBackground(Color.clear)
         }
         .navigationTitle(repository.RepositoryName)
     }
@@ -145,15 +146,16 @@ struct ContentRow: View {
             VStack(alignment: .leading) {
                 Text(content.Name)
                     .font(.headline)
+                    .foregroundColor(.purple)
                 if let authorLabel = content.Author?.Label {
                     Text(authorLabel)
                         .font(.subheadline)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.purple.opacity(0.7))
                 } else {
                     let authorLabel = repo.RepositoryAuthor
                     Text(authorLabel)
                         .font(.subheadline)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.purple.opacity(0.7))
                 }
             }
         }

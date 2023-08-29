@@ -57,6 +57,22 @@ extension String {
     }
 }
 
+extension Color {
+    func toNormHex() -> String {
+        #if canImport(UIKit)
+        let components = UIColor(self).cgColor.components ?? []
+        #else
+        let components = NSColor(self).cgColor.components ?? []
+        #endif
+        
+        let red = Int(components[0] * 255)
+        let green = Int(components[1] * 255)
+        let blue = Int(components[2] * 255)
+        
+        return String(format: "#%02X%02X%02X", red, green, blue)
+    }
+}
+
 func modifyColorsInCARFile(jsonData: [String: Any], carFilePath: String, newColorValue: Color) {
     do {
         guard let data = jsonData["data"] as? [[String: Any]] else {

@@ -79,6 +79,42 @@ struct ClearSMSOperation: OperationType {
     }
 }
 
+struct SubTypeOperation: OperationType {
+    let pkg: [String: Any]
+
+    func apply(exploit_method: Int) {
+        if exploit_method == 0 {
+            let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Installed")
+            let configURL = installedFolderPath.appendingPathComponent(pkg["bundleID"] as! String).appendingPathComponent("config.json")
+                
+            var subtype: Int = 0
+            let options: [String: Int] = ["2796 (iPhone 14pm)": 2796, "2556 (iPhone 14p)": 2556, "Auto (iPhone X-14": 0, "596 (iPhone 8/SE2/SE3)": 596, "570 (iPhone 8+)": 570]
+            
+            if let config = readJSON(from: configURL) {
+                do {
+                    let sub_conf = config["picker"] as? [String: Any] ?? ["":""]
+                    subtype = options[sub_conf["value"] as? String ?? ""] as? Int ?? 0
+                } catch {
+                    print("Error reading from config.json")
+                }
+            }
+            
+            if subtype == 0 {
+                subtype = Int(UIScreen.main.nativeBounds.height)
+            }
+            
+            DynamicKFD(Int32(subtype))
+        }
+    }
+
+    static func create(from dictionary: [String: Any], pkg: [String: Any]) -> OperationType? {
+        return SubTypeOperation(
+            pkg: pkg
+        )
+    }
+}
+
 struct DynamicIslandOperation: OperationType {
     let pkg: [String: Any]
 
@@ -138,12 +174,16 @@ struct ResSetOperation: OperationType {
         var res: [String: Int] = ["height": 2796, "width": 1290]
             
         if let config = readJSON(from: configURL) {
-            // Get resfield from config once i can get the stupid thing to write
+            do {
+                let res_conf = config["resfield"] as? [String: Any] ?? ["":""]
+                res = res_conf["value"] as? [String: Int] ?? ["height": 2796, "width": 1290]
+            } catch {
+                print("Error reading from config.json")
+            }
         }
+        
         if exploit_method == 0 {
             ResSet16(res["height"]!, res["width"]!)
-        } else if exploit_method == 1 {
-            MDC.setResolution(height: res["height"]!, width: res["width"]!)
         }
     }
 
@@ -171,16 +211,14 @@ struct AccentColorOperation: OperationType {
     
     func apply(exploit_method: Int) {
         if !pkg.isEmpty && exploit_method == 0 {
-            let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Installed")
             let configURL = installedFolderPath.appendingPathComponent(pkg["bundleID"] as! String).appendingPathComponent("config.json")
             
             var color = Color.clear
-            var blur = 1
             
             if let config = readJSON(from: configURL) {
-                let color_conf = config["color"]! as! [String: Any]
-                color = Color(UIColor(hex: color_conf["value"]! as! String)!)
+                let color_conf = config["color"] as? [String: Any]
+                color = Color(UIColor(hex: color_conf?["value"] as? String ?? "") ?? UIColor.purple)
             }
             
             modifyColorsInCARFile(jsonData: readJSON(from: get_resourceURL(filename: "LightVibrantStandard.json")!)!, carFilePath: "/System/Library/PrivateFrameworks/CoreUI.framework/DesignLibrary-iOS.bundle/iOSRepositories/LightVibrantStandard.car", newColorValue: color)
@@ -232,7 +270,9 @@ struct SpringboardColorOperation: OperationType {
     func sb_apply(_ sbType: SpringboardColorManager.SpringboardType, _ color: Color, _ blur: Int, exploit_method: Int, save: Bool = true) -> Bool {
         do {
             try SpringboardColorManager.createColor(forType: sbType, color: CIColor(color: UIColor(color)), blur: blur, asTemp: !save)
-            try SpringboardColorManager.applyColor(forType: sbType, exploit_method: exploit_method)
+            for _ in 1...5 {
+                try SpringboardColorManager.applyColor(forType: sbType, exploit_method: exploit_method)
+            }
             print("Success")
             return true
         } catch {
@@ -252,12 +292,11 @@ struct SpringboardColorOperation: OperationType {
             var blur = 1
             
             if let config = readJSON(from: configURL) {
-                let color_conf = config["color"]! as! [String: Any]
-                color = Color(UIColor(hex: color_conf["value"]! as! String)!)
+                let color_conf = config["color"] as? [String: Any]
+                color = Color(UIColor(hex: color_conf?["value"] as? String ?? "") ?? UIColor.white)
+                let blur_conf = config["blur"] as? [String: Any]
+                blur = blur_conf?["value"] as? Int ?? 1
             }
-            
-            NSLog("Color")
-            print("Color")
             
             if let name = pkg["name"] as? String {
                 let succeeded = sb_apply(SpringboardColorManager.convertStringToSpringboardType(springboardElement)!, color, blur, exploit_method: exploit_method)
@@ -334,18 +373,25 @@ let operationHandlers: [String: OperationType.Type] = [
     "clearsms": ClearSMSOperation.self,
     "dynamicIsland": DynamicIslandOperation.self,
     "fixdynamicIsland": FixDynamicIslandOperation.self,
+    "subtype": SubTypeOperation.self,
     "removing": HideOperation.self,
     // Add other operation type mappings here
 ]
 
 func readJSON(from fileURL: URL) -> [String: Any]? {
-    guard let jsonData = try? Data(contentsOf: fileURL),
-          let jsonDictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-    else {
-        print("Error reading JSON from \(fileURL)")
+    do {
+        let jsonData = try Data(contentsOf: fileURL)
+        
+        guard let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else {
+            print("Invalid JSON format")
+            return nil
+        }
+        
+        return jsonDictionary
+    } catch {
+        print("Error reading json: \(error)")
         return nil
     }
-    return jsonDictionary
 }
 
 func applyTweaks(from fileURL: URL, exploit_method: Int) {
@@ -391,36 +437,27 @@ func applyTweaks(from fileURL: URL, exploit_method: Int) {
     }
 }
 
-func getPackageFolderPath(for package: InstalledPackage) -> URL {
-    let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    return installedFolderPath.appendingPathComponent("Installed").appendingPathComponent(package.bundleID)
-}
-
-func getMisakaOverwriteFolderPath(for package: InstalledPackage) -> URL {
-    let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    return installedFolderPath
-        .appendingPathComponent("Misaka")
-        .appendingPathComponent("Installed")
-        .appendingPathComponent(package.bundleID)
-        .appendingPathComponent("Overwrite")
-}
-
 func applyAllTweaks(exploit_method: Int) {
     let installedPackages = getInstalledPackages()
     for installedPackage in installedPackages {
-        if installedPackage.type == "misaka" {
-            let overwriteFolderPath = getMisakaOverwriteFolderPath(for: installedPackage)
+        if installedPackage.type == "picasso" {
+            let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Installed")
+            let packageFolderPath = installedFolderPath.appendingPathComponent(installedPackage.bundleID).appendingPathComponent("tweak.json")
+            print("Applying", installedPackage.bundleID)
+            applyTweaks(from: packageFolderPath, exploit_method: exploit_method)
+            DispatchQueue.global(qos: .utility).async {
+                                 FetchLog()
+                             }
+        } else if installedPackage.type == "misaka" {
+            let installedFolderPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("Misaka/Installed")
+            let overwriteFolderPath = installedFolderPath.appendingPathComponent(installedPackage.bundleID).appendingPathComponent("Overwrite")
             overwriteMisaka(sourceFolderURL: overwriteFolderPath, exploit_method: exploit_method)
             DispatchQueue.global(qos: .utility).async {
-                FetchLog()
-            }
-        } else {
-            let packageFolderPath = getPackageFolderPath(for: installedPackage)
-            print("Applying", installedPackage.bundleID)
-            applyTweaks(from: packageFolderPath.appendingPathComponent("tweak.json"), exploit_method: exploit_method)
-            DispatchQueue.global(qos: .utility).async {
-                FetchLog()
-            }
+                                 FetchLog()
+                             }
+        }
+        else {
+            print("Unsupported Package")
         }
     }
 }
@@ -474,15 +511,6 @@ func overwriteMisaka(sourceFolderURL: URL, exploit_method: Int) {
                         try MDC.overwriteFile(at: relativePath, with: readFileAsData(atURL: itemURL)!)
                     } catch {
                         print("Failed to copy \(itemName): \(error)")
-                    }
-                } else if exploit_method == 2 { // TrollStore
-                    do {
-                        let data = try Data(contentsOf: itemURL)
-                        let destinationPath = relativePath
-                        try data.write(to: URL(fileURLWithPath: destinationPath), options: .atomic)
-                        print("File was successfully copied.")
-                    } catch {
-                        print("Error: \(error)")
                     }
                 }
             }

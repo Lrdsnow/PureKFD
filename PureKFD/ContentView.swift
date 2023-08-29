@@ -187,6 +187,21 @@ struct RepoApp: App {
             print("")
         }
         do {
+            try fileManager.removeItem(atPath: PicassoExtractedFolderPath.path)
+        } catch {
+            print("")
+        }
+        do {
+            try fileManager.removeItem(atPath: PicassoTempPath.path)
+        } catch {
+            print("")
+        }
+        do {
+            try fileManager.removeItem(atPath: PicassoBackgroundFolderPath.path)
+        } catch {
+            print("")
+        }
+        do {
             try fileManager.removeItem(at: downloadFolderPath)
         } catch {
             print("")
@@ -206,11 +221,21 @@ struct RepoApp: App {
 //            }
 //        }
     }
+    @StateObject var appDelegate = AppDelegate()
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(appDelegate)
         }
     }
+}
+
+class AppDelegate: ObservableObject {
+    @Published var TweakSettings_current_path: String = ""
+    @Published var TweakSettings_overwrite_path: String = ""
+    @Published var TweakSettings_IsActive: Bool = false
+    @Published var TweakSettings_PackageID: String = ""
+    @Published var App_Loading: Bool = false
 }
 
 struct ContentView: View {
@@ -227,6 +252,10 @@ struct ContentView: View {
         case installed
         case home
         case search
+    }
+    
+    init() {
+        UINavigationBar.appearance().prefersLargeTitles = true
     }
     
     //@State private var PicassoRepoURLs = [
@@ -247,11 +276,10 @@ struct ContentView: View {
     @State private var MisakaRepoURLs: [URL] = []
     
     var body: some View {
-        
         NavigationView {
             if selectedTab == .repos {
                 List {
-                    Section(header: Text("Picasso Repos")) {
+                    Section(header: Text("Picasso Repos").foregroundColor(.purple)) {
                         ForEach(PicassoRepos) { repo in
                             NavigationLink(
                                 destination: PicassoContentDetailsView(repo: repo, selectedRepo: $selectedRepo),
@@ -259,7 +287,7 @@ struct ContentView: View {
                                 selection: $selectedRepo
                             ) {
                                 RepoRow(repo: repo)
-                            }
+                            }.listRowBackground(Color.clear)
                             .contextMenu {
                                 Button(action: {
                                     let pasteboard = UIPasteboard.general
@@ -276,11 +304,11 @@ struct ContentView: View {
                             }
                         }
                     }
-                    Section(header: Text("Misaka Repos")) {
+                    Section(header: Text("Misaka Repos").foregroundColor(.purple)) {
                         ForEach(viewModel.repositories) { repository in
                             NavigationLink(destination: ContentDetailsView(contents: repository.RepositoryContents, repository: repository)) {
                                 RepositoryRow(repository: repository)
-                            }.contextMenu {
+                            }.listRowBackground(Color.clear).contextMenu {
                                 Button(action: {
                                     let pasteboard = UIPasteboard.general
                                     pasteboard.string = repository.RepositoryURL?.absoluteString
@@ -321,7 +349,7 @@ struct ContentView: View {
                 InstalledPackagesView(installedPackages: getInstalledPackages())
                     .navigationBarTitle("PureKFD - Installed")
             } else if selectedTab == .home {
-                HomeView(dev: $dev).navigationBarTitle("PureKFD", displayMode: .large)
+                HomeView().navigationBarTitle("PureKFD", displayMode: .large)
             } else if selectedTab == .search {
                 SearchView().navigationBarTitle("PureKFD - Search", displayMode: .large)
             }
@@ -363,7 +391,7 @@ struct ContentView: View {
                     URL(string: "https://github.com/Fomri/fomrirepo/raw/main/repo.json")!,
                     URL(string: "https://tweakrain.github.io/repos/misaka/misaka.json")!,
                     URL(string: "https://www.iwishkem.tk/misaka.json")!,
-                    URL(string: "https://raw.githubusercontent.com/EPOS05/MisakaRepoEPOS/main/repo.json")!,
+                    URL(string: "https://raw.githubusercontent.com/EPOS05/EPOSbox/main/misaka.json")!,
                     URL(string: "https://raw.githubusercontent.com/tdquang266/MDC/main/repo.json")!,
                     URL(string: "https://raw.githubusercontent.com/kloytofyexploiter/Misaka-repo_MRX/main/repo.json")!,
                     URL(string: "https://raw.githubusercontent.com/HackZy01/misio/main/repo.json")!,
@@ -554,9 +582,10 @@ struct RepoRow: View {
             VStack(alignment: .leading) {
                 Text(repo.name)
                     .font(.headline)
+                    .foregroundColor(.purple)
                 Text(repo.description)
                     .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.purple.opacity(0.7))
             }
         }.onAppear {
             DispatchQueue.global(qos: .utility).async {
@@ -777,8 +806,16 @@ struct HomeView: View {
     @State private var kreadMethod = 1
     @State private var kwriteMethod = 1
     @State private var RespringMode = 0
-    @Binding var dev: Bool
-  
+    
+    init() {
+        UINavigationBar.appearance().largeTitleTextAttributes = [
+            .foregroundColor: UIColor(red: 197/255, green: 89/255, blue: 239/255, alpha: 1.0)
+        ]
+        UINavigationBar.appearance().titleTextAttributes = [
+            .foregroundColor: UIColor(red: 197/255, green: 89/255, blue: 239/255, alpha: 1.0)
+        ]
+    }
+    
     var body: some View {
             Form {
 //                Section(header: Text("General Options")) {
@@ -786,7 +823,7 @@ struct HomeView: View {
 //                    ToggleSettingView(title: "Developer Mode", isOn: $userSettings.dev)
 //                }
                 
-                Section(header: Text("Actions")) {
+                Section(header: Text("Actions").foregroundColor(Color.purple)) {
                     Button(action: {
                         UIApplication.shared.alert(title: "Applying...", body: "Please wait", animated: false, withButton: false)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -846,16 +883,25 @@ struct HomeView: View {
                     }
                     
                     Button(action: {
-                        close_exploit()
-                        exit(0)
+                        backboard_respring()
                     }) {
-                        Text("Exit")
+                        Text("Backboard Respring")
                             .settingButtonStyle()
                     }
-                }
-                Section("Notice") {
-                    Text("Version: 3.3\n\nNotes: Misaka package support is in its early stages\n\nUsage: Install a package (I recommend the NothingOS font), Hit apply & then hit respring")
-                }
+                }.listRowBackground(Color.clear)
+                Section(header:
+                                Text("Notice")
+                                    .foregroundColor(Color.purple)
+                            ) {
+                                Text("Version: 3.4\n\nNotes: Misaka package support is in its early stages\n\nUsage: Install a package, Hit apply & then hit respring")
+                                    .padding()
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.purple, lineWidth: 2)
+                                    )
+                                    .foregroundColor(Color.purple)
+                                    .listRowBackground(Color.clear)
+                            }
             }
             .navigationBarItems(
                 trailing: HStack {
@@ -883,17 +929,39 @@ struct HomeView: View {
     }
 }
 
+extension View {
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content) -> some View {
+
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
+        }
+    }
+}
+
 struct SearchView: View {
     @State private var searchText = ""
     @State private var searchResults: [Package] = []
 
     var body: some View {
         VStack(spacing: 0) {
-            TextField("Search Packages", text: $searchText)
+            TextField("", text: $searchText)
+                .placeholder(when: searchText.isEmpty) {
+                    Text("Search Packages").foregroundColor(.purple.opacity(0.7))
+                }
                 .padding(7)
-                .background(Color(.systemGray6))
+                .background(Color.clear)
+                .foregroundColor(Color.purple)
                 .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.purple, lineWidth: 1)
+                )
                 .padding(.horizontal, 15)
+                .disableAutocorrection(true)
                 .onChange(of: searchText) { newValue in
                     searchResults = PackageManager.shared.searchPackages(with: newValue)
             }
@@ -901,7 +969,7 @@ struct SearchView: View {
             List(searchResults) { package in
                 NavigationLink(destination: PackageDetailView(package: package)) {
                     PackageRow(package: package)
-                }
+                }.listRowBackground(Color.clear)
             }
         }
     }
@@ -925,9 +993,20 @@ struct PackageRow: View {
             VStack(alignment: .leading) {
                 Text(package.name)
                     .font(.headline)
+                    .foregroundColor(.purple)
                 Text(package.author)
                     .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.purple.opacity(0.7))
+            }
+            Spacer()
+            if package.type == "misaka" {
+                Text("Misaka")
+                    .font(.footnote)
+                    .foregroundColor(.purple.opacity(0.5))
+            } else {
+                Text("Picasso")
+                    .font(.footnote)
+                    .foregroundColor(.purple.opacity(0.5))
             }
         }
         .onAppear {
@@ -986,41 +1065,10 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Exploit Settings")) {
-                Picker("puaf pages:", selection: $puafPagesIndex) {
-                    ForEach(0 ..< puafPagesOptions.count, id: \.self) {
-                        Text(String(self.puafPagesOptions[$0]))
-                    }
-                }.tint(.purple).foregroundColor(.purple)
-
-                Picker("puaf method:", selection: $puafMethod) {
-                    ForEach(0 ..< puafMethodOptions.count, id: \.self) {
-                        Text(self.puafMethodOptions[$0])
-                    }
-                }.tint(.purple).foregroundColor(.purple)
-
-                Picker("kread method:", selection: $kreadMethod) {
-                    ForEach(0 ..< kreadMethodOptions.count, id: \.self) {
-                        Text(self.kreadMethodOptions[$0])
-                    }
-                }.tint(.purple).foregroundColor(.purple)
-
-                Picker("kwrite method:", selection: $kwriteMethod) {
-                    ForEach(0 ..< kwriteMethodOptions.count, id: \.self) {
-                        Text(self.kwriteMethodOptions[$0])
-                    }
-                }.tint(.purple).foregroundColor(.purple)
-            }
-            Section(header: Text("Other Settings")) {
-                Picker("Respring Mode:", selection: $RespringMode) {
-                    ForEach(0 ..< RespringOptions.count, id: \.self) {
-                        Text(String(self.RespringOptions[$0]))
-                    }
-                }.tint(.purple).foregroundColor(.purple)
-                
+            Section(header: Text("Main Settings").foregroundColor(.purple)) {
                 Toggle(isOn: $enforce_exploit_method) {
                     Text("Override Exploit Method").font(.headline).foregroundColor(.purple)
-                }
+                }.tint(.purple)
                 if enforce_exploit_method {
                     Picker("Exploit:", selection: $exploit_method) {
                         ForEach(0 ..< ExploitOptions.count, id: \.self) {
@@ -1028,6 +1076,33 @@ struct SettingsView: View {
                         }
                     }.tint(.purple).foregroundColor(.purple)
                 }
+            }.listRowBackground(Color.clear)
+            if exploit_method == 0 && enforce_exploit_method {
+                Section(header: Text("Exploit Settings").foregroundColor(.purple)) {
+                    Picker("puaf pages:", selection: $puafPagesIndex) {
+                        ForEach(0 ..< puafPagesOptions.count, id: \.self) {
+                            Text(String(self.puafPagesOptions[$0]))
+                        }
+                    }.tint(.purple).foregroundColor(.purple)
+                    
+                    Picker("puaf method:", selection: $puafMethod) {
+                        ForEach(0 ..< puafMethodOptions.count, id: \.self) {
+                            Text(self.puafMethodOptions[$0])
+                        }
+                    }.tint(.purple).foregroundColor(.purple)
+                    
+                    Picker("kread method:", selection: $kreadMethod) {
+                        ForEach(0 ..< kreadMethodOptions.count, id: \.self) {
+                            Text(self.kreadMethodOptions[$0])
+                        }
+                    }.tint(.purple).foregroundColor(.purple)
+                    
+                    Picker("kwrite method:", selection: $kwriteMethod) {
+                        ForEach(0 ..< kwriteMethodOptions.count, id: \.self) {
+                            Text(self.kwriteMethodOptions[$0])
+                        }
+                    }.tint(.purple).foregroundColor(.purple)
+                }.listRowBackground(Color.clear)
             }
         }.navigationBarTitle("Settings", displayMode: .inline)
     }
@@ -1075,7 +1150,7 @@ struct PicassoContentDetailsView: View {
         List(repo.packages, id: \.bundleid) { package in
             NavigationLink(destination: AppDetailView(pkg: package, MisakaPkg: nil, repo: repo, MisakaRepo: nil, picassoRepo: true)) {
                 PicassoContentRow(name: package.name, author: package.author, icon: package.icon, repo: repo)
-            }.foregroundColor(.purple)
+            }.listRowBackground(Color.clear)
         }
         .navigationTitle(repo.name)
     }

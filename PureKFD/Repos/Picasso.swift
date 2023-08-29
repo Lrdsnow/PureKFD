@@ -211,9 +211,10 @@ struct PicassoContentRow: View {
             VStack(alignment: .leading) {
                 Text(name)
                     .font(.headline)
+                    .foregroundColor(.purple)
                 Text(author)
                     .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.purple.opacity(0.7))
             }
         }
         .onAppear {

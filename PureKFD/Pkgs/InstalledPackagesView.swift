@@ -11,6 +11,8 @@ import SwiftUI
 struct InstalledPackagesView: View {
     @State private var installedPackages: [InstalledPackage]
     
+    
+    
     init(installedPackages: [InstalledPackage]) {
         self._installedPackages = State(initialValue: installedPackages)
         print(installedPackages)
@@ -23,13 +25,18 @@ struct InstalledPackagesView: View {
                 if !installedPackage.preferences.isEmpty {
                     NavigationLink(destination: PreferencesView(preferences: installedPackage.preferences, installedPackage: $installedPackages[index])) {
                         row(for: installedPackage)
-                    }
+                    }.listRowBackground(Color.clear)
                 } else {
-                    row(for: installedPackage)
+                    row(for: installedPackage).listRowBackground(Color.clear)
                 }
             }
             .onDelete(perform: deletePackages)
+            .onMove(perform: moveRow)
         }
+    }
+    
+    func moveRow(from source: IndexSet, to destination: Int) {
+        installedPackages.move(fromOffsets: source, toOffset: destination)
     }
     
     private func row(for installedPackage: InstalledPackage) -> some View {
@@ -145,9 +152,8 @@ enum PreferenceValue: Codable {
     case int(Int)
     case double(Double)
     case string(String)
-    case color(Color)
     case colorHex(String)
-    case picker(Int)
+    case picker([Int: String])
     case resfield([String: Int])
 
     enum CodingKeys: String, CodingKey {
@@ -169,9 +175,6 @@ enum PreferenceValue: Codable {
         case .string(let value):
             try container.encode("string", forKey: .type)
             try container.encode(value, forKey: .value)
-        case .color(let value):
-            try container.encode("color", forKey: .type)
-            try container.encode(value.toHex(), forKey: .value)
         case .colorHex(let value):
             try container.encode("colorHex", forKey: .type)
             try container.encode(value, forKey: .value)
@@ -196,13 +199,10 @@ enum PreferenceValue: Codable {
             self = .double(try container.decode(Double.self, forKey: .value))
         case "string":
             self = .string(try container.decode(String.self, forKey: .value))
-        case "color":
-            let hexString = try container.decode(String.self, forKey: .value)
-            self = .color(Color(hex: hexString))
         case "colorHex":
             self = .colorHex(try container.decode(String.self, forKey: .value))
         case "picker":
-            self = .picker(try container.decode(Int.self, forKey: .value))
+            self = .picker(try container.decode([Int: String].self, forKey: .value))
         case "resfield":
             self = .resfield(try container.decode([String: Int].self, forKey: .value))
         default:
@@ -210,6 +210,7 @@ enum PreferenceValue: Codable {
         }
     }
 }
+
 
 
 
@@ -227,7 +228,10 @@ struct PreferencesView: View {
     init(preferences: [InstalledPackage.Preference], installedPackage: Binding<InstalledPackage>) {
         self.preferences = preferences
         self._installedPackage = installedPackage
-            
+        
+        // Setup default stuff
+        setupDefaultTempPreferences()
+        
         // Load saved preferences from config.json
         loadSavedPreferences()
     }
@@ -251,8 +255,10 @@ struct PreferencesView: View {
                     message: Text("Preferences have been successfully saved. These will persist till you Apply new ones."),
                     dismissButton: .default(Text("OK"))
                 )
+            }.onAppear {
+                loadSavedPreferences()
             }
-        
+
     }
     
     private var applyButton: some View {
@@ -410,24 +416,22 @@ struct PreferencesView: View {
     }
 
     private func pickerPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
-        Picker(selection: Binding<Int>(
+        let selectedOption = Binding<String>(
             get: {
-                if let selectedIndex = preference.options?.firstIndex(of: tempPreferences[preference.key] as? String ?? "") {
-                    return selectedIndex
-                }
-                return 0 // Default to the first option
+                return tempPreferences[preference.key] as? String ?? preference.options?.first ?? ""
             },
             set: { newValue in
-                if let selectedOption = preference.options?[newValue] as? String {
-                    tempPreferences[preference.key] = selectedOption
-                }
+                tempPreferences[preference.key] = newValue
             }
-        ), label: Text(preference.title)) {
+        )
+        
+        return Picker(selection: selectedOption, label: Text(preference.title)) {
             ForEach(preference.options ?? [], id: \.self) { option in
                 Text(option)
                     .tag(option) // Use the option itself as the tag
             }
         }
+        //.pickerStyle(DefaultPickerStyle()) // Add a picker style here if needed
     }
 
     private func booleanPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
@@ -443,7 +447,7 @@ struct PreferencesView: View {
 
     private func integerPreferenceView(for preference: InstalledPackage.Preference, at index: Int) -> some View {
         let lowerBound = preference.optionValues?.first ?? 0
-        let upperBound = preference.optionValues?.last ?? 100
+        let upperBound = preference.optionValues?.last ?? 1000
         
         let range = lowerBound...upperBound
         
@@ -458,8 +462,6 @@ struct PreferencesView: View {
             ), in: range) {
                 Text("\(preference.title): \(tempPreferences[preference.key] as? Int ?? lowerBound)")
             }
-            
-            Text("Range: \(lowerBound) - \(upperBound)")
         }
     }
 
@@ -480,8 +482,6 @@ struct PreferencesView: View {
             ), in: range) {
                 Text(preference.title)
             }
-            
-            Text("Range: \(lowerBound) - \(upperBound)")
         }
     }
 
@@ -519,14 +519,26 @@ struct PreferencesView: View {
 
     private func savePreferences() -> Bool {
         var encodedPreferences: [String: PreferenceValue] = [:]
+        print("\nSaving Preferences...\n")
         
         for (key, value) in tempPreferences {
-            if let preferenceValue = value as? PreferenceValue {
+            if let colorValue = value as? Color {
+                encodedPreferences[key] = .colorHex(colorValue.toHex())
+            } else if let resfieldValue = value as? [String: Int] {
+                encodedPreferences[key] = .resfield(resfieldValue)
+            } else if let boolValue = value as? Bool {
+                encodedPreferences[key] = .bool(boolValue)
+            } else if let intValue = value as? Int {
+                encodedPreferences[key] = .int(intValue)
+            } else if let doubleValue = value as? Double {
+                encodedPreferences[key] = .double(doubleValue)
+            } else if let stringValue = value as? String {
+                encodedPreferences[key] = .string(stringValue)
+            } else if let pickerValue = value as? [Int: String] {
+                encodedPreferences[key] = .picker(pickerValue)
+            } else if let preferenceValue = value as? PreferenceValue {
                 encodedPreferences[key] = preferenceValue
-            } else if let color = value as? Color {
-                encodedPreferences[key] = .color(color)
             }
-            // Handle other types as needed
         }
 
         let fileManager = FileManager.default
@@ -539,7 +551,7 @@ struct PreferencesView: View {
             return true
         } catch {
             print("Error writing preferences to config.json: \(error)")
-            return false // Return false to indicate failure
+            return false
         }
     }
 
@@ -552,25 +564,33 @@ struct PreferencesView: View {
             if fileManager.fileExists(atPath: configURL.path) {
                 let configData = try Data(contentsOf: configURL)
                 let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase // If your keys are in snake_case format
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
 
                 do {
-                    let preferencesDict = try decoder.decode([String: [String: String]].self, from: configData)
-
-                    tempPreferences = [:] // Clear tempPreferences first
+                    let preferencesDict = try decoder.decode([String: PreferenceValue].self, from: configData)
                     
-                    for (key, valueDict) in preferencesDict {
-                        if let valueType = valueDict["type"], let value = valueDict["value"] {
-                            if valueType == "color" {
-                                if let color = UIColor(hex: value) {
-                                    tempPreferences[key] = Color(color) // Convert UIColor to Color here
-                                } else {
-                                    print("Invalid hex color value: \(value)")
-                                }
+                    tempPreferences = [:]
+
+                    for (key, value) in preferencesDict {
+                        switch value {
+                        case .colorHex(let hexValue):
+                            if let color = UIColor(hex: hexValue) {
+                                tempPreferences[key] = Color(color)
                             } else {
-                                // Handle other value types as needed
-                                // For example, boolean, string, etc.
+                                print("Invalid hex color value: \(hexValue)")
                             }
+                        case .resfield(let resfieldValue):
+                            tempPreferences[key] = resfieldValue
+                        case .bool(let boolValue):
+                            tempPreferences[key] = boolValue
+                        case .int(let intValue):
+                            tempPreferences[key] = intValue
+                        case .double(let doubleValue):
+                            tempPreferences[key] = doubleValue
+                        case .string(let stringValue):
+                            tempPreferences[key] = stringValue
+                        case .picker(let pickerValue):
+                            tempPreferences[key] = pickerValue
                         }
                     }
                 } catch {
@@ -579,6 +599,32 @@ struct PreferencesView: View {
             }
         } catch {
             print("Error loading preferences from config.json: \(error)")
+        }
+    }
+    
+    private func setupDefaultTempPreferences() {
+        for preference in preferences {
+            switch preference.valueType {
+            case "color", "Color_Hex":
+                tempPreferences[preference.key] = Color.white // Set default color or hex color here
+            case "resfield":
+                tempPreferences[preference.key] = ["height": 2796, "width": 1290] // Set default resfield values here
+            case "picker":
+                tempPreferences[preference.key] = [0, preference.options?.first ?? ""] // Set default picker values here
+            case "bool":
+                tempPreferences[preference.key] = false // Set default boolean value here
+            case "int":
+                tempPreferences[preference.key] = preference.optionValues?.first ?? 0 // Set default int value here
+            case "double":
+                tempPreferences[preference.key] = Double(preference.optionValues?.first ?? 0) // Set default double value here
+            case "string":
+                tempPreferences[preference.key] = "" // Set default string value here
+            case "String":
+                tempPreferences[preference.key] = "" // Set default notice value here
+            // Handle other cases as needed
+            default:
+                break
+            }
         }
     }
 
@@ -603,9 +649,25 @@ struct InstalledPackageRow: View {
             VStack(alignment: .leading) {
                 Text(installedPackage.name)
                     .font(.headline)
+                    .foregroundColor(.purple)
                 Text(installedPackage.author)
                     .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.purple.opacity(0.7))
+                if installedPackage.type == "misaka" {
+                    if !installedPackage.preferences.isEmpty {
+                        Text("Misaka - Most likely unsupported")
+                            .font(.footnote)
+                            .foregroundColor(.purple.opacity(0.5))
+                    } else {
+                        Text("Misaka - May be supported")
+                            .font(.footnote)
+                            .foregroundColor(.purple.opacity(0.5))
+                    }
+                } else {
+                    Text("Picasso - Should be supported")
+                        .font(.footnote)
+                        .foregroundColor(.purple.opacity(0.5))
+                }
             }
         }.onAppear {
             fetchImage(from: installedPackage.icon) { result in
@@ -857,8 +919,6 @@ func getInstalledPackages() -> [InstalledPackage] {
     } catch {
         print("Error fetching Misaka packages: \(error)")
     }
-
-
+    
     return installedPackages
 }
-
