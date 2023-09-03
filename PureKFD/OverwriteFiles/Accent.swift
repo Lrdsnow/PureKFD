@@ -32,47 +32,6 @@ func modifyCARFile(filePath: String, startingOffset: Int, newColorValue: String)
     print("Color modified successfully.")
 }
 
-extension String {
-    var hexadecimalData: Data? {
-        var hex = self
-        if hex.hasPrefix("#") {
-            hex.remove(at: hex.startIndex)
-        }
-        
-        var data = Data(capacity: hex.count / 2)
-        
-        var index = hex.startIndex
-        while index < hex.endIndex {
-            let byteRange = index..<hex.index(index, offsetBy: 2)
-            if let byte = UInt8(hex[byteRange], radix: 16) {
-                data.append(byte)
-            } else {
-                return nil
-            }
-            
-            index = hex.index(index, offsetBy: 2)
-        }
-        
-        return data
-    }
-}
-
-extension Color {
-    func toNormHex() -> String {
-        #if canImport(UIKit)
-        let components = UIColor(self).cgColor.components ?? []
-        #else
-        let components = NSColor(self).cgColor.components ?? []
-        #endif
-        
-        let red = Int(components[0] * 255)
-        let green = Int(components[1] * 255)
-        let blue = Int(components[2] * 255)
-        
-        return String(format: "#%02X%02X%02X", red, green, blue)
-    }
-}
-
 func modifyColorsInCARFile(jsonData: [String: Any], carFilePath: String, newColorValue: Color) {
     do {
         guard let data = jsonData["data"] as? [[String: Any]] else {

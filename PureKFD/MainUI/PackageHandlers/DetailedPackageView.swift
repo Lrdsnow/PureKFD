@@ -185,7 +185,7 @@ func convertToRepos(from repositories: [Repository]) -> [Repo] {
                         name: content.Name,
                         bundleid: content.PackageID ?? "",
                         author: content.Author?.Label ?? repository.RepositoryAuthor,
-                        description: content.Caption, 
+                        description: content.Caption,
                         screenshots: content.Screenshot,
                         version: content.PackageID ?? "",
                         icon: content.Icon ?? "",
@@ -261,13 +261,13 @@ func translatePackageToContent(package: Package) -> Content {
     let content = Content(
         Name: package.name,
         Description: package.description,
-        Caption: nil, 
+        Caption: nil,
         Screenshot: package.screenshots,
         Icon: package.icon,
         Author: Author(Label: package.author, Links: nil),
         Releases: package.MisakaReleases, // You need to populate this array based on package.repo and package.version
         PackageID: package.id.uuidString,
-        MinIOSVersion: nil, 
+        MinIOSVersion: nil,
         MaxIOSVersion: nil
     )
     
@@ -277,17 +277,17 @@ func translatePackageToContent(package: Package) -> Content {
 func convertToRepositories(from repo: Repo) -> Repository? {
     if let url = repo.url {
         let repository = Repository(
-            RepositoryName: repo.name,
-            RepositoryDescription: repo.description,
+            RepositoryName: repo.name ?? "Unknown Repo Name",
+            RepositoryDescription: repo.description ?? "Unknown Repo Description",
             RepositoryAuthor: "",
-            RepositoryIcon: repo.icon,
+            RepositoryIcon: repo.icon ?? "",
             RepositoryWebsite: "",
             RepositoryURL: url,
             RepositoryContents: repo.packages.map { package in
                 Content(
                     Name: package.name,
                     Description: package.description,
-                    Caption: package.description, 
+                    Caption: package.description,
                     Screenshot: package.screenshots,
                     Icon: package.icon,
                     Author: Author(Label: package.author, Links: nil),

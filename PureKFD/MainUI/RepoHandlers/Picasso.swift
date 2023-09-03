@@ -28,9 +28,9 @@ struct Package: Codable, Identifiable {
 
 struct Repo: Codable, Identifiable, Hashable {
     let id = UUID()
-    let name: String
-    let description: String
-    let icon: String
+    let name: String?
+    let description: String?
+    let icon: String?
     let packages: [Package]
     var url: URL?
     let type: String?
@@ -242,3 +242,181 @@ struct PicassoContentRow: View {
     }
 }
 
+struct PicassoContentDetailsView: View {
+    let repo: Repo
+    @Binding var selectedRepo: SelectedItem?
+    
+    var body: some View {
+        List(repo.packages, id: \.bundleid) { package in
+            NavigationLink(destination: AppDetailView(pkg: package, MisakaPkg: nil, repo: repo, MisakaRepo: nil, picassoRepo: true)) {
+                PicassoContentRow(name: package.name, author: package.author, icon: package.icon, repo: repo)
+            }.listRowBackground(Color.clear)
+        }
+        .navigationTitle(repo.name ?? "Unknown Repo Name")
+    }
+}
+
+class PackageManager {
+    static var shared = PackageManager()
+    private var indexedPackages: [String: Package] = [:]
+
+    func indexPackages(packages: [Package]) {
+        for package in packages {
+            indexedPackages[package.bundleid] = package
+        }
+    }
+
+    func searchPackages(with searchText: String) -> [Package] {
+        let lowercaseSearchText = searchText.lowercased()
+        let matchingPackages = indexedPackages.values.filter { package in
+            package.name.lowercased().contains(lowercaseSearchText)
+        }
+        return Array(matchingPackages)
+    }
+}
+
+class NetworkManager {
+    func fetchRepos(from urls: [URL], completion: @escaping ([Repo]) -> Void) {
+        var repos: [Repo] = []
+
+        let group = DispatchGroup()
+
+        for url in urls {
+            group.enter()
+            let manifestURL = url.appendingPathComponent("manifest.json")
+            URLSession.shared.dataTask(with: manifestURL) { data, response, error in
+                defer { group.leave() }
+
+                if let data = data {
+                    do {
+                        let decoder = JSONDecoder()
+                        var repo = try decoder.decode(Repo.self, from: data)
+                        
+                        
+                        repo.url = url
+                        
+                        repos.append(repo)
+                    } catch {
+                        print("Error decoding JSON: \(error)")
+                    }
+                }
+            }.resume()
+        }
+
+        group.notify(queue: .main) {
+            completion(repos)
+        }
+    }
+}
+
+struct RepoRow: View {
+    let repo: Repo
+    @State private var repositoryIcon: UIImage? = nil
+    
+    var body: some View {
+        HStack {
+            if let icon = repositoryIcon {
+                Image(uiImage: icon)
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .cornerRadius(5)
+            } else {
+                Image(systemName: "folder.fill")
+                    .foregroundColor(.purple)
+            }
+            VStack(alignment: .leading) {
+                Text(repo.name ?? "Unknown Repo Name")
+                    .font(.headline)
+                    .foregroundColor(.purple)
+                Text(repo.description ?? "Unknown Repo Description")
+                    .font(.subheadline)
+                    .foregroundColor(.purple.opacity(0.7))
+            }
+        }.onAppear {
+            DispatchQueue.global(qos: .utility).async {
+                                 FetchLog()
+                             }
+            if let iconURL = URL(string: repo.url!.appendingPathComponent(repo.icon ?? "").absoluteString) {
+                fetchImage(from: iconURL) { result in
+                    switch result {
+                    case .success(let image):
+                        DispatchQueue.main.async {
+                            repositoryIcon = image
+                        }
+                    case .failure(let error):
+                        print("Error fetching image: \(error)")
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct PackageRow: View {
+    let package: Package
+    @State private var contentIcon: UIImage? = nil
+
+    var body: some View {
+        HStack {
+            if let icon = contentIcon {
+                Image(uiImage: icon)
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .cornerRadius(5)
+            } else {
+                Image(systemName: "doc.text.fill")
+                    .foregroundColor(.purple)
+            }
+            VStack(alignment: .leading) {
+                Text(package.name)
+                    .font(.headline)
+                    .foregroundColor(.purple)
+                Text(package.author)
+                    .font(.subheadline)
+                    .foregroundColor(.purple.opacity(0.7))
+            }
+            Spacer()
+            if package.type == "misaka" {
+                Text("Misaka")
+                    .font(.footnote)
+                    .foregroundColor(.purple.opacity(0.5))
+            } else {
+                Text("Picasso")
+                    .font(.footnote)
+                    .foregroundColor(.purple.opacity(0.5))
+            }
+        }
+        .onAppear {
+            DispatchQueue.global(qos: .utility).async {
+                                 FetchLog()
+                             }
+            if package.type == "misaka" {
+                if let iconURL = URL(string: package.icon) {
+                    fetchImage(from: iconURL) { result in
+                        switch result {
+                        case .success(let image):
+                            DispatchQueue.main.async {
+                                contentIcon = image
+                            }
+                        case .failure(let error):
+                            print("Error fetching image: \(error)")
+                        }
+                    }
+                }
+            } else {
+                if let iconURL = URL(string: (package.repo?.url!.appendingPathComponent(package.icon).absoluteString)!) {
+                    fetchImage(from: iconURL) { result in
+                        switch result {
+                        case .success(let image):
+                            DispatchQueue.main.async {
+                                contentIcon = image
+                            }
+                        case .failure(let error):
+                            print("Error fetching image: \(error)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

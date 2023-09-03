@@ -1,11 +1,15 @@
 //
-//  SpringboardColorManager.swift
-//  Cowabunga
+//  ColorManager.swift
+//  PureKFD
 //
-//  Created by lemin on 2/1/23.
+//  Created by Lrdsnow on 9/2/23.
+//  Credits to lemin.limez for 99.9% of this script tho
 //
 
+import Foundation
 import SwiftUI
+import UIKit
+import CoreImage
 
 class SpringboardColorManager {
     enum SpringboardType: CaseIterable {
@@ -366,5 +370,164 @@ class SpringboardColorManager {
             print("An error occurred getting/making the background files directory")
         }
         return nil
+    }
+}
+
+class UsefulFunctions {
+    static func addEmptyData(matchingSize: Int, to plist: [String: Any]) throws -> Data {
+        var newPlist = plist
+        // create the new data
+        guard var newData = try? PropertyListSerialization.data(fromPropertyList: newPlist, format: .binary, options: 0) else { throw "Unable to get data" }
+        // add data if too small
+        // while loop to make data match because recursive function didn't work
+        // very slow, will hopefully improve
+        if newData.count == matchingSize {
+            return newData
+        }
+        var newDataSize = newData.count
+        var added = matchingSize - newDataSize
+        if added < 0 {
+            added = 1
+        }
+        var count = 0
+        while newDataSize != matchingSize && count < 200 {
+            count += 1
+            if added < 0 {
+                print("LESS THAN 0")
+                break
+            }
+            newPlist.updateValue(String(repeating: "#", count: added), forKey: "MdC")
+            do {
+                newData = try PropertyListSerialization.data(fromPropertyList: newPlist, format: .binary, options: 0)
+            } catch {
+                newDataSize = -1
+                print("ERROR SERIALIZING DATA")
+                break
+            }
+            newDataSize = newData.count
+            if count < 5 {
+                // max out this method at 5 if it isn't working
+                added += matchingSize - newDataSize
+            } else {
+                if newDataSize > matchingSize {
+                    added -= 1
+                } else if newDataSize < matchingSize {
+                    added += 1
+                }
+            }
+        }
+
+        return newData
+    }
+    
+    public static func respring() {
+        UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        
+        let animator = UIViewPropertyAnimator(duration: 0.5, dampingRatio: 1) {
+            let windows: [UIWindow] = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap(\.windows)
+            
+            for window in windows {
+                window.alpha = 0
+                window.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            }
+        }
+        
+        animator.addCompletion { _ in
+            if UserDefaults.standard.string(forKey: "RespringType") ?? "Frontboard" == "Backboard" {
+                //backboard_respring()
+            } else {
+                //respring()
+            }
+            
+            //sleep(2) // give the springboard some time to restart before exiting
+            exit(0)
+        }
+        
+        animator.startAnimation()
+    }
+    
+    public static func getDefaultStr(forKey: String, defaultValue: String = "Visible") -> String {
+        let defaults = UserDefaults.standard
+        
+        return defaults.string(forKey: forKey) ?? defaultValue
+    }
+}
+
+enum OverwritingFileTypes {
+    case springboard
+    case cc
+    case plist
+    case audio
+    case region
+}
+
+class ColorSwapManager {
+    public static func setColor(url: URL, color: CIColor, blur: Int) throws -> Data {
+        let plistData = try Data(contentsOf: url)
+        if let originalPlist = try PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any] {
+            var plist = setColor(list: originalPlist, color: color, blur: blur)
+            let newData = try UsefulFunctions.addEmptyData(matchingSize: plistData.count, to: plist)
+            if newData.count == plistData.count {
+                return newData
+            } else {
+                throw "File size does not match!!!\nNew: \(newData.count)\nOld: \(plistData.count)"
+            }
+        } else {
+            throw "Error serializing original plist data!"
+        }
+    }
+    
+    public static func setColor(list: [String: Any], color: CIColor, blur: Int) -> [String: Any] {
+        func changeValue(dict: [String: Any], keyName: String, newName: String, replacement: Any, remove: Bool = true, appends: Bool = false) -> [String: Any] {
+            var newDict = dict
+            for (k, _) in dict {
+                if k == keyName {
+                    if remove {
+                        newDict[k] = nil
+                        newDict[newName] = replacement
+                    } else {
+                        if appends, var repDict = dict[k] as? [String: Any] {
+                            repDict[newName] = replacement
+                            newDict[k] = repDict
+                        } else {
+                            newDict[k] = [newName: replacement]
+                        }
+                    }
+                } else if let subdict = dict[k] as? [String: Any] {
+                    newDict[k] = changeValue(dict: subdict, keyName: keyName, newName: newName, replacement: replacement, remove: remove)
+                }
+            }
+            return newDict
+        }
+        
+        var changed = list
+        changed["materialSettingsVersion"] = nil
+        changed["visualStyleSetVersion"] = nil
+        changed["MdC"] = nil
+        
+        let tintColor: [String: Double] = [
+            "alpha": color.alpha,
+            "red": color.red,
+            "green": color.green,
+            "blue": color.blue
+        ]
+        let tinting: [String: Any] = [
+            "tintAlpha": color.alpha,
+            "tintColor": tintColor
+        ]
+        
+        let newMaterialFiltering: [String: Any] = [
+            "blurRadius": blur,
+            "tinting": tinting
+        ]
+        
+        changed = changeValue(dict: changed, keyName: "blurRadius", newName: "blurRadius", replacement: blur)
+        changed = changeValue(dict: changed, keyName: "materialFiltering", newName: "materialFiltering", replacement: newMaterialFiltering)
+        changed = changeValue(dict: changed, keyName: "filtering", newName: "tinting", replacement: tinting)
+        
+        // return it
+        return changed
     }
 }
