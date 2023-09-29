@@ -10,7 +10,7 @@ import SwiftUI
 
 struct InstalledPackagesView: View {
     @State private var installedPackages: [InstalledPackage]
-    
+    @AppStorage("viewOption") var viewOption = 1
     
     
     init(installedPackages: [InstalledPackage]) {
@@ -19,19 +19,115 @@ struct InstalledPackagesView: View {
     }
     
     var body: some View {
-        List {
-            ForEach(installedPackages.indices, id: \.self) { index in
-                let installedPackage = installedPackages[index]
-                if !installedPackage.preferences.isEmpty {
-                    NavigationLink(destination: PreferencesView(preferences: installedPackage.preferences, installedPackage: $installedPackages[index])) {
-                        row(for: installedPackage)
-                    }.listRowBackground(Color.clear)
-                } else {
-                    row(for: installedPackage).listRowBackground(Color.clear)
+        if viewOption == 0{
+            List {
+                ForEach(installedPackages.indices, id: \.self) { index in
+                    let installedPackage = installedPackages[index]
+                    if !installedPackage.preferences.isEmpty {
+                        NavigationLink(destination: PreferencesView(preferences: installedPackage.preferences, installedPackage: $installedPackages[index])) {
+                            row(for: installedPackage)
+                        }.listRowBackground(Color.clear)
+                    } else {
+                        row(for: installedPackage).listRowBackground(Color.clear)
+                            .onAppear {
+                                print("ip \(installedPackage.name)")
+                            }
+                    }
+                }
+                .onDelete(perform: deletePackages)
+                .onMove(perform: moveRow)
+            }
+        } else if viewOption == 1{
+            ScrollView{
+                ForEach(installedPackages.indices, id: \.self) { index in
+                    let installedPackage = installedPackages[index]
+                    if !installedPackage.preferences.isEmpty {
+                        NavigationLink(destination: PreferencesView(preferences: installedPackage.preferences, installedPackage: $installedPackages[index])) {
+                            HStack {
+                                AsyncImage(url: installedPackage.icon){ Image in
+                                    Image
+                                        .resizable()
+                                        .frame(width: 60, height: 60)
+                                        .cornerRadius(20)
+                                } placeholder: {
+                                    ProgressView()
+                                        .frame(width: 60, height: 60)
+                                        .foregroundColor(.gray)
+                                }
+                                VStack(alignment: .leading){
+                                    Text(installedPackage.name)
+                                        .foregroundColor(Color("colorscheme"))
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                    Text("By \(installedPackage.author)")
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.trailing, 15)
+                                Spacer()
+                                Image(systemName: "arrowtriangle.right.fill")
+                                    .foregroundColor(.gray)
+                                    .padding(.trailing, 10)
+                            }
+                            .frame(width:300)
+                            .background(Color("primaryalternative"))
+                            .cornerRadius(20)
+                            .contextMenu {
+                                Button(role: .destructive, action: {
+                                    if let index = installedPackages.firstIndex(of: installedPackage) {
+                                        deletePackage(at: index)
+                                    }
+                                }) {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        //                        row(for: installedPackage).listRowBackground(Color.clear)
+                        HStack {
+                            AsyncImage(url: installedPackage.icon){ Image in
+                                Image
+                                    .resizable()
+                                    .frame(width: 60, height: 60)
+                                    .cornerRadius(20)
+                            } placeholder: {
+                                ProgressView()
+                                    .frame(width: 60, height: 60)
+                                    .foregroundColor(.gray)
+                            }
+                            VStack(alignment: .leading){
+                                Text(installedPackage.name)
+                                    .foregroundColor(Color("colorscheme"))
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                Text("By \(installedPackage.author)")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.trailing, 10)
+                            Spacer()
+                        }
+                        .frame(width:300)
+                        .background(.primary)
+                        .cornerRadius(20)
+                        .contextMenu {
+                            Button(role: .destructive, action: {
+                                if let index = installedPackages.firstIndex(of: installedPackage) {
+                                    deletePackage(at: index)
+                                }
+                            }) {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+                    //                .padding(.leading, 10)
+                    //                .onDelete(perform: deletePackages)
+                    //                .onMove(perform: moveRow)
                 }
             }
-            .onDelete(perform: deletePackages)
-            .onMove(perform: moveRow)
         }
     }
     

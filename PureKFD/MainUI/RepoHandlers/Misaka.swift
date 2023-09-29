@@ -375,9 +375,9 @@ func downloadPackage(from url: URL, icon iconurl: URL, pkg: Content, completion:
 }
 
 // Rel Stuff:
-/*
+
 func unzip(Data_zip: URL, Extract: URL) -> Bool{
     print("Unsupported on unoffical builds")
     return false
 }
-*/
+

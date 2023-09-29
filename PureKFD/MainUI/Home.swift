@@ -13,10 +13,9 @@ struct HomeView: View {
     @State private var isFileBrowserAlertPresented = false
     @State private var showFileBrowser = false
     @State private var inFileBrowser = false
-    
+    @AppStorage("viewOption") var viewOption = 1
     // KFD:
     private let puafPagesOptions = [16, 32, 64, 128, 256, 512, 1024, 2048]
-    
     init() {
         UINavigationBar.appearance().largeTitleTextAttributes = [
             .foregroundColor: UIColor(red: 197/255, green: 89/255, blue: 239/255, alpha: 1.0)
@@ -171,7 +170,7 @@ struct HomeView: View {
             }
             .navigationBarItems(
                 trailing: HStack {
-                    NavigationLink(destination: FileBrowser(exploit_method: $userSettings.exploit_method).navigationBarTitle("PureKFD - File Browser", displayMode: .large), isActive: $showFileBrowser) {
+                    NavigationLink(destination: FileBrowser(exploit_method: $userSettings.exploit_method).navigationBarTitle("File Browser", displayMode: .large), isActive: $showFileBrowser) {
                         EmptyView()
                     }
                     Button(action: {isFileBrowserAlertPresented=true}) {
@@ -179,7 +178,7 @@ struct HomeView: View {
                             .font(.system(size: 20))
                             .tint(.purple)
                     }
-                    NavigationLink(destination: LogView().navigationBarTitle("PureKFD - Logs", displayMode: .large)) {
+                    NavigationLink(destination: LogView().navigationBarTitle("Logs", displayMode: .large)) {
                         Image(systemName: "terminal")
                             .font(.system(size: 20))
                             .tint(.purple)
@@ -191,6 +190,9 @@ struct HomeView: View {
                     }
                 }
             )
+//            .sheet(isPresented: $showSettings) {
+//                SettingsView(showSettings: $showSettings)
+//            }
     }
 }
 

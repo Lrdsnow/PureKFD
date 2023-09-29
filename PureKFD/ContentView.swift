@@ -206,11 +206,11 @@ struct ContentView: View {
                 reposContent()
             } else if selectedTab == .installed {
                 InstalledPackagesView(installedPackages: getInstalledPackages())
-                    .navigationBarTitle("PureKFD - Installed")
+                    .navigationBarTitle("Installed Packages")
             } else if selectedTab == .home {
                 HomeView().navigationBarTitle("PureKFD", displayMode: .large)
             } else if selectedTab == .search {
-                SearchView().navigationBarTitle("PureKFD - Search", displayMode: .large)
+                SearchView().navigationBarTitle("Search", displayMode: .large)
             }
         }
     }
@@ -264,7 +264,7 @@ struct ContentView: View {
                 }
             }
         }
-        .navigationBarTitle("PureKFD - Repos")
+        .navigationBarTitle("Repos")
         .navigationBarItems(trailing: Button(action: {
             isAddRepoAlertPresented.toggle()
         }) {

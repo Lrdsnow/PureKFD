@@ -38,8 +38,6 @@
 		65EE9D1F2A976C360053E865 /* offsets.m in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CCD2A976C360053E865 /* offsets.m */; };
 		65EE9D202A976C360053E865 /* vnode.m in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CCE2A976C360053E865 /* vnode.m */; };
 		65EE9D212A976C360053E865 /* proc.c in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CCF2A976C360053E865 /* proc.c */; };
-		65EE9D222A976C360053E865 /* encryptkey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CD62A976C360053E865 /* encryptkey.swift */; };
-		65EE9D232A976C360053E865 /* encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CD72A976C360053E865 /* encrypt.swift */; };
 		65EE9D242A976C360053E865 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65EE9CD82A976C360053E865 /* Assets.xcassets */; };
 		65EE9D272A976C360053E865 /* InstalledPackagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EE9CDD2A976C360053E865 /* InstalledPackagesView.swift */; };
 		65EE9D292A976C360053E865 /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 65EE9CDF2A976C360053E865 /* AppIcon.png */; };
@@ -96,19 +94,6 @@
 		65EE9CA72A976C360053E865 /* helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = helpers.h; sourceTree = "<group>"; };
 		65EE9CA82A976C360053E865 /* grant_full_disk_access.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = grant_full_disk_access.h; sourceTree = "<group>"; };
 		65EE9CA92A976C360053E865 /* Wrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wrappers.swift; sourceTree = "<group>"; };
-		65EE9CAB2A976C360053E865 /* krkw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = krkw.h; sourceTree = "<group>"; };
-		65EE9CAE2A976C360053E865 /* kread_sem_open.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kread_sem_open.h; sourceTree = "<group>"; };
-		65EE9CAF2A976C360053E865 /* kread_kqueue_workloop_ctl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kread_kqueue_workloop_ctl.h; sourceTree = "<group>"; };
-		65EE9CB12A976C360053E865 /* kwrite_sem_open.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kwrite_sem_open.h; sourceTree = "<group>"; };
-		65EE9CB22A976C360053E865 /* kwrite_dup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kwrite_dup.h; sourceTree = "<group>"; };
-		65EE9CB42A976C360053E865 /* static_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = static_info.h; sourceTree = "<group>"; };
-		65EE9CB52A976C360053E865 /* dynamic_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dynamic_info.h; sourceTree = "<group>"; };
-		65EE9CB62A976C360053E865 /* puaf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = puaf.h; sourceTree = "<group>"; };
-		65EE9CB72A976C360053E865 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
-		65EE9CB92A976C360053E865 /* smith.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smith.h; sourceTree = "<group>"; };
-		65EE9CBA2A976C360053E865 /* physpuppet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = physpuppet.h; sourceTree = "<group>"; };
-		65EE9CBB2A976C360053E865 /* perf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = perf.h; sourceTree = "<group>"; };
-		65EE9CBC2A976C360053E865 /* info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = info.h; sourceTree = "<group>"; };
 		65EE9CBD2A976C360053E865 /* ezkfd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ezkfd.swift; sourceTree = "<group>"; };
 		65EE9CBF2A976C360053E865 /* MacDirtyCowSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MacDirtyCowSwift.swift; sourceTree = "<group>"; };
 		65EE9CC12A976C360053E865 /* thanks_opa334dev_htrowii.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thanks_opa334dev_htrowii.h; sourceTree = "<group>"; };
@@ -129,9 +114,6 @@
 		65EE9CD02A976C360053E865 /* fun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fun.h; sourceTree = "<group>"; };
 		65EE9CD12A976C360053E865 /* helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = helpers.h; sourceTree = "<group>"; };
 		65EE9CD22A976C360053E865 /* grant_full_disk_access.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = grant_full_disk_access.h; sourceTree = "<group>"; };
-		65EE9CD32A976C360053E865 /* libkfd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkfd.h; sourceTree = "<group>"; };
-		65EE9CD62A976C360053E865 /* encryptkey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = encryptkey.swift; sourceTree = "<group>"; };
-		65EE9CD72A976C360053E865 /* encrypt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = encrypt.swift; sourceTree = "<group>"; };
 		65EE9CD82A976C360053E865 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		65EE9CDD2A976C360053E865 /* InstalledPackagesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstalledPackagesView.swift; sourceTree = "<group>"; };
 		65EE9CDF2A976C360053E865 /* AppIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon.png; sourceTree = "<group>"; };
@@ -161,6 +143,20 @@
 		65EE9D0A2A976C360053E865 /* platterVibrantShadowDark.visualstyleset */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = platterVibrantShadowDark.visualstyleset; sourceTree = "<group>"; };
 		65EE9D0C2A976C360053E865 /* dockDark.materialrecipe */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = dockDark.materialrecipe; sourceTree = "<group>"; };
 		65EE9D0D2A976C360053E865 /* dockLight.materialrecipe */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = dockLight.materialrecipe; sourceTree = "<group>"; };
+		912B02B22AC63E530037C799 /* krkw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = krkw.h; sourceTree = "<group>"; };
+		912B02C22AC63E530037C799 /* kread_sem_open.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kread_sem_open.h; sourceTree = "<group>"; };
+		912B02C32AC63E530037C799 /* kread_kqueue_workloop_ctl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kread_kqueue_workloop_ctl.h; sourceTree = "<group>"; };
+		912B02C52AC63E530037C799 /* kwrite_sem_open.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kwrite_sem_open.h; sourceTree = "<group>"; };
+		912B02C62AC63E530037C799 /* kwrite_dup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kwrite_dup.h; sourceTree = "<group>"; };
+		912B02C92AC63E530037C799 /* static_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = static_info.h; sourceTree = "<group>"; };
+		912B02CA2AC63E530037C799 /* dynamic_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dynamic_info.h; sourceTree = "<group>"; };
+		912B02CB2AC63E530037C799 /* puaf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = puaf.h; sourceTree = "<group>"; };
+		912B02CC2AC63E530037C799 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		912B02D12AC63E530037C799 /* smith.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smith.h; sourceTree = "<group>"; };
+		912B02D22AC63E530037C799 /* physpuppet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = physpuppet.h; sourceTree = "<group>"; };
+		912B02D72AC63E530037C799 /* perf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = perf.h; sourceTree = "<group>"; };
+		912B02D82AC63E530037C799 /* info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = info.h; sourceTree = "<group>"; };
+		912B03072AC63E5D0037C799 /* libkfd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libkfd.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -234,7 +230,6 @@
 				65EE9CEA2A976C360053E865 /* OverwriteFiles */,
 				6583CA0C2AA282FE00C8D5C1 /* MainUI */,
 				65EE9C9F2A976C360053E865 /* Exploit */,
-				65EE9CD52A976C360053E865 /* Misaka */,
 				65EE9CD82A976C360053E865 /* Assets.xcassets */,
 				65EE9CDF2A976C360053E865 /* AppIcon.png */,
 				65EE9CE92A976C360053E865 /* ContentView.swift */,
@@ -245,14 +240,14 @@
 		65EE9C9F2A976C360053E865 /* Exploit */ = {
 			isa = PBXGroup;
 			children = (
-				654E23152A99469F005F6D1A /* PureKFD-Bridging-Header.h */,
+				912B03072AC63E5D0037C799 /* libkfd.h */,
+				912B029F2AC63E530037C799 /* libkfd */,
 				65EE9CA02A976C360053E865 /* MDC */,
+				654E23152A99469F005F6D1A /* PureKFD-Bridging-Header.h */,
 				65EE9CA92A976C360053E865 /* Wrappers.swift */,
-				65EE9CAA2A976C360053E865 /* libkfd */,
 				65EE9CBD2A976C360053E865 /* ezkfd.swift */,
 				65EE9CBF2A976C360053E865 /* MacDirtyCowSwift.swift */,
 				65EE9CC02A976C360053E865 /* fun */,
-				65EE9CD32A976C360053E865 /* libkfd.h */,
 			);
 			path = Exploit;
 			sourceTree = "<group>";
@@ -270,66 +265,6 @@
 				65EE9CA82A976C360053E865 /* grant_full_disk_access.h */,
 			);
 			path = MDC;
-			sourceTree = "<group>";
-		};
-		65EE9CAA2A976C360053E865 /* libkfd */ = {
-			isa = PBXGroup;
-			children = (
-				65EE9CAB2A976C360053E865 /* krkw.h */,
-				65EE9CAC2A976C360053E865 /* krkw */,
-				65EE9CB32A976C360053E865 /* info */,
-				65EE9CB62A976C360053E865 /* puaf.h */,
-				65EE9CB72A976C360053E865 /* common.h */,
-				65EE9CB82A976C360053E865 /* puaf */,
-				65EE9CBB2A976C360053E865 /* perf.h */,
-				65EE9CBC2A976C360053E865 /* info.h */,
-			);
-			path = libkfd;
-			sourceTree = "<group>";
-		};
-		65EE9CAC2A976C360053E865 /* krkw */ = {
-			isa = PBXGroup;
-			children = (
-				65EE9CAD2A976C360053E865 /* kread */,
-				65EE9CB02A976C360053E865 /* kwrite */,
-			);
-			path = krkw;
-			sourceTree = "<group>";
-		};
-		65EE9CAD2A976C360053E865 /* kread */ = {
-			isa = PBXGroup;
-			children = (
-				65EE9CAE2A976C360053E865 /* kread_sem_open.h */,
-				65EE9CAF2A976C360053E865 /* kread_kqueue_workloop_ctl.h */,
-			);
-			path = kread;
-			sourceTree = "<group>";
-		};
-		65EE9CB02A976C360053E865 /* kwrite */ = {
-			isa = PBXGroup;
-			children = (
-				65EE9CB12A976C360053E865 /* kwrite_sem_open.h */,
-				65EE9CB22A976C360053E865 /* kwrite_dup.h */,
-			);
-			path = kwrite;
-			sourceTree = "<group>";
-		};
-		65EE9CB32A976C360053E865 /* info */ = {
-			isa = PBXGroup;
-			children = (
-				65EE9CB42A976C360053E865 /* static_info.h */,
-				65EE9CB52A976C360053E865 /* dynamic_info.h */,
-			);
-			path = info;
-			sourceTree = "<group>";
-		};
-		65EE9CB82A976C360053E865 /* puaf */ = {
-			isa = PBXGroup;
-			children = (
-				65EE9CB92A976C360053E865 /* smith.h */,
-				65EE9CBA2A976C360053E865 /* physpuppet.h */,
-			);
-			path = puaf;
 			sourceTree = "<group>";
 		};
 		65EE9CC02A976C360053E865 /* fun */ = {
@@ -357,15 +292,6 @@
 				653CE5FC2AA3F398002E10A8 /* dir.h */,
 			);
 			path = fun;
-			sourceTree = "<group>";
-		};
-		65EE9CD52A976C360053E865 /* Misaka */ = {
-			isa = PBXGroup;
-			children = (
-				65EE9CD62A976C360053E865 /* encryptkey.swift */,
-				65EE9CD72A976C360053E865 /* encrypt.swift */,
-			);
-			path = Misaka;
 			sourceTree = "<group>";
 		};
 		65EE9CEA2A976C360053E865 /* OverwriteFiles */ = {
@@ -480,6 +406,66 @@
 			path = Dock;
 			sourceTree = "<group>";
 		};
+		912B029F2AC63E530037C799 /* libkfd */ = {
+			isa = PBXGroup;
+			children = (
+				912B02B22AC63E530037C799 /* krkw.h */,
+				912B02C02AC63E530037C799 /* krkw */,
+				912B02C82AC63E530037C799 /* info */,
+				912B02CB2AC63E530037C799 /* puaf.h */,
+				912B02CC2AC63E530037C799 /* common.h */,
+				912B02D02AC63E530037C799 /* puaf */,
+				912B02D72AC63E530037C799 /* perf.h */,
+				912B02D82AC63E530037C799 /* info.h */,
+			);
+			path = libkfd;
+			sourceTree = "<group>";
+		};
+		912B02C02AC63E530037C799 /* krkw */ = {
+			isa = PBXGroup;
+			children = (
+				912B02C12AC63E530037C799 /* kread */,
+				912B02C42AC63E530037C799 /* kwrite */,
+			);
+			path = krkw;
+			sourceTree = "<group>";
+		};
+		912B02C12AC63E530037C799 /* kread */ = {
+			isa = PBXGroup;
+			children = (
+				912B02C22AC63E530037C799 /* kread_sem_open.h */,
+				912B02C32AC63E530037C799 /* kread_kqueue_workloop_ctl.h */,
+			);
+			path = kread;
+			sourceTree = "<group>";
+		};
+		912B02C42AC63E530037C799 /* kwrite */ = {
+			isa = PBXGroup;
+			children = (
+				912B02C52AC63E530037C799 /* kwrite_sem_open.h */,
+				912B02C62AC63E530037C799 /* kwrite_dup.h */,
+			);
+			path = kwrite;
+			sourceTree = "<group>";
+		};
+		912B02C82AC63E530037C799 /* info */ = {
+			isa = PBXGroup;
+			children = (
+				912B02C92AC63E530037C799 /* static_info.h */,
+				912B02CA2AC63E530037C799 /* dynamic_info.h */,
+			);
+			path = info;
+			sourceTree = "<group>";
+		};
+		912B02D02AC63E530037C799 /* puaf */ = {
+			isa = PBXGroup;
+			children = (
+				912B02D12AC63E530037C799 /* smith.h */,
+				912B02D22AC63E530037C799 /* physpuppet.h */,
+			);
+			path = puaf;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -587,7 +573,6 @@
 				653CE5FB2AA3F389002E10A8 /* dir.m in Sources */,
 				65EE9D122A976C360053E865 /* jit.m in Sources */,
 				653CE5E62AA39F5C002E10A8 /* Logs.swift in Sources */,
-				65EE9D232A976C360053E865 /* encrypt.swift in Sources */,
 				65EE9D1D2A976C360053E865 /* thanks_opa334dev_htrowii.m in Sources */,
 				65EE9D152A976C360053E865 /* helpers.m in Sources */,
 				65EE9D1E2A976C360053E865 /* krw.c in Sources */,
@@ -609,7 +594,6 @@
 				65EE9D272A976C360053E865 /* InstalledPackagesView.swift in Sources */,
 				65EE9D132A976C360053E865 /* vm_unaligned_copy_switch_race.c in Sources */,
 				6583CA0B2AA282F900C8D5C1 /* Search.swift in Sources */,
-				65EE9D222A976C360053E865 /* encryptkey.swift in Sources */,
 				653CE5EF2AA3A26B002E10A8 /* Misaka.swift in Sources */,
 				65EE9D192A976C360053E865 /* fun.m in Sources */,
 				65EE9D1C2A976C360053E865 /* utils.m in Sources */,
@@ -763,8 +747,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
@@ -808,8 +792,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";

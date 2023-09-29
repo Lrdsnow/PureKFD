@@ -16,7 +16,6 @@ struct SettingsView: View {
     private let kwriteMethodOptions = ["dup", "sem_open"]
     private let RespringOptions = ["Backboard Respring", "Frontboard Respring"]
     private let ExploitOptions = ["KFD", "MDC", "TrollStore"]
-
     var body: some View {
         Form {
             Section(header: Text("Main Settings").foregroundColor(.purple)) {
