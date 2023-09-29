@@ -48,7 +48,7 @@ struct InstalledPackagesView: View {
                                     Image
                                         .resizable()
                                         .frame(width: 60, height: 60)
-                                        .cornerRadius(20)
+                                        .cornerRadius(25)
                                 } placeholder: {
                                     ProgressView()
                                         .frame(width: 60, height: 60)
@@ -64,15 +64,15 @@ struct InstalledPackagesView: View {
                                         .fontWeight(.semibold)
                                         .foregroundColor(.gray)
                                 }
-                                .padding(.trailing, 15)
+                                .padding(.trailing, 10)
                                 Spacer()
                                 Image(systemName: "arrowtriangle.right.fill")
                                     .foregroundColor(.gray)
-                                    .padding(.trailing, 10)
+                                    .padding(.trailing, 20)
                             }
-                            .frame(width:300)
+                            .frame(width:350)
                             .background(Color("primaryalternative"))
-                            .cornerRadius(20)
+                            .cornerRadius(25)
                             .contextMenu {
                                 Button(role: .destructive, action: {
                                     if let index = installedPackages.firstIndex(of: installedPackage) {
@@ -110,7 +110,7 @@ struct InstalledPackagesView: View {
                             .padding(.trailing, 10)
                             Spacer()
                         }
-                        .frame(width:300)
+                        .frame(width:350)
                         .background(.primary)
                         .cornerRadius(20)
                         .contextMenu {
