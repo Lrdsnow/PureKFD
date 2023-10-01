@@ -1,5 +1,5 @@
 <p align="left">
-  <img align="left" height="120" src="https://github.com/Lrdsnow/PureKFD/blob/main/PureKFD/AppIcon.png?raw=true" alt="PureKFD Logo" style="float: left; border-radius: 10px;"/>
+  <img align="left" height="120" src="https://github.com/Lrdsnow/PureKFD/blob/4.0/PureKFD/Assets.xcassets/AppIcons/AppIcon.appiconset/App%20Store.png?raw=true" alt="PureKFD Logo" style="float: left; border-radius: 10px;"/>
 </p>
 <h3 align="right">PureKFD, A KFD Package Manager that supports Picasso & Misaka Packages/Repos</h3> 
 
