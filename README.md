@@ -23,3 +23,4 @@
 - lemin.limez for cowabunga stuff (mdc & color changer)
 - wh1te4ever for kfund
 - felix-pb for kfd
+- And more in app
