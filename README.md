@@ -17,13 +17,7 @@
 
 ### Supported Versions: Arm64e 15.0-16.5 & 16.6b1, Arm64 15.0-15.7.6
 
-### A KFD Tweaks app that supports misaka & picasso repos/packages
-- Fully supports picasso packages & Has rudementary support for misaka packages
-
-### Todo:
-- Fix Prefs (Only color prefs save correctly & they dont load at all to the ui)
-- Fix AccentColorOperation
-- Improve Misaka Packages
+### An MDC/KFD Tweaking app with Picasso and Misaka Support!
 
 #### Credit:
 - lemin.limez for cowabunga stuff (mdc & color changer)
