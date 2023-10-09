@@ -15,7 +15,7 @@
 
 #
 
-### Supported Versions: Arm64e 15.0-16.5 & 16.6b1, Arm64 15.0-15.7.6
+### Supported Versions: Arm64e 14.0-16.5 & 16.6b1, Arm64 14.0-15.7.6
 
 ### An MDC/KFD Tweaking app with Picasso and Misaka Support!
 
