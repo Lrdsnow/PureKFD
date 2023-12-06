@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "icons8-arrow-30.png",
+      "filename" : "icons8-arrow-32.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icons8-arrow-60.png",
+      "filename" : "icons8-arrow-64.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
