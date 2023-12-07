@@ -33,8 +33,8 @@ func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, (Int, Int, Int, Boo
             let gestAltCache = NSDictionary(contentsOfFile: "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist")
             let cacheExtras: [String: Any] = gestAltCache?["CacheExtra"] as? [String: Any] ?? [:]
             let modelIdentifier = cacheExtras["0+nc/Udy4WNG8S+Q7a/s1A"] as? String ?? cacheExtras["h9jDsbgj7xIVeIQ8S3/X3Q"] as? String ?? "Unknown Device"
-            if modelIdentifier != "Unknown Device" {
-                let gen_array = modelIdentifier.replacingOccurrences(of: "iPhone", with: "").replacingOccurrences(of: "iPod", with: "").replacingOccurrences(of: "iPad", with: "").split(separator: ",")
+            if modelIdentifier != "Unknown Device" && modelIdentifier.contains("iPhone") {
+                let gen_array = modelIdentifier.replacingOccurrences(of: "iPhone", with: "").split(separator: ",")
                 if let gen = Int(gen_array[0]) {
                     if gen <= 10 {
                         lowend = true
@@ -49,7 +49,7 @@ func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, (Int, Int, Int, Boo
                 (major == 15 && (sub <= 6 || (sub <= 7 && minor <= 1))) ||
                 (major == 16 && sub <= 1) {
                 exploit_method = 1
-            } else if (major == 16 && sub >= 2 && sub <= 6) && !modelIdentifier.hasPrefix("iPad") && !(sub == 6 && build_number != "20G5026e") && !lowend {
+            } else if (major == 16 && sub >= 2 && sub <= 6) && !(sub == 6 && build_number != "20G5026e") && !lowend {
                 exploit_method = 0
             } else if ((try? FileManager.default.contentsOfDirectory(atPath: "/var/jb")) != nil) {
                 exploit_method = 3
