@@ -75,9 +75,9 @@ struct PureKFDApp: App {
                         }
                         PackageDetailView(package: selectedPackage ?? Package(name: "Nil", bundleID: "nil", author: "Nil", version: "Nil", desc: "Nil", longdesc: "", icon: URL(string: ""), accent: nil, screenshots: [], banner: nil, previewbg: nil, install_actions: [], uninstall_actions: [], url: nil, pkgtype: "unknown"), appData: appData)
                             .padding()
-                            .listStyle(.plain)
+                            .plainList()
                             .mainViewTweaks()
-                            .background(Color.clear)
+                            .clearBackground()
                     }
                 }
         }
@@ -91,9 +91,9 @@ struct ContentView: View {
     var body: some View {
         MainView()
             .mainViewTweaks()
-            .listStyle(.plain)
+            .plainList()
             .accentColor(Color(UIColor(hex: UserDefaults.standard.string(forKey: "accentColor") ?? "") ?? UIColor.systemPurple))
-            .background(Color.clear)
+            .clearBackground()
             .environmentObject(appData)
             .onAppear {
                 let controller = UIHostingController(rootView: self)

@@ -108,7 +108,7 @@ struct CreatorView: View {
                         .cornerRadius(8)
                 }.buttonStyle(.bordered).disabled(generatingpackage)
                 Spacer()
-            }.listRowBackground(Color.clear)
+            }.clearListRowBackground()
         }.listStyle(.insetGrouped).navigationBarTitle("Tweak Creator", displayMode: .large)
     }
     

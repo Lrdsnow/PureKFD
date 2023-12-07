@@ -32,7 +32,7 @@ struct TweakConverterView: View {
                 }
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
-                .listRowBackground(Color.clear)
+                .clearListRowBackground()
             }
             Section("Out") {
                 Picker("Output Tweak Type:", selection: $outpkgtype) {
@@ -42,7 +42,7 @@ struct TweakConverterView: View {
                 }
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
-                .listRowBackground(Color.clear)
+                .clearListRowBackground()
                 Button(action: {
                     Task {
                         tweakpath = convertTweak(intype: true_pkgtypes[inpkgtype], outtype: true_outpkgtypes[outpkgtype], pkgpath: URL(fileURLWithPath: pickedFileFullPath))

@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+extension NSLock {
+    func synchronized<T>(_ closure: () throws -> T) rethrows -> T {
+        lock()
+        defer { unlock() }
+        return try closure()
+    }
+}
+
 @available(iOS 15.0, *)
 struct HomeView: View {
     @EnvironmentObject var appData: AppData
@@ -18,119 +26,91 @@ struct HomeView: View {
     @State private var lowend = false
     
     var body: some View {
-        if true {//
-            NavigationView {
-                ZStack {
-                    List {
-                        // Featured Packages
-                        if !featuredPackages.isEmpty {
-                            FeaturedPackagesView(featuredPackages: featuredPackages, homeView: true)
-                                .padding(.horizontal, -12)
-                                .padding(.bottom, -35)
-                                .listRowSeparator(.hidden)
-                        }
-                        
+        NavigationView {
+            ZStack {
+                List {
+                    // Featured Packages
+                    if !featuredPackages.isEmpty {
+                        FeaturedPackagesView(featuredPackages: featuredPackages, homeView: true)
+                            .padding(.horizontal, -12)
+                            .padding(.bottom, -35)
+                            .listRowSeparator(.hidden)
+                    } else {
+                        PlaceholderFeaturedView()
+                            .padding(.horizontal, -12)
+                            .padding(.bottom, -35)
+                            .listRowSeparator(.hidden)
+                    }
+                    
+                    Section("Need Ideas?") {
                         if !packageList.isEmpty {
-                            Section("Need Ideas?") {
-                                ForEach(packageList) { package in
-                                    NavigationLink(destination: PackageDetailView(package: package, appData: appData)) {
-                                        if #available(iOS 16, *) {
-                                            PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package, installedPackageView: true)
-                                                .contextMenu(menuItems: {Button(action: {
-                                                    let pasteboard = UIPasteboard.general
-                                                    pasteboard.string = package.bundleID
-                                                }) {
-                                                    Text("Copy Bundle ID")
-                                                    Image("copy_icon")
-                                                        .renderingMode(.template)
-                                                }}, preview: {PackagePreviewView(package: package).if(package.accent != nil) { view in
-                                                    view.accentColor(package.accent!.toColor())
-                                                }})
-                                        } else {
-                                            PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package, installedPackageView: true)
-                                        }
+                            ForEach(packageList) { package in
+                                NavigationLink(destination: PackageDetailView(package: package, appData: appData)) {
+                                    if #available(iOS 16, *) {
+                                        PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package, installedPackageView: true)
+                                            .contextMenu(menuItems: {Button(action: {
+                                                let pasteboard = UIPasteboard.general
+                                                pasteboard.string = package.bundleID
+                                            }) {
+                                                Text("Copy Bundle ID")
+                                                Image("copy_icon")
+                                                    .renderingMode(.template)
+                                            }}, preview: {PackagePreviewView(package: package).if(package.accent != nil) { view in
+                                                view.accentColor(package.accent!.toColor())
+                                            }})
+                                    } else {
+                                        PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package, installedPackageView: true)
                                     }
-                                    .listRowSeparator(.hidden)
                                 }
+                                .listRowSeparator(.hidden)
                             }
-                        }
-                        
-                        if !packageList.isEmpty || !featuredPackages.isEmpty {
-                            Text("\(iosversion.5)\(lowend ? " (LPM)":"") • \(iosversion.0 == 0 ? "Unknown Version" : "iOS \(iosversion.0).\(iosversion.1)\(iosversion.2 == 0 ? "" : ".\(iosversion.2)")")\(iosversion.3 ? " Beta" : "")\(iosversion.4 == "0" ? "" : " (\(iosversion.4))") • PureKFD v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0") • \(exploitMethod)").frame(maxWidth: .infinity, alignment: .center).opacity(0.7).font(.footnote).listRowSeparator(.hidden)
+                        } else {
+                            PlaceholderPackageListView()
+                                .listRowSeparator(.hidden)
                         }
                     }
                     
-                    if packageList.isEmpty && featuredPackages.isEmpty {
-                        ZStack {
-                            ProgressView()
-                            Text("\n\nGetting Repos...")
-                        }
+                    if !packageList.isEmpty || !featuredPackages.isEmpty {
+                        Text("\(iosversion.5)\(lowend ? " (LPM)":"") • \(iosversion.0 == 0 ? "Unknown Version" : "iOS \(iosversion.0).\(iosversion.1)\(iosversion.2 == 0 ? "" : ".\(iosversion.2)")")\(iosversion.3 ? " Beta" : "")\(iosversion.4 == "0" ? "" : " (\(iosversion.4))") • PureKFD v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0") • \(exploitMethod)").frame(maxWidth: .infinity, alignment: .center).opacity(0.7).font(.footnote).listRowSeparator(.hidden)
                     }
                 }
-                .task {
-                    haptic()
-                }
-                .navigationTitle("Home")
-                .navigationBarItems(trailing: gearButton)
-                .refreshable {
-                    repoSections = [:]
-                    featuredPackages = []
-                    packageList = []
-                }.task() {
-                    Task {
-                        let deviceinfo = getDeviceInfo(appData: appData)
-                        iosversion = deviceinfo.2
-                        lowend = deviceinfo.3
-                        switch deviceinfo.0 {
-                        case 0:
-                            exploitMethod = "KFD"
-                        case 1:
-                            exploitMethod = "MDC"
-                        case 2:
-                            exploitMethod = "Rootful"
-                        case 3:
-                            exploitMethod = "Rootless"
-                        default:
-                            exploitMethod = "None"
-                            appData.UserData.filters.jb = true
-                            appData.UserData.filters.kfd = true
-                        }
-                    }
-                    await fetchRepos()
-                }
-            }.navigationViewStyle(.stack)
-        } else {
-            if repoSections.isEmpty {
-                ZStack {
-                    ProgressView().task() {
-                        Task {
-                            let deviceinfo = getDeviceInfo(appData: appData)
-                            iosversion = deviceinfo.2
-                            lowend = deviceinfo.3
-                            switch deviceinfo.0 {
-                            case 0:
-                                exploitMethod = "KFD"
-                            case 1:
-                                exploitMethod = "MDC"
-                            case 2:
-                                exploitMethod = "Rootful"
-                            case 3:
-                                exploitMethod = "Rootless"
-                            default:
-                                exploitMethod = "None"
-                                appData.UserData.filters.jb = true
-                                appData.UserData.filters.kfd = true
-                            }
-                        }
-                        await fetchRepos()
-                    }
-                    Text("\n\nGetting Repos...")
-                }
-            } else {
-                Text("There was an error fetching repos.\n\nDevice Info:\nModel Identifier: \(iosversion.5)\niOS Version: \(iosversion.0 == 0 ? "Unknown iOS Version" : "iOS \(iosversion.0).\(iosversion.1)\(iosversion.2 == 0 ? "" : ".\(iosversion.2)")")\(iosversion.3 ? " Beta" : "")\(iosversion.4 == "0" ? "" : " (\(iosversion.4))")\nApp Version: \(((Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) != nil) ? "PureKFD v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0")" : "Unknown, Broken Bundle?")").task() {
-                }.multilineTextAlignment(.center)
             }
-        }
+            .task {
+                haptic()
+            }
+            .navigationTitle("Home")
+            .navigationBarItems(trailing: gearButton)
+            .refreshable {
+                repoSections = [:]
+                featuredPackages = []
+                packageList = []
+                await fetchRepos()
+            }.task() {
+                Task {
+                    let deviceinfo = getDeviceInfo(appData: appData)
+                    iosversion = deviceinfo.2
+                    lowend = deviceinfo.3
+                    switch deviceinfo.0 {
+                    case 0:
+                        exploitMethod = "KFD"
+                    case 1:
+                        exploitMethod = "MDC"
+                    case 2:
+                        exploitMethod = "Rootful"
+                    case 3:
+                        exploitMethod = "Rootless"
+                    default:
+                        exploitMethod = "None"
+                        appData.UserData.filters.jb = true
+                        appData.UserData.filters.kfd = true
+                    }
+                }
+                await fetchRepos()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                    updateUI()
+                }
+            }
+        }.navigationViewStyle(.stack)
     }
     
     private var gearButton: some View {
@@ -156,10 +136,28 @@ struct HomeView: View {
     }
     
     private func fetchRepos() async {
-        let temp_repoSections = Dictionary(grouping: await getAllRepos(appdata: appData), by: { $0.repotype }).mapValues { $0.sorted { $0.repotype < $1.repotype } }
+        repoSections = [:]
+        await getRepos(appdata: appData) { repo in
+            DispatchQueue.main.async {
+                let repoType = repo.repotype
+                if var existingRepos = repoSections[repoType] {
+                    if let existingRepoIndex = existingRepos.firstIndex(where: { $0.url == repo.url }) {
+                        existingRepos[existingRepoIndex] = repo
+                    } else {
+                        existingRepos.append(repo)
+                    }
+                    repoSections[repoType] = existingRepos
+                } else {
+                    repoSections[repoType] = [repo]
+                }
+            }
+        }
+    }
+    
+    func updateUI() {
         var temp_featuredPackages: [Featured] = []
         var temp_packageList: [Package] = []
-        for (_, repoList) in temp_repoSections {
+        for (_, repoList) in repoSections {
             for repo in repoList {
                 if !(repo.featured?.isEmpty ?? true) {
                     temp_featuredPackages.append(contentsOf: repo.featured!)
@@ -167,7 +165,7 @@ struct HomeView: View {
             }
         }
         temp_featuredPackages = Array(temp_featuredPackages.shuffled().prefix(5)) as? [Featured] ?? []
-        for (_, repoList) in temp_repoSections {
+        for (_, repoList) in repoSections {
             for repo in repoList {
                 var filteredPackages: [Package] = repo.packages
                 filteredPackages = filteredPackages.filter { !($0.screenshots?.isEmpty ?? true) }
@@ -179,7 +177,6 @@ struct HomeView: View {
         temp_packageList = Array(temp_packageList.shuffled().prefix(10)) as? [Package] ?? []
         packageList = temp_packageList
         featuredPackages = temp_featuredPackages
-        repoSections = temp_repoSections
         appData.repoSections = repoSections
         appData.refreshedRepos = true
     }
@@ -252,14 +249,17 @@ struct SettingsView: View {
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                .listRowBackground(Color.clear)
+                .clearListRowBackground()
                 Toggle("Override Exploit Method", isOn: $appData.UserData.override_exploit_method)
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
                     .onChange(of: appData.UserData.override_exploit_method) {_ in appData.save()}
-                    .listRowBackground(Color.clear)
+                    .clearListRowBackground()
                 
                 if appData.UserData.override_exploit_method {
+                    if appData.UserData.exploit_method == 1 {
+                        Text("Your device was detected as an MDC device, KFD IS NOT RECOMMENDED on these devices").clearListRowBackground()
+                    }
                     Picker("Exploit:", selection: $appData.UserData.exploit_method) {
                         ForEach(0..<exploitOptions.count, id: \.self) {
                             Text(exploitOptions[$0])
@@ -268,7 +268,7 @@ struct SettingsView: View {
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
                     .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                    .listRowBackground(Color.clear)
+                    .clearListRowBackground()
                 }
                 
                 Picker("App Install Type:", selection: $appData.UserData.install_method) {
@@ -279,7 +279,7 @@ struct SettingsView: View {
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                .listRowBackground(Color.clear)
+                .clearListRowBackground()
             }
             
             if appData.UserData.exploit_method == 0 && appData.UserData.override_exploit_method {
@@ -291,7 +291,7 @@ struct SettingsView: View {
                     }
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
-                    .listRowBackground(Color.clear)
+                    .clearListRowBackground()
                     
                     Picker("puaf method:", selection: $appData.UserData.kfd.puaf_method) {
                         ForEach(0..<puafMethodOptions.count, id: \.self) {
@@ -300,7 +300,7 @@ struct SettingsView: View {
                     }
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
-                    .listRowBackground(Color.clear)
+                    .clearListRowBackground()
                     
                     Picker("kread method:", selection: $appData.UserData.kfd.kread_method) {
                         ForEach(0..<kreadMethodOptions.count, id: \.self) {
@@ -309,7 +309,7 @@ struct SettingsView: View {
                     }
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
-                    .listRowBackground(Color.clear)
+                    .clearListRowBackground()
                     
                     Picker("kwrite method:", selection: $appData.UserData.kfd.kwrite_method) {
                         ForEach(0..<kwriteMethodOptions.count, id: \.self) {
@@ -318,7 +318,7 @@ struct SettingsView: View {
                     }
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
-                    .listRowBackground(Color.clear)
+                    .clearListRowBackground()
                 }
                 .listRowSeparator(.hidden)
                 .onChange(of: appData.UserData.kfd) {_ in appData.save()}
@@ -327,25 +327,25 @@ struct SettingsView: View {
                 Toggle("Translate Prefs On Install", isOn: $appData.UserData.translateoninstall)
                     .onChange(of: appData.UserData.translateoninstall) { _ in
                         appData.save()
-                    }.listRowBackground(Color.clear)
+                    }.clearListRowBackground()
                 Toggle("Use BuiltIn File Picker", isOn: $appData.UserData.PureKFDFilePicker)
                     .onChange(of: appData.UserData.PureKFDFilePicker) { _ in
                         appData.save()
-                    }.listRowBackground(Color.clear)
+                    }.clearListRowBackground()
                 Toggle("Developer Mode", isOn: $appData.UserData.dev)
                     .onChange(of: appData.UserData.dev) { _ in
                         appData.save()
-                    }.listRowBackground(Color.clear)
+                    }.clearListRowBackground()
                 NavigationLink(destination: IconSelectorView(), label: {
                     Text("Change Icon")
-                }).listRowBackground(Color.clear)
+                }).clearListRowBackground()
                 NavigationLink(destination: ExtrasView(selectedColor: $selectedColor, selectedColorString: $selectedColorString), label: {
                     Text("Other Extras")
-                }).listRowBackground(Color.clear)
+                }).clearListRowBackground()
             }
-            .listRowBackground(Color.clear)
+            .clearListRowBackground()
             CreditView()
-                .listRowBackground(Color.clear)
+                .clearListRowBackground()
         }.navigationBarTitle("Settings", displayMode: .large)
     }
 }
@@ -357,10 +357,10 @@ struct CreditView: View {
             CreditRow(name: "Lrdsnow", role: "Developer", link: URL(string: "https://github.com/Lrdsnow")).foregroundStyle(.purple)
             CreditRow(name: "leminlimez", role: "Springboard Color Manager", link: URL(string: "https://github.com/leminlimez")).foregroundStyle(.yellow)
             CreditRow(name: "icons8", role: "Plumpy Icons", link: URL(string: "https://icons8.com")).foregroundStyle(.green)
-            CreditRow(name: "emmikat", role: "M1/M2 Fixes", link: URL(string: "https://github.com/emmikat")).foregroundStyle(.green)
+            CreditRow(name: "emmikat", role: "M1/M2 Fixes", link: URL(string: "https://github.com/emmikat")).foregroundStyle(.pink)
             CreditRow(name: "dhinakg", role: "M1/M2 Fixes", link: URL(string: "https://github.com/dhinakg")).foregroundStyle(.green)
-            CreditRow(name: "lilmayofuksu", role: "M1/M2 Fixes", link: URL(string: "https://github.com/lilmayofuksu")).foregroundStyle(.green)
-            CreditRow(name: "noxwell", role: "M1/M2 Fixes", link: URL(string: "https://github.com/noxwell")).foregroundStyle(.green)
+            CreditRow(name: "lilmayofuksu", role: "M1/M2 Fixes", link: URL(string: "https://github.com/lilmayofuksu")).foregroundStyle(.purple)
+            CreditRow(name: "noxwell", role: "M1/M2 Fixes", link: URL(string: "https://github.com/noxwell")).foregroundStyle(.blue)
             CreditRow(name: "@dor4a", role: "Icon/Tweak Creator/Translator", link: URL(string: "https://discord.com/users/455513497288310785")).foregroundStyle("#c2f1ff".toColor()!)
             CreditRow(name: "@hackzy", role: "Icon/Tweak Creator", link: URL(string: "https://discord.com/users/424899221267939328")).foregroundStyle(.green)
             CreditRow(name: "@dreelpoop_er", role: "Icon/Tweak Creator", link: URL(string: "https://discord.com/users/669665537051197491")).foregroundStyle(.red)
@@ -468,6 +468,7 @@ struct ExtrasView: View {
     @EnvironmentObject var appData: AppData
     @Binding var selectedColor: Color
     @Binding var selectedColorString: String
+    @State var clearListRow = !UserDefaults.standard.bool(forKey: "noClearRows")
     var body: some View {
         Form {
             Section(header: Text("Design").foregroundColor(.accentColor)) {
@@ -476,6 +477,12 @@ struct ExtrasView: View {
                 }).onChange(of: appData.UserData.allowlight) { _ in
                     appData.save()
                 }
+                Toggle(isOn: $clearListRow, label: {
+                    Text("Clear List Rows")
+                }).onChange(of: clearListRow) { newValue in
+                    UserDefaults.standard.set(!newValue, forKey: "noClearRows")
+                    refreshView(appData: appData)
+                }
                 ColorPicker("Accent Color", selection: $selectedColor)
                     .onChange(of: selectedColor) { newValue in
                         selectedColorString = newValue.toHex()
@@ -483,28 +490,28 @@ struct ExtrasView: View {
                         refreshView(appData: appData)
                     }
             }
-            .listRowBackground(Color.clear)
+            .clearListRowBackground()
             Section(header: Text("App Data").foregroundColor(.accentColor)) {
                 Button(action: {
                     appData.RepoData = SavedRepoData(urls: [])
                     appData.repoSections = [:]
                     appData.save()
-                }, label: {Text("Clear Repo Data")}).listRowBackground(Color.clear)
+                }, label: {Text("Clear Repo Data")}).clearListRowBackground()
                 Button(action: {
                     appData.UserData = SavedUserData()
                     appData.save()
-                }, label: {Text("Clear User Data")}).listRowBackground(Color.clear)
+                }, label: {Text("Clear User Data")}).clearListRowBackground()
                 Button(action: {
                     UserDefaults.standard.set("", forKey: "accentColor")
                     refreshView(appData: appData)
-                }, label: {Text("Clear Accent Color")}).listRowBackground(Color.clear)
+                }, label: {Text("Clear Accent Color")}).clearListRowBackground()
                 Spacer()
                 Button(action: {
                     BackupManager().exportBackup()
-                }, label: {Text("Backup Data")}).listRowBackground(Color.clear)
+                }, label: {Text("Backup Data")}).clearListRowBackground()
                 Spacer()
                 
-            }.listRowBackground(Color.clear)
+            }.clearListRowBackground()
         }.navigationBarTitle("Extras", displayMode: .large)
     }
 }

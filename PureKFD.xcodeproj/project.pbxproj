@@ -681,7 +681,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [ -d \"${BUILT_PRODUCTS_DIR}/Build\" ]; then\n    rm -r \"${BUILT_PRODUCTS_DIR}/Build\"\nfi\nif [ -d \"${BUILT_PRODUCTS_DIR}/ts\" ]; then\n    rm -r \"${BUILT_PRODUCTS_DIR}/ts\"\nfi\nmkdir -p ${BUILT_PRODUCTS_DIR}/ts\ncp -r ${BUILT_PRODUCTS_DIR}/PureKFD.app ${BUILT_PRODUCTS_DIR}/ts/PureKFD.app\nldid -S./entitlements.plist ${BUILT_PRODUCTS_DIR}/ts/PureKFD.app/PureKFD\ncd ${BUILT_PRODUCTS_DIR}\nif [ -d \"Payload\" ]; then\n    rm -r \"Payload\"\nfi\nmkdir -p \"Payload\"\ncp -r PureKFD.app Payload/PureKFD.app\nzip -r purekfd.ipa Payload\ncd ${BUILT_PRODUCTS_DIR}/ts\nif [ -d \"Payload\" ]; then\n    rm -r \"Payload\"\nfi\nmkdir -p \"Payload\"\ncp -r PureKFD.app Payload/PureKFD.app\nzip -r ../purekfd.tipa Payload\ncd ${BUILT_PRODUCTS_DIR}\nrm -r \"${BUILT_PRODUCTS_DIR}/ts\"\nrm -r \"${BUILT_PRODUCTS_DIR}/Payload\"\nmkdir Build\nmv purekfd.ipa Build/purekfd.ipa\nmv purekfd.tipa Build/purekfd.tipa\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [ -d \"${BUILT_PRODUCTS_DIR}/Build\" ]; then\n    rm -r \"${BUILT_PRODUCTS_DIR}/Build\"\nfi\nldid -S./entitlements.plist ${BUILT_PRODUCTS_DIR}/PureKFD.app/PureKFD\ncd ${BUILT_PRODUCTS_DIR}\nif [ -d \"Payload\" ]; then\n    rm -r \"Payload\"\nfi\nmkdir -p \"Payload\"\ncp -r PureKFD.app Payload/PureKFD.app\nzip -r purekfd.ipa Payload\nrm -r \"${BUILT_PRODUCTS_DIR}/Payload\"\nmkdir Build\nmv purekfd.ipa Build/purekfd.ipa\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -877,6 +877,8 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PureKFD/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PureKFD;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow PureKFD to unsandbox";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -889,7 +891,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.2;
+				MARKETING_VERSION = 4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "uwu.lrdsnow.purekfd-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -914,6 +916,8 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PureKFD/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PureKFD;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow PureKFD to unsandbox";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -926,7 +930,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.2;
+				MARKETING_VERSION = 4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "uwu.lrdsnow.purekfd-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

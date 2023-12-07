@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 extension View {
+    
     @ViewBuilder
     func `if`<Content: View>(_ condition: Bool, content: (Self) -> Content) -> some View {
         if condition {
@@ -18,8 +19,32 @@ extension View {
         }
     }
     @ViewBuilder
+    func plainList() -> some View {
+        if !UserDefaults.standard.bool(forKey: "noClearRows") {
+            self.listStyle(.plain)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
+    func clearBackground() -> some View {
+        if !UserDefaults.standard.bool(forKey: "noClearRows") {
+            self.background(Color.clear)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
+    func clearListRowBackground() -> some View {
+        if !UserDefaults.standard.bool(forKey: "noClearRows") {
+            self.listRowBackground(Color.clear)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
     func hideListRowSeparator() -> some View {
-        if #available(iOS 15.0, *) {
+        if !UserDefaults.standard.bool(forKey: "noClearRows") {
             self.listRowSeparator(.hidden)
         } else {
             self

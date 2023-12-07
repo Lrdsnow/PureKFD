@@ -20,10 +20,16 @@ struct DeveloperView: View {
         NavigationView {
             List {
                 Section("TS") {
-                    Text("Recommended Install Instructions:\n1. Hit Install Trollstore\n2. Immediately Force Shutdown When it finsihes (vol down+power)\n3. Open Tips And Install Trollstore\nNote: If tips crashes or you get error 1, reinstall tips and try again")
+                    if appData.UserData.exploit_method == 0 {
+                        Text("Recommended Install Instructions:\n1. Hit Install Trollstore\n2. Immediately Force Shutdown When it finsihes (vol down+power)\n3. Open Tips And Install Trollstore\nNote: If tips crashes or you get error 1, reinstall tips and try again")
+                    } else {
+                        Text("Your device was not detected as an KFD device, TS install is currently not compatible with anything other then KFD Devices.")
+                    }
                     Button(action: {
                         UIApplication.shared.alert(title: "Installing...", body: "Please wait...", withButton: false)
+                        sleep(1)
                         if smart_kopen(appData: appData) == 0 {
+                            sleep(1)
                             try? getApps(exploit_method: 0)
                             do_kclose()
                             UIApplication.shared.dismissAlert(animated: false)
@@ -37,7 +43,7 @@ struct DeveloperView: View {
                             Image("dev_icon").renderingMode(.template)
                             Text("Install Trollstore Helper (KFD)")
                         }
-                    })
+                    }).disabled(appData.UserData.exploit_method != 0).opacity(appData.UserData.exploit_method != 0 ? 0.7 : 1)
                 }
                 
                 Section("Files") {
@@ -49,7 +55,9 @@ struct DeveloperView: View {
                     NavigationLink(destination: TweakConverterView(), label: {Image("gear_icon").renderingMode(.template); Text("Tweak Converter")})
                 }
                 Section("Tests") {
-                    NavigationLink(destination: AppManagerView(), label: {Image("dev_icon").renderingMode(.template); Text("App Manager")})
+                    if appData.UserData.exploit_method == 0 {
+                        NavigationLink(destination: AppManagerView(), label: {Image("dev_icon").renderingMode(.template); Text("App Manager (KFD)")})
+                    }
                     NavigationLink(destination: PiPView(htmlString: """
                                 <!DOCTYPE html>
                                 <html>
@@ -136,24 +144,26 @@ struct DeveloperView: View {
                         Text("Clear Icon Cache")
                     }
                 })
-                Button(action: {
-                    rebuildIconCache(appData: appData)
-                    UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
-                }, label: {
-                    HStack {
-                        Image("dev_icon").renderingMode(.template)
-                        Text("Rebuild Icon Cache (KFD)")
-                    }
-                })
-                Button(action: {
-                    rebuildIconCache2(appData: appData)
-                    UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
-                }, label: {
-                    HStack {
-                        Image("dev_icon").renderingMode(.template)
-                        Text("Rebuild Icon Cache 2 (KFD)")
-                    }
-                })
+                if appData.UserData.exploit_method == 0 {
+                    Button(action: {
+                        rebuildIconCache(appData: appData)
+                        UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
+                    }, label: {
+                        HStack {
+                            Image("dev_icon").renderingMode(.template)
+                            Text("Rebuild Icon Cache (KFD)")
+                        }
+                    })
+                    Button(action: {
+                        rebuildIconCache2(appData: appData)
+                        UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
+                    }, label: {
+                        HStack {
+                            Image("dev_icon").renderingMode(.template)
+                            Text("Rebuild Icon Cache 2 (KFD)")
+                        }
+                    })
+                }
                 Button(action: {
                     cleanTemp()
                     UIApplication.shared.alert(title: "Complete", body: "Cleared PureKFD's temp files", withButton: true)
