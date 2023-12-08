@@ -35,11 +35,13 @@ struct HomeView: View {
                             .padding(.horizontal, -12)
                             .padding(.bottom, -35)
                             .listRowSeparator(.hidden)
+                            .listStyle(.plain)
                     } else {
                         PlaceholderFeaturedView()
                             .padding(.horizontal, -12)
                             .padding(.bottom, -35)
                             .listRowSeparator(.hidden)
+                            .listStyle(.plain)
                     }
                     
                     Section("Need Ideas?") {

@@ -15,7 +15,6 @@
 		650E821A2AF7018D00985508 /* ColorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E82192AF7018C00985508 /* ColorHandling.swift */; };
 		650E821C2AF701DE00985508 /* Alert++.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E821B2AF701DE00985508 /* Alert++.swift */; };
 		650E821E2AF701F600985508 /* Others.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E821D2AF701F600985508 /* Others.swift */; };
-		650E82202AF702C700985508 /* OpenInApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650E821F2AF702C700985508 /* OpenInApp.swift */; };
 		650E82232AF7659800985508 /* grant_wallpaper_access.m in Sources */ = {isa = PBXBuildFile; fileRef = 650E82222AF7659700985508 /* grant_wallpaper_access.m */; };
 		651FFEC42AAE2E81005D6223 /* TextFieldAlert in Frameworks */ = {isa = PBXBuildFile; productRef = 651FFEC32AAE2E81005D6223 /* TextFieldAlert */; };
 		651FFEC82AAE7518005D6223 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651FFEC72AAE7518005D6223 /* Package.swift */; };
@@ -97,7 +96,6 @@
 		650E82192AF7018C00985508 /* ColorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorHandling.swift; sourceTree = "<group>"; };
 		650E821B2AF701DE00985508 /* Alert++.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Alert++.swift"; sourceTree = "<group>"; };
 		650E821D2AF701F600985508 /* Others.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Others.swift; sourceTree = "<group>"; };
-		650E821F2AF702C700985508 /* OpenInApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenInApp.swift; sourceTree = "<group>"; };
 		650E82222AF7659700985508 /* grant_wallpaper_access.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = grant_wallpaper_access.m; sourceTree = "<group>"; };
 		650E82242AF7725500985508 /* grant_full_disk_access.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = grant_full_disk_access.h; sourceTree = "<group>"; };
 		651FFEC72AAE7518005D6223 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
@@ -186,6 +184,7 @@
 		65B475982AACDAD100172BD3 /* RepoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepoData.swift; sourceTree = "<group>"; };
 		65B4759D2AAD0A4900172BD3 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		65DDC7A12ABAA51700F627FA /* FileBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowser.swift; sourceTree = "<group>"; };
+		65E8B8F32B238A62008C4CEC /* PureKFD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PureKFD.entitlements; sourceTree = "<group>"; };
 		65E9328B2AFEBA49007B7E09 /* jb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = jb.h; sourceTree = "<group>"; };
 		65E9328E2AFEBA84007B7E09 /* jb.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = jb.m; path = PureKFD/Exploit/jb.m; sourceTree = SOURCE_ROOT; };
 		65F925072AFF3AC600575A7F /* lrdsnow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = lrdsnow.m; sourceTree = "<group>"; };
@@ -255,7 +254,6 @@
 				650E82192AF7018C00985508 /* ColorHandling.swift */,
 				650E821B2AF701DE00985508 /* Alert++.swift */,
 				650E821D2AF701F600985508 /* Others.swift */,
-				650E821F2AF702C700985508 /* OpenInApp.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -403,6 +401,7 @@
 		6596B0F32AAAABB90005EED9 /* PureKFD */ = {
 			isa = PBXGroup;
 			children = (
+				65E8B8F32B238A62008C4CEC /* PureKFD.entitlements */,
 				65A69CE42AFD13C4000DB0AE /* music.png */,
 				6596B0F82AAAABBA0005EED9 /* Assets.xcassets */,
 				6596B0F62AAAABB90005EED9 /* Main.swift */,
@@ -569,7 +568,7 @@
 				6596B0ED2AAAABB90005EED9 /* Sources */,
 				6596B0EE2AAAABB90005EED9 /* Frameworks */,
 				6596B0EF2AAAABB90005EED9 /* Resources */,
-				651D95EA2B20F23100C7F478 /* ShellScript */,
+				651D95EA2B20F23100C7F478 /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -666,22 +665,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		651D95EA2B20F23100C7F478 /* ShellScript */ = {
+		651D95EA2B20F23100C7F478 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [ -d \"${BUILT_PRODUCTS_DIR}/Build\" ]; then\n    rm -r \"${BUILT_PRODUCTS_DIR}/Build\"\nfi\nldid -S./entitlements.plist ${BUILT_PRODUCTS_DIR}/PureKFD.app/PureKFD\ncd ${BUILT_PRODUCTS_DIR}\nif [ -d \"Payload\" ]; then\n    rm -r \"Payload\"\nfi\nmkdir -p \"Payload\"\ncp -r PureKFD.app Payload/PureKFD.app\nzip -r purekfd.ipa Payload\nrm -r \"${BUILT_PRODUCTS_DIR}/Payload\"\nmkdir Build\nmv purekfd.ipa Build/purekfd.ipa\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [ -d \"${BUILT_PRODUCTS_DIR}/Build\" ]; then\n    rm -r \"${BUILT_PRODUCTS_DIR}/Build\"\nfi\nmkdir ${BUILT_PRODUCTS_DIR}/Build\ncp -r ${BUILT_PRODUCTS_DIR}/PureKFD.app ${BUILT_PRODUCTS_DIR}/Build/PureKFD.app\nldid -S./entitlements.plist ${BUILT_PRODUCTS_DIR}/Build/PureKFD.app/PureKFD\ncd ${BUILT_PRODUCTS_DIR}/Build\nif [ -d \"Payload\" ]; then\n    rm -r \"Payload\"\nfi\nmkdir -p \"Payload\"\nmv PureKFD.app Payload/PureKFD.app\nzip -r purekfd.ipa Payload\nrm -r Payload\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -707,7 +707,6 @@
 				651FFEC82AAE7518005D6223 /* Package.swift in Sources */,
 				65FCEBCB2AAC928200E4DAF8 /* Home.swift in Sources */,
 				65AB44DE2AD28E3B0073BF45 /* TweakConverter.swift in Sources */,
-				650E82202AF702C700985508 /* OpenInApp.swift in Sources */,
 				655F6D332ABD69240056B035 /* prefTranslate.swift in Sources */,
 				65FCEBCF2AAC928E00E4DAF8 /* Installed.swift in Sources */,
 				65A38F562AB16B4200C23058 /* helpers.m in Sources */,
@@ -869,6 +868,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
+				CODE_SIGN_ENTITLEMENTS = PureKFD/PureKFD.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -908,6 +909,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
+				CODE_SIGN_ENTITLEMENTS = PureKFD/PureKFD.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";

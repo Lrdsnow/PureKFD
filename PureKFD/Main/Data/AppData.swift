@@ -97,10 +97,10 @@ struct defaulturls {
         // Altstore Repos
         //URL(string: "https://ipa.cypwn.xyz/cypwn.json")!,
         //URL(string: "https://skadz.online/repo")!,
-        URL(string: "https://quarksources.github.io/dist/quantumsource.min.json")!,
-        URL(string: "https://cdn.altstore.io/file/altstore/apps.json")!,
+        //URL(string: "https://quarksources.github.io/dist/quantumsource.min.json")!,
+        //URL(string: "https://cdn.altstore.io/file/altstore/apps.json")!,
         // Scarlet Repos
-        URL(string: "https://raw.githubusercontent.com/azu0609/repo/main/scarlet_repo.json")!,
+        //URL(string: "https://raw.githubusercontent.com/azu0609/repo/main/scarlet_repo.json")!,
         // Esign Repos
         //URL(string: "https://raw.githubusercontent.com/iwishkem/iwishkem.github.io/main/esign.json")!,
         // JB Repos
@@ -119,7 +119,7 @@ struct defaulturls {
 //        URL(string: "https://paisseon.github.io/Release")!,
 //        URL(string: "https://repo.palera.in/Release")!,
         // Misaka Repos
-        URL(string: "https://phucdo-repo.pages.dev/repo.json")!,
+        URL(string: "http://phucdo-repo.pages.dev/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/shimajiron/Misaka_Network/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/34306/iPA/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/roeegh/Puck/main/repo.json")!,
@@ -134,7 +134,7 @@ struct defaulturls {
         URL(string: "https://raw.githubusercontent.com/EPOS05/EPOSbox/main/misaka.json")!,
         URL(string: "https://raw.githubusercontent.com/tdquang266/MDC/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/kloytofyexploiter/Misaka-repo_MRX/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/HackZy01/misio/main/repo.json")!,
+        URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/main/pure.json")!,
         URL(string: "https://raw.githubusercontent.com/tyler10290/MisakaRepoBackup/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/hanabiADHD/DekotasMirror/main/dekotas.json")!,
     ]

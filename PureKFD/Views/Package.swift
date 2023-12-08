@@ -193,20 +193,21 @@ struct PackageDetailView: View {
                                     .cornerRadius(20)
                             }
                         }.onAppear() {isInstalled = isPackageInstalled(package.bundleID)}.contextMenu(menuItems: {
-//                            if package.pkgtype == "misaka" && !isInstalled {
-//                                ForEach(package.versions) { index in
-//                                    let release = package.versions[index]
-//                                    Button(action: {
-//                                        if !isDownloading && !isInstalled && !isPackageInstalled(package.bundleID) {
-//                                            isDownloading = true
-//                                            downloadPackage(pkg: package, SpecifyRelease: release)
-//                                        }
-//                                    }) {
-//                                        Text("Install v\(release.Version ?? "1.0")")
-//                                        Image("download_icon").renderingMode(.template)
-//                                    }
-//                                }
-//                            }
+                            if package.pkgtype == "misaka" && !isInstalled {
+                                ForEach(package.versions?.keys.sorted() ?? [], id: \.self) { versionKey in
+                                    if let release = package.versions?[versionKey] {
+                                        Button(action: {
+                                            if !isDownloading && !isInstalled && !isPackageInstalled(package.bundleID) {
+                                                isDownloading = true
+                                                downloadPackage(pkg: package, SpecifyRelease: release)
+                                            }
+                                        }) {
+                                            Text("Install v\(versionKey)")
+                                            Image("download_icon").renderingMode(.template)
+                                        }
+                                    }
+                                }
+                            }
                             if isInstalled {
                                 Button(action: {
                                     purgePackage(package.bundleID)
@@ -296,7 +297,7 @@ struct PackageDetailView: View {
         .navigationBarTitle("", displayMode: .inline)
     }
     
-    func downloadPackage(pkg: Package, SpecifyRelease: MisakaRelease? = nil) {
+    func downloadPackage(pkg: Package, SpecifyRelease: String? = nil) {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let tempDirectory = documentsDirectory.appendingPathComponent("temp", isDirectory: true)
         isDownloading = true
@@ -315,7 +316,7 @@ struct PackageDetailView: View {
         var path = pkg.path
         
         if SpecifyRelease != nil {
-            path = URL(string: SpecifyRelease?.Package ?? "")
+            path = URL(string: SpecifyRelease ?? "")
         }
         
         if !(path?.isFileURL ?? false) {

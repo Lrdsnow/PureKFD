@@ -811,6 +811,7 @@ struct FileInfoView: View {
                                         }()
                                         Text("Creation Date: \(dateFormatter.string(from: fileAttributes[.creationDate] as? Date ?? Date()))")
                                         Text("Modification Date: \(dateFormatter.string(from: fileAttributes[.modificationDate] as? Date ?? Date()))")
+                                        Text("Full Path: \(fileURL.path)")
                                     }
                                 } else {Text("Permission Denied")}
                             }

@@ -77,25 +77,11 @@
 	</array>
 	<key>com.apple.private.network.statistics</key>
 	<true/>
-	<key>com.apple.private.security.no-container</key>
-	<true/>
-	<key>com.apple.private.security.no-sandbox</key>
-	<true/>
-	<key>com.apple.security.iokit-user-client-class</key>
-	<array>
-		<string>AGXDeviceUserClient</string>
-		<string>IOHDIXControllerUserClient</string>
-		<string>IOSurfaceRootUserClient</string>
-	</array>
-	<key>com.apple.private.persona-mgmt</key>
-	<true/>
-	<key>com.apple.private.security.system-application</key>
-	<true/>
-	<key>com.apple.managedconfiguration.profiled-access</key>
-	<true/>
 	<key>com.apple.springboard.wallpaper-access</key>
 	<true/>
 	<key>com.apple.security.app-sandbox</key>
 	<false/>
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
 </dict>
 </plist>
