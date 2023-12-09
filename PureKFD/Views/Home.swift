@@ -357,6 +357,7 @@ struct CreditView: View {
     var body: some View {
         Section(header: Text("Credits").foregroundColor(.accentColor)) {
             CreditRow(name: "Lrdsnow", role: "Developer", link: URL(string: "https://github.com/Lrdsnow")).foregroundStyle(.purple)
+            CreditRow(name: "Nick Chan", role: "KFD Stability", link: URL(string: "https://github.com/asdfugil")).foregroundStyle(.green)
             CreditRow(name: "leminlimez", role: "Springboard Color Manager", link: URL(string: "https://github.com/leminlimez")).foregroundStyle(.yellow)
             CreditRow(name: "icons8", role: "Plumpy Icons", link: URL(string: "https://icons8.com")).foregroundStyle(.green)
             CreditRow(name: "emmikat", role: "M1/M2 Fixes", link: URL(string: "https://github.com/emmikat")).foregroundStyle(.pink)
