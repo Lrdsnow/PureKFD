@@ -42,6 +42,7 @@
 		6543F0152ABFADE6003DB2F9 /* platterVibrantShadowDark.visualstyleset in Resources */ = {isa = PBXBuildFile; fileRef = 6543EFFB2ABFADE5003DB2F9 /* platterVibrantShadowDark.visualstyleset */; };
 		6543F0162ABFADE6003DB2F9 /* dockDark.materialrecipe in Resources */ = {isa = PBXBuildFile; fileRef = 6543EFFD2ABFADE5003DB2F9 /* dockDark.materialrecipe */; };
 		6543F0172ABFADE6003DB2F9 /* dockLight.materialrecipe in Resources */ = {isa = PBXBuildFile; fileRef = 6543EFFE2ABFADE5003DB2F9 /* dockLight.materialrecipe */; };
+		655588112B24D00A00153B2D /* jb.m in Sources */ = {isa = PBXBuildFile; fileRef = 655588102B24D00A00153B2D /* jb.m */; };
 		655F6D2F2ABD35CA0056B035 /* dir.m in Sources */ = {isa = PBXBuildFile; fileRef = 655F6D2E2ABD35C90056B035 /* dir.m */; };
 		655F6D332ABD69240056B035 /* prefTranslate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655F6D322ABD69240056B035 /* prefTranslate.swift */; };
 		658D6BB22AAED5000023A755 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 658D6BB12AAED5000023A755 /* Zip */; };
@@ -77,7 +78,6 @@
 		65B4759E2AAD0A4900172BD3 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B4759D2AAD0A4900172BD3 /* Extensions.swift */; };
 		65B475A12AAD586500172BD3 /* MarqueeText in Frameworks */ = {isa = PBXBuildFile; productRef = 65B475A02AAD586500172BD3 /* MarqueeText */; };
 		65DDC7A22ABAA51700F627FA /* FileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DDC7A12ABAA51700F627FA /* FileBrowser.swift */; };
-		65E9328F2AFEBA84007B7E09 /* jb.m in Sources */ = {isa = PBXBuildFile; fileRef = 65E9328E2AFEBA84007B7E09 /* jb.m */; };
 		65F925082AFF3AC600575A7F /* lrdsnow.m in Sources */ = {isa = PBXBuildFile; fileRef = 65F925072AFF3AC600575A7F /* lrdsnow.m */; };
 		65FCEBCB2AAC928200E4DAF8 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65FCEBCA2AAC928200E4DAF8 /* Home.swift */; };
 		65FCEBCD2AAC928800E4DAF8 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65FCEBCC2AAC928800E4DAF8 /* Search.swift */; };
@@ -123,6 +123,7 @@
 		6543EFFB2ABFADE5003DB2F9 /* platterVibrantShadowDark.visualstyleset */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = platterVibrantShadowDark.visualstyleset; sourceTree = "<group>"; };
 		6543EFFD2ABFADE5003DB2F9 /* dockDark.materialrecipe */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = dockDark.materialrecipe; sourceTree = "<group>"; };
 		6543EFFE2ABFADE5003DB2F9 /* dockLight.materialrecipe */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = dockLight.materialrecipe; sourceTree = "<group>"; };
+		655588102B24D00A00153B2D /* jb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = jb.m; sourceTree = "<group>"; };
 		655F6D2D2ABD35C90056B035 /* dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dir.h; sourceTree = "<group>"; };
 		655F6D2E2ABD35C90056B035 /* dir.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = dir.m; sourceTree = "<group>"; };
 		655F6D322ABD69240056B035 /* prefTranslate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = prefTranslate.swift; sourceTree = "<group>"; };
@@ -186,7 +187,6 @@
 		65DDC7A12ABAA51700F627FA /* FileBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowser.swift; sourceTree = "<group>"; };
 		65E8B8F32B238A62008C4CEC /* PureKFD.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PureKFD.entitlements; sourceTree = "<group>"; };
 		65E9328B2AFEBA49007B7E09 /* jb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = jb.h; sourceTree = "<group>"; };
-		65E9328E2AFEBA84007B7E09 /* jb.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = jb.m; path = PureKFD/Exploit/jb.m; sourceTree = SOURCE_ROOT; };
 		65F925072AFF3AC600575A7F /* lrdsnow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = lrdsnow.m; sourceTree = "<group>"; };
 		65F925092AFF3B6500575A7F /* lrdsnow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lrdsnow.h; sourceTree = "<group>"; };
 		65FCEBCA2AAC928200E4DAF8 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
@@ -373,6 +373,7 @@
 		658D6BB32AAEF0830023A755 /* Private */ = {
 			isa = PBXGroup;
 			children = (
+				65A38F1A2AB16B4200C23058 /* Exploit */,
 				658D6BB42AAEF0830023A755 /* encryptkey.swift */,
 				658D6BB52AAEF0830023A755 /* encrypt.swift */,
 				658D6BC02AAF1ACD0023A755 /* purePrefs.swift */,
@@ -406,7 +407,6 @@
 				6596B0F82AAAABBA0005EED9 /* Assets.xcassets */,
 				6596B0F62AAAABB90005EED9 /* Main.swift */,
 				650E82122AF6FFB700985508 /* Main */,
-				65A38F1A2AB16B4200C23058 /* Exploit */,
 				658D6BB32AAEF0830023A755 /* Private */,
 				6596B1022AAAAC050005EED9 /* Views */,
 			);
@@ -439,7 +439,7 @@
 				65A38F392AB16B4200C23058 /* MacDirtyCowSwift.swift */,
 				65A38F3A2AB16B4200C23058 /* fun */,
 				65A38F4D2AB16B4200C23058 /* libkfd.h */,
-				65E9328E2AFEBA84007B7E09 /* jb.m */,
+				655588102B24D00A00153B2D /* jb.m */,
 				65E9328B2AFEBA49007B7E09 /* jb.h */,
 				65F925072AFF3AC600575A7F /* lrdsnow.m */,
 				65F925092AFF3B6500575A7F /* lrdsnow.h */,
@@ -708,6 +708,7 @@
 				65FCEBCB2AAC928200E4DAF8 /* Home.swift in Sources */,
 				65AB44DE2AD28E3B0073BF45 /* TweakConverter.swift in Sources */,
 				655F6D332ABD69240056B035 /* prefTranslate.swift in Sources */,
+				655588112B24D00A00153B2D /* jb.m in Sources */,
 				65FCEBCF2AAC928E00E4DAF8 /* Installed.swift in Sources */,
 				65A38F562AB16B4200C23058 /* helpers.m in Sources */,
 				658D6BC12AAF1ACD0023A755 /* purePrefs.swift in Sources */,
@@ -716,7 +717,6 @@
 				65A38F582AB16B4200C23058 /* thanks_opa334dev_htrowii.m in Sources */,
 				65A38F502AB16B4200C23058 /* grant_full_disk_access.m in Sources */,
 				65A69CDE2AFCC05A000DB0AE /* pipHandler.swift in Sources */,
-				65E9328F2AFEBA84007B7E09 /* jb.m in Sources */,
 				650E821A2AF7018D00985508 /* ColorHandling.swift in Sources */,
 				65B4759E2AAD0A4900172BD3 /* Extensions.swift in Sources */,
 				65A38F542AB16B4200C23058 /* fun.m in Sources */,
@@ -892,11 +892,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.3;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "uwu.lrdsnow.purekfd-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = PureKFD/Exploit/bridge.h;
+				SWIFT_OBJC_BRIDGING_HEADER = PureKFD/Private/Exploit/bridge.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -933,11 +933,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.3;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "uwu.lrdsnow.purekfd-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = PureKFD/Exploit/bridge.h;
+				SWIFT_OBJC_BRIDGING_HEADER = PureKFD/Private/Exploit/bridge.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

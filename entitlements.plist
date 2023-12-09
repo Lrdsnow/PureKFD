@@ -83,5 +83,7 @@
 	<false/>
 	<key>com.apple.developer.kernel.increased-memory-limit</key>
 	<true/>
+	<key>get-task-allow</key>
+	<true/>
 </dict>
 </plist>

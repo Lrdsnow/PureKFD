@@ -138,9 +138,13 @@ func getRepoInfo(_ repourl: String, appData: AppData, lowend: Bool = false) asyn
         return blankrepo
     }
     do {
-        let data = try await downloadJSON(from: url, lowend: lowend)
+        var data = try await downloadJSON(from: url, lowend: lowend)
         var repo: Repo = blankrepo
         let decoder = JSONDecoder()
+        // fucking misaka.app fixes - fix misaka repo on runtime omg
+        let fixed_jsonstring = (String(data: data, encoding: .utf8) ?? "").replacingOccurrences(of: "\"Label\": \"Twitter\", //", with: "\"Label\": \"Twitter\",")
+        data = fixed_jsonstring.data(using: .utf8) ?? data
+        //
         do {
             switch getRepoType(String(data: data, encoding: .utf8) ?? "") {
             case "purekfd":
@@ -247,6 +251,9 @@ func getRepoType(_ jsonString: String) -> String {
                 }
             }
         } catch {
+//            print("\n\n\nERROR:")
+//            print(error)
+//            print("-----\n\n\n")
             return "unknown"
         }
     }
