@@ -1,12 +1,41 @@
 import Foundation
 import SwiftUI
 
-func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, (Int, Int, Int, Bool, String, String), Bool) {
+func smart_kopen(appData: AppData) -> Int {
+    // Get Exploit
+    let exploit_method = getDeviceInfo(appData: appData).0
+    let kfddata = getDeviceInfo(appData: appData).1
+    
+    // KFD Stuff
+    if exploit_method == 0 && !appData.kopened {
+        let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(kfddata.static_headroom))
+        if exploit_result == 0 {
+            return -1
+        }
+        fix_exploit()
+        appData.kopened = true
+    }
+    
+    return exploit_method
+}
+
+struct DeviceInfo {
+    var major: Int = 0
+    var sub: Int = 0
+    var minor: Int = 0
+    var beta: Bool = false
+    var build_number: String = "0"
+    var modelIdentifier: String = "Unknown Device"
+    var lowend: Bool = false
+}
+
+func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, Bool, DeviceInfo) {
     var exploit_method = -1
     var kfddata = SavedKFDData(puaf_pages: 3072, puaf_method: 1, kread_method: 1, kwrite_method: 1)
-    var version = (0, 0, 0, false, "0", "Unknown Device")
+    var deviceInfo = DeviceInfo()
     var lowend = false
-    #if targetEnvironment(simulator)
+    var ts = false
+#if targetEnvironment(simulator)
     exploit_method = 2
     appData?.UserData.exploit_method = 2
     let systemVersion = UIDevice.current.systemVersion
@@ -15,36 +44,48 @@ func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, (Int, Int, Int, Boo
         let major = versionComponents[0]
         let sub = versionComponents[1]
         let minor = versionComponents.count >= 3 ? versionComponents[2] : 0
-        version = (major, sub, minor, false, "0", "Simulator")
+        deviceInfo = DeviceInfo(major: major,
+                                sub: sub,
+                                minor: minor,
+                                beta: false,
+                                build_number: "0",
+                                modelIdentifier: "Simulator",
+                                lowend: false)
     }
-    #else
-    if !(appData?.UserData.override_exploit_method ?? false) {
-        let systemVersion = UIDevice.current.systemVersion
-        let versionComponents = systemVersion.split(separator: ".").compactMap { Int($0) }
-        if versionComponents.count >= 2 {
-            let major = versionComponents[0]
-            let sub = versionComponents[1]
-            let minor = versionComponents.count >= 3 ? versionComponents[2] : 0
-            
-            // Check for beta and get model and <A12 check
-            let systemAttributes = NSDictionary(contentsOfFile: "/System/Library/CoreServices/SystemVersion.plist")
-            let build_number = systemAttributes?["ProductBuildVersion"] as? String ?? "0"
-            let beta = build_number.count > 6
-            let gestAltCache = NSDictionary(contentsOfFile: "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist")
-            let cacheExtras: [String: Any] = gestAltCache?["CacheExtra"] as? [String: Any] ?? [:]
-            let modelIdentifier = cacheExtras["0+nc/Udy4WNG8S+Q7a/s1A"] as? String ?? cacheExtras["h9jDsbgj7xIVeIQ8S3/X3Q"] as? String ?? "Unknown Device"
-            if modelIdentifier != "Unknown Device" && modelIdentifier.contains("iPhone") {
-                let gen_array = modelIdentifier.replacingOccurrences(of: "iPhone", with: "").split(separator: ",")
-                if let gen = Int(gen_array[0]) {
-                    if gen <= 10 {
-                        lowend = true
-                    }
+#else
+    let systemVersion = UIDevice.current.systemVersion
+    let versionComponents = systemVersion.split(separator: ".").compactMap { Int($0) }
+    if versionComponents.count >= 2 {
+        let major = versionComponents[0]
+        let sub = versionComponents[1]
+        let minor = versionComponents.count >= 3 ? versionComponents[2] : 0
+        
+        // Check for beta and get model and <A12 check
+        let systemAttributes = NSDictionary(contentsOfFile: "/System/Library/CoreServices/SystemVersion.plist")
+        let build_number = systemAttributes?["ProductBuildVersion"] as? String ?? "0"
+        let beta = build_number.count > 6
+        let gestAltCache = NSDictionary(contentsOfFile: "/var/containers/Shared/SystemGroup/systemgroup.com.apple.mobilegestaltcache/Library/Caches/com.apple.MobileGestalt.plist")
+        let cacheExtras: [String: Any] = gestAltCache?["CacheExtra"] as? [String: Any] ?? [:]
+        let modelIdentifier = cacheExtras["0+nc/Udy4WNG8S+Q7a/s1A"] as? String ?? cacheExtras["h9jDsbgj7xIVeIQ8S3/X3Q"] as? String ?? "Unknown Device"
+        if modelIdentifier != "Unknown Device" && modelIdentifier.contains("iPhone") {
+            let gen_array = modelIdentifier.replacingOccurrences(of: "iPhone", with: "").split(separator: ",")
+            if let gen = Int(gen_array[0]) {
+                if gen <= 10 {
+                    lowend = true
                 }
             }
-            //
-            
-            version = (major, sub, minor, beta, build_number, modelIdentifier)
-            
+        }
+        //
+        
+        deviceInfo = DeviceInfo(major: major,
+                                sub: sub,
+                                minor: minor,
+                                beta: beta,
+                                build_number: build_number,
+                                modelIdentifier: modelIdentifier,
+                                lowend: lowend)
+        
+        if !(appData?.UserData.override_exploit_method ?? false) {
             if (major == 14) ||
                 (major == 15 && (sub <= 6 || (sub <= 7 && minor <= 1))) ||
                 (major == 16 && sub <= 1) {
@@ -56,36 +97,26 @@ func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, (Int, Int, Int, Boo
             } else if ((try? FileManager.default.contentsOfDirectory(atPath: "/usr/bin")) != nil) {
                 exploit_method = 2
             }
-            
-//            print("Device Info:")
-//            print(modelIdentifier)
-//            print(build_number)
-//            print("iOS \(major).\(sub).\(minor)")
+        } else {
+            exploit_method = appData?.UserData.exploit_method ?? exploit_method
+            kfddata = appData?.UserData.kfd ?? kfddata
         }
-    } else {
-        exploit_method = appData?.UserData.exploit_method ?? exploit_method
-        kfddata = appData?.UserData.kfd ?? kfddata
+        
+        //            NSLog("Device Info:")
+        //            NSLog(modelIdentifier)
+        //            NSLog(build_number)
+        //            NSLog("iOS \(major).\(sub).\(minor)")
     }
     appData?.UserData.exploit_method = exploit_method
     appData?.UserData.kfd = kfddata
-    #endif
-//    print(kfddata)
-    return (exploit_method, kfddata, version, lowend)
+    ts = hasEntitlement("com.apple.private.security.no-sandbox" as CFString)
+#endif
+    //    NSLog(kfddata)
+    return (exploit_method, kfddata, ts, deviceInfo)
 }
 
 func applyTweaks(appData: AppData) {
-    // Get Exploit
-    let exploit_method = getDeviceInfo(appData: appData).0
-    let kfddata = getDeviceInfo(appData: appData).1
-    
-    // KFD Stuff
-    if exploit_method == 0 && !appData.kopened {
-        let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method))
-        if exploit_result == 0 {
-            return
-        }
-        fix_exploit()
-    }
+    let exploit_method = smart_kopen(appData: appData)
     
     // Jailbreak Stuff
     if exploit_method == 2 || exploit_method == 3 {
@@ -105,7 +136,7 @@ func applyTweaks(appData: AppData) {
             }
         }
         if true_exploit_method == 0 {
-            print("Closing Kernel")
+            NSLog("Closing Kernel")
             do_kclose()
         }
     }
@@ -128,7 +159,7 @@ func asyncApplyTweaks(_ exploit_method: Int, _ writeErrors: inout [String], appD
             }
         }
     }
-    print("All Done")
+    NSLog("All Done")
 }
 
 func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, writeErrors: inout [String]) async {
@@ -163,7 +194,7 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                             try await readFileAsData(atURL: itemURL)!.write(to: URL(fileURLWithPath: relativePath))
                         }
                     } else {
-                        print("\nPURE BINARY INIT\n")
+                        NSLog("\nPURE BINARY INIT\n")
                         do {
                             let path = relativePath.replacingOccurrences(of: "?pure_binary.", with: "")
                             // Read the JSON data containing replacements
@@ -181,8 +212,8 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                                 
                                 // Apply the replacements to the binary data
                                 for (offset, replacement) in jsonDictionary["Overwrite"] as? [String:String] ?? [:] {
-                                    print("OFFSET", offset)
-                                    print("REPLACEMENT", (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") ?? "N/A")
+                                    NSLog("OFFSET", offset)
+                                    NSLog("REPLACEMENT", (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") ?? "N/A")
                                     if let offset = Int(offset), let replacementData = Data(hex: (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") as? String ?? "") {
                                         binaryData.replaceSubrange(offset..<offset + replacementData.count, with: replacementData)
                                     }
@@ -202,9 +233,9 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                                 do{try fileManager.removeItem(at: URL.documents.appendingPathComponent("temp"))}catch{}
                             }
                         } catch {
-                            print(error)
+                            NSLog("%@", "\(error)")
                         }
-                        print("\nPURE BINARY FINISHED\n")
+                        NSLog("\nPURE BINARY FINISHED\n")
                     }
                 } catch {
                     if relativePath.hasPrefix("/var/mobile/Containers/Data/Application") {
@@ -223,7 +254,7 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                                     throw "Permission Denied"
                                 }
                             } catch {
-                                print(error)
+                                NSLog("%@", "\(error)")
                                 writeErrors.append("\(error)")
                             }
                             
@@ -240,7 +271,7 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                             }
                         }
                     } else if relativePath.hasPrefix("/var/mobile/Documents") {
-                        print("(rdir) relativepath",relativePath)
+                        NSLog("(rdir) relativepath %@", "\(relativePath)")
                         if exploit_method == 0 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
                             let fileManager = FileManager.default
                             let pathfromdocs = URL(fileURLWithPath: relativePath).deletingLastPathComponent().path.replacingOccurrences(of: "/var/mobile/Documents/", with: "")
@@ -263,36 +294,36 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                                 if vdata != UInt64.max {
                                     do {
                                         try fileManager.createDirectory(at: URL.documents.appendingPathComponent("mounted/\(part)"), withIntermediateDirectories: true)
-                                    } catch {print(error)}
+                                    } catch {NSLog("%@", "\(error)")}
                                     UnRedirectAndRemoveFolder2(vdata)
                                 } else {
-                                    print("(rdir) Failed to redirect")
+                                    NSLog("(rdir) Failed to redirect")
                                 }
                             }
                             
-                            print("(rdir) writing to", URL.documents.appendingPathComponent(filename).path, "(\(relativePath))")
+                            NSLog("(rdir) writing to %@ %@", URL.documents.appendingPathComponent(filename).path, "(\(relativePath))")
                             let vdata = createFolderAndRedirect2(URL(fileURLWithPath: relativePath).deletingLastPathComponent().path)
                             if vdata != UInt64.max {
                                 do {
                                     try await readFileAsData(atURL: itemURL)!.write(to: URL.documents.appendingPathComponent("mounted/\(filename)"))
-                                    print("(rdir) successfully wrote to", URL.documents.appendingPathComponent("mounted/\(filename)").path, "(\(relativePath))")
-                                } catch {print(error)}
+                                    NSLog("(rdir) successfully wrote to %@ %@", URL.documents.appendingPathComponent("mounted/\(filename)").path, "(\(relativePath))")
+                                } catch {NSLog("%@", "\(error)")}
                                 UnRedirectAndRemoveFolder2(vdata)
                             } else {
-                                print("(rdir) Failed to redirect")
+                                NSLog("(rdir) Failed to redirect")
                             }
                             
 //                            do {
 //                                do {
 //                                    try FileManager.default.createDirectory(at: path, withIntermediateDirectories: true)
 //                                } catch {
-//                                    print(error)
+//                                    NSLog(error)
 //                                    writeErrors.append("\(error)")
 //                                }
-//                                print(filepath.path)
+//                                NSLog(filepath.path)
 //                                try await readFileAsData(atURL: itemURL)!.write(to: filepath)
 //                            } catch {
-//                                print(error)
+//                                NSLog(error)
 //                                writeErrors.append("\(error)")
 //                            }
                             
@@ -323,7 +354,7 @@ func readFileAsData(atURL url: URL) async throws -> Data? {
         let fileData = try Data(contentsOf: url)
         return fileData
     } catch {
-        print("Error reading file: \(error)")
+        NSLog("Error reading file: \(error)")
         throw error
     }
 }
@@ -373,7 +404,7 @@ func getTweaksData(_ fileURL: URL) throws -> [String: Any] {
             return jsonDictionary
         }
     } catch {
-        print("Error loading JSON data: \(error)")
+        NSLog("Error loading JSON data: \(error)")
         throw error
     }
     return [:]
@@ -402,7 +433,7 @@ func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData:
                 MDC.setResolution(height: hight, width: width)
             }
         case "panic":
-            do_kopen(0, 0, 0, 0)
+            do_kopen(0, 0, 0, 0, 0)
         case "remove3app":
             if getDeviceInfo(appData: appData).0 == 1 {
                 //patch_installd()
@@ -450,7 +481,7 @@ func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData:
                 } catch {}
             }
         default:
-            print("Unsupported Tweak:", operationType ?? "")
+            NSLog("Unsupported Tweak: \(operationType ?? "")")
         }
     }
 }
@@ -473,10 +504,10 @@ extension String {
                 let fileName = parseMisakaSegment(from: item)[0]
                 let variableName = parseMisakaSegment(from: item)[1]
                 let variableValue = parseMisakaSegment(from: item)[2]
-                print(fileName, variableName, variableValue)
+                NSLog("fileName: %@\nvariableName: %@\nvariableValue: %@", fileName, variableName, variableValue)
                 if variableName == "iOSver" {
-                    let deviceInfo = getDeviceInfo(appData: nil).2
-                    if variableValue == "\(deviceInfo.0)" {
+                    let deviceInfo = getDeviceInfo(appData: nil).3
+                    if variableValue == "\(deviceInfo.major)" {
                         path = path.replacingOccurrences(of: item, with: fileName)
                     }
                 }
@@ -493,7 +524,7 @@ extension String {
                 if misakaOperationValues(from: item)[1] == "Data" {
                     do {
                         path = try path.replacingOccurrences(of: "/var/mobile/Containers/Data/Application/"+item, with: getDataDir(bundleID: bundleid, exploit_method: exploit_method).path)
-                    } catch {print("failed")}
+                    } catch {NSLog("failed")}
                 }
             }
         }
@@ -523,14 +554,14 @@ func getBundleID(path: String, uuid: String, exploit_method: Int) throws -> Stri
     
     if exploit_method == 0 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
         let mmpath = mounted + "/.com.apple.mobile_container_manager.metadata.plist"
-        print(mmpath)
+        NSLog("%@", mmpath)
         let vdata = createFolderAndRedirectTemp(path+"/"+uuid)
         do {
             if vdata != UInt64.max {
                 var mmDict: [String: Any]
                 if fm.fileExists(atPath: mmpath) {
                     mmDict = try PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: mmpath)), options: [], format: nil) as? [String: Any] ?? [:]
-                    print(mmDict["MCMMetadataIdentifier"] ?? "")
+                    NSLog("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
                     if let bundleID = mmDict["MCMMetadataIdentifier"] as? String {
                         returnedurl = URL(fileURLWithPath: "/var/mobile/Containers/Data/Application/").appendingPathComponent(uuid)
                         savedAppDataPaths[bundleID] = returnedurl?.path
@@ -554,7 +585,7 @@ func getBundleID(path: String, uuid: String, exploit_method: Int) throws -> Stri
             var mmDict: [String: Any]
             if fm.fileExists(atPath: mmpath) {
                 mmDict = try PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: mmpath)), options: [], format: nil) as? [String: Any] ?? [:]
-                print(mmDict["MCMMetadataIdentifier"] ?? "")
+                NSLog("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
                 if let bundleID = mmDict["MCMMetadataIdentifier"] as? String {
                     returnedurl = URL(fileURLWithPath: "/var/mobile/Containers/Data/Application/").appendingPathComponent(uuid)
                     savedAppDataPaths[bundleID] = returnedurl?.path
@@ -589,7 +620,7 @@ func getDataDir(bundleID: String, exploit_method: Int) throws -> URL {
             
             do {
                 dirlist = try fm.contentsOfDirectory(atPath: URL.documents.appendingPathComponent("mounted").path)
-                // print(dirlist)
+                // NSLog(dirlist)
             } catch {
                 throw "Could not access /var/mobile/Containers/Data/Application.\n\(error.localizedDescription)"
             }
@@ -603,7 +634,7 @@ func getDataDir(bundleID: String, exploit_method: Int) throws -> URL {
                     var mmDict: [String: Any]
                     if fm.fileExists(atPath: mmpath) {
                         mmDict = try PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: mmpath)), options: [], format: nil) as? [String: Any] ?? [:]
-                        print(mmDict["MCMMetadataIdentifier"] ?? "")
+                        NSLog("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
                         if mmDict["MCMMetadataIdentifier"] as! String == bundleID {
                             returnedurl = URL(fileURLWithPath: "/var/mobile/Containers/Data/Application/").appendingPathComponent(dir)
                             savedAppDataPaths[bundleID] = returnedurl?.path
@@ -625,20 +656,20 @@ func getDataDir(bundleID: String, exploit_method: Int) throws -> URL {
         
         do {
             dirlist = try fm.contentsOfDirectory(atPath: "/var/mobile/Containers/Data/Application")
-            // print(dirlist)
+            // NSLog(dirlist)
         } catch {
             throw "Could not access /var/mobile/Containers/Data/Application.\n\(error.localizedDescription)"
         }
         
         for dir in dirlist {
-            // print(dir)
+            // NSLog(dir)
             let mmpath = "/var/mobile/Containers/Data/Application/" + dir + "/.com.apple.mobile_container_manager.metadata.plist"
-            // print(mmpath)
+            // NSLog(mmpath)
             do {
                 var mmDict: [String: Any]
                 if fm.fileExists(atPath: mmpath) {
                     mmDict = try PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: mmpath)), options: [], format: nil) as? [String: Any] ?? [:]
-                    // print(mmDict as Any)
+                    // NSLog(mmDict as Any)
                     if mmDict["MCMMetadataIdentifier"] as! String == bundleID {
                         returnedurl = URL(fileURLWithPath: "/var/mobile/Containers/Data/Application/").appendingPathComponent(dir)
                         savedAppDataPaths[bundleID] = returnedurl?.path
@@ -676,7 +707,7 @@ func misakaOperationValues(from inputString: String) -> [String] {
             }
         }
     } catch {
-        print("Error: \(error)")
+        NSLog("Error: %@", "\(error)")
     }
 
     return extractedValues
@@ -697,7 +728,7 @@ func parseMisakaSegment(from inputString: String) -> [String] {
             }
         }
     } catch {
-        print("Error: \(error)")
+        NSLog("Error: %@", "\(error)")
     }
 
     return extractedValues

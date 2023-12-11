@@ -18,24 +18,44 @@ class AppData: ObservableObject {
     @Published var reloading_browse = false // wether or not browse is being reloaded
 
     func save() {
-        if let encodedData = try? JSONEncoder().encode(RepoData) {
-            UserDefaults.standard.set(encodedData, forKey: "appData")
-        }
-        if let encodedData = try? JSONEncoder().encode(UserData) {
-            UserDefaults.standard.set(encodedData, forKey: "userAppData")
+        do {
+            // Create the config folder if not found
+            let configDirectory = URL.documents.appendingPathComponent("config", isDirectory: true)
+            if !FileManager.default.fileExists(atPath: configDirectory.path) {
+                try FileManager.default.createDirectory(at: configDirectory, withIntermediateDirectories: true, attributes: nil)
+            }
+            // save repodata
+            let encodedRepoData = try JSONEncoder().encode(RepoData)
+            try encodedRepoData.write(to: configDirectory.appendingPathComponent("repoData.json"))
+            // save userdata
+            let encodedUserData = try JSONEncoder().encode(UserData)
+            try encodedUserData.write(to: configDirectory.appendingPathComponent("userData.json"))
+        } catch {
+            print("Error saving data: \(error)")
         }
     }
 
     func load() {
-        if let encodedData = UserDefaults.standard.data(forKey: "appData"),
-           let decodedData = try? JSONDecoder().decode(SavedRepoData.self, from: encodedData) {
-            RepoData = decodedData
-        }
-        if let encodedData = UserDefaults.standard.data(forKey: "userAppData"),
-           let decodedData = try? JSONDecoder().decode(SavedUserData.self, from: encodedData) {
-            UserData = decodedData
+        do {
+            // load repodata
+            let appDataPath = URL.documents.appendingPathComponent("config/repoData.json")
+            if FileManager.default.fileExists(atPath: appDataPath.path) {
+                let encodedData = try Data(contentsOf: appDataPath)
+                let decodedData = try JSONDecoder().decode(SavedRepoData.self, from: encodedData)
+                RepoData = decodedData
+            }
+            // load userdata
+            let userAppDataPath = URL.documents.appendingPathComponent("config/userData.json")
+            if FileManager.default.fileExists(atPath: userAppDataPath.path) {
+                let encodedData = try Data(contentsOf: userAppDataPath)
+                let decodedData = try JSONDecoder().decode(SavedUserData.self, from: encodedData)
+                UserData = decodedData
+            }
+        } catch {
+            print("Error loading data: \(error)")
         }
     }
+
     
     static let shared = AppData()
 }
@@ -75,6 +95,8 @@ struct SavedKFDData: Codable, Equatable {
     var puaf_method = 1 // Physpuppet or Smith (smith works for all)
     var kread_method = 1 // kqueue_workloop_ctl or sem_open (sem_open works for all)
     var kwrite_method = 1 // dup or sem_open (sem_open works for all)
+    var static_headroom = 256 // headroom for ram hogger
+    var static_headroom_sel = 2 // headroom selection
 }
 
 struct defaulturls {

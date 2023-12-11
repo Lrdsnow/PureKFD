@@ -302,7 +302,7 @@ struct PackageDetailView: View {
         let tempDirectory = documentsDirectory.appendingPathComponent("temp", isDirectory: true)
         isDownloading = true
         
-        print("download")
+        NSLog("download")
         
         // Create the temp directory if it doesn't exist
         do {
@@ -520,7 +520,7 @@ class ViewModel: ObservableObject {
                     try FileManager.default.moveItem(at: tempURL, to: destinationURL)
                     downloadedURL = destinationURL
                 } catch {
-                    print("Error moving downloaded file: \(error)")
+                    NSLog("%@", "Error moving downloaded file: \(error)")
                 }
             }
             semaphore.signal()
@@ -565,7 +565,7 @@ func extractPackage(_ url: URL, readPackageInfo: Bool = false, appdata: AppData?
     do {
         try fileManager.createDirectory(at: extractedDir, withIntermediateDirectories: true, attributes: nil)
     } catch {
-        print("Error creating directory: \(error.localizedDescription)")
+        NSLog("%@", "Error creating directory: \(error.localizedDescription)")
         return (error, nil)
     }
     
@@ -626,7 +626,7 @@ func extractPackage(_ url: URL, readPackageInfo: Bool = false, appdata: AppData?
             return (nil, package)
         } catch {
             if !FileManager.default.fileExists(atPath: extractedDir.appendingPathComponent(url.lastPathComponent.removingFileExtensions(2)).appendingPathComponent("Overwrite").path) {
-                print("Error reading info.json or decoding package: \(error.localizedDescription)")
+                NSLog("%@", "Error reading info.json or decoding package: \(error.localizedDescription)")
                 return (error, nil)
             } else {
                 return (nil, Package(name: "Misaka Package", bundleID: "\(UUID())", author: "Unknown", desc: "Unknown", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, install_actions: [], uninstall_actions: [], url: nil, pkgtype: "misaka"))
@@ -647,9 +647,9 @@ func translatePrefs(_ preftype: String, pkgpath: URL) {
            let jsonString = String(data: jsonData, encoding: .utf8) {
             do {
                 try jsonString.write(toFile: tofile.path, atomically: true, encoding: .utf8)
-                print("Data saved to file: \(pkgpath.path)")
+                NSLog("%@", "Data saved to file: \(pkgpath.path)")
             } catch {
-                print("Error saving data to file: \(error)")
+                NSLog("%@", "Error saving data to file: \(error)")
             }
         }
     } else if preftype == "misaka" {
@@ -659,9 +659,9 @@ func translatePrefs(_ preftype: String, pkgpath: URL) {
             let jsonString = String(data: jsonData, encoding: .utf8) {
             do {
                 try jsonString.write(toFile: tofile.path, atomically: true, encoding: .utf8)
-                print("Data saved to file: \(pkgpath.path)")
+                NSLog("%@", "Data saved to file: \(pkgpath.path)")
             } catch {
-                print("Error saving data to file: \(error)")
+                NSLog("%@", "Error saving data to file: \(error)")
             }
         }
     }

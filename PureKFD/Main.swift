@@ -63,7 +63,7 @@ struct PureKFDApp: App {
                                 UIApplication.shared.alert(title: "Error", body: "Unknown error occurred", withButton: true)
                             }
                         } else {
-                            print(url.absoluteString)
+                            NSLog("%@" ,url.absoluteString)
                         }
                     }
                 }.sheet(isPresented: $isPackageDetailViewPresented) {

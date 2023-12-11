@@ -115,7 +115,7 @@ class SpringboardColorManager {
             
             return Color.init(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b)).opacity(a)
         } catch {
-            print(error.localizedDescription)
+            NSLog("%@", error.localizedDescription)
         }
         return Color.gray
     }
@@ -131,7 +131,7 @@ class SpringboardColorManager {
             // get the blur
             return getDictValue(plist, "blurRadius") as? Double ?? 30
         } catch {
-            print(error.localizedDescription)
+            NSLog(error.localizedDescription)
         }
         return 30
     }
@@ -222,10 +222,10 @@ class SpringboardColorManager {
                                     try newData.write(to: bgDir!.appendingPathComponent(file+fileExt[forType]!))
                                 }
                             } else {
-                                print("NOT CORRECT SIZE")
+                                NSLog("NOT CORRECT SIZE")
                             }
                         } catch {
-                            print(error.localizedDescription)
+                            NSLog(error.localizedDescription)
                             throw error.localizedDescription
                         }
                     }
@@ -277,11 +277,11 @@ class SpringboardColorManager {
                                 try newData.write(to: bgDir!.appendingPathComponent(file+fileExt[forType]!))
                             }
                         } else {
-                            print("NOT CORRECT SIZE")
+                            NSLog("NOT CORRECT SIZE")
                             throw "Not the correct file size for item \(file+fileExt[forType]!)!"
                         }
                     } catch {
-                        print(error.localizedDescription)
+                        NSLog(error.localizedDescription)
                         throw error.localizedDescription
                     }
                 }
@@ -350,7 +350,7 @@ class SpringboardColorManager {
                         try MDC.overwriteFile(at: path, with: newData!)
                     }
                 } catch {
-                    print(error.localizedDescription)
+                    NSLog("%@", error.localizedDescription)
                 }
             }
         }
@@ -365,7 +365,7 @@ class SpringboardColorManager {
             }
             return newURL
         } catch {
-            print("An error occurred getting/making the background files directory")
+            NSLog("An error occurred getting/making the background files directory")
         }
         return nil
     }
@@ -391,7 +391,7 @@ class UsefulFunctions {
         while newDataSize != matchingSize && count < 200 {
             count += 1
             if added < 0 {
-                print("LESS THAN 0")
+                NSLog("LESS THAN 0")
                 break
             }
             newPlist.updateValue(String(repeating: "#", count: added), forKey: "MdC")
@@ -399,7 +399,7 @@ class UsefulFunctions {
                 newData = try PropertyListSerialization.data(fromPropertyList: newPlist, format: .binary, options: 0)
             } catch {
                 newDataSize = -1
-                print("ERROR SERIALIZING DATA")
+                NSLog("ERROR SERIALIZING DATA")
                 break
             }
             newDataSize = newData.count

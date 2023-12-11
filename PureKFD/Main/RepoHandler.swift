@@ -76,7 +76,7 @@ func getInstalledPackages() -> [Package] {
                 }
             }
         } catch {
-            print("Error while processing folder: \(error.localizedDescription)")
+            NSLog("Error while processing folder: %@", error.localizedDescription)
         }
     }
     
@@ -206,7 +206,7 @@ func getRepoInfo(_ repourl: String, appData: AppData, lowend: Bool = false) asyn
                 
             }
         } catch {
-            print("Error decoding JSON: \(error)")
+            NSLog("Error decoding JSON: %@", "\(error)")
             repo.desc = "Error Decoding JSON (\(url))"
             repo.url = url.deletingLastPathComponent()
         }
@@ -214,7 +214,7 @@ func getRepoInfo(_ repourl: String, appData: AppData, lowend: Bool = false) asyn
             return repo
         }
     } catch {
-        print("Error fetching or decoding JSON: \(error)")
+        NSLog("Error fetching or decoding JSON: %@", "\(error)")
         var repo = blankrepo
         repo.desc = "\(error.localizedDescription) (\(repourl))"
         repo.url = url.deletingLastPathComponent()
@@ -251,9 +251,9 @@ func getRepoType(_ jsonString: String) -> String {
                 }
             }
         } catch {
-//            print("\n\n\nERROR:")
-//            print(error)
-//            print("-----\n\n\n")
+//            NSLog("\n\n\nERROR:")
+//            NSLog(error)
+//            NSLog("-----\n\n\n")
             return "unknown"
         }
     }

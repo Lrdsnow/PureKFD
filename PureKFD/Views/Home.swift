@@ -19,11 +19,10 @@ extension NSLock {
 struct HomeView: View {
     @EnvironmentObject var appData: AppData
     @State private var exploitMethod = "None"
-    @State private var iosversion = (0, 0, 0, false, "0", "Unknown Device")
+    @State private var iosversion = DeviceInfo()
     @State private var repoSections: [String:[Repo]] = [:]
     @State private var featuredPackages: [Featured] = []
     @State private var packageList: [Package] = []
-    @State private var lowend = false
     
     var body: some View {
         NavigationView {
@@ -72,9 +71,7 @@ struct HomeView: View {
                         }
                     }
                     
-                    if !packageList.isEmpty || !featuredPackages.isEmpty {
-                        Text("\(iosversion.5)\(lowend ? " (LPM)":"") • \(iosversion.0 == 0 ? "Unknown Version" : "iOS \(iosversion.0).\(iosversion.1)\(iosversion.2 == 0 ? "" : ".\(iosversion.2)")")\(iosversion.3 ? " Beta" : "")\(iosversion.4 == "0" ? "" : " (\(iosversion.4))") • PureKFD v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0") • \(exploitMethod)").frame(maxWidth: .infinity, alignment: .center).opacity(0.7).font(.footnote).listRowSeparator(.hidden)
-                    }
+                    Text("\(iosversion.modelIdentifier)\(iosversion.lowend ? " (LPM)":"") • \(iosversion.major == 0 ? "Unknown Version" : "iOS \(iosversion.major).\(iosversion.sub)\(iosversion.minor == 0 ? "" : ".\(iosversion.minor)")")\(iosversion.beta ? " Beta" : "")\(iosversion.build_number == "0" ? "" : " (\(iosversion.build_number))") • PureKFD v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0") • \(exploitMethod)").frame(maxWidth: .infinity, alignment: .center).opacity(0.7).font(.footnote).listRowSeparator(.hidden)
                 }
             }
             .task {
@@ -90,8 +87,7 @@ struct HomeView: View {
             }.task() {
                 Task {
                     let deviceinfo = getDeviceInfo(appData: appData)
-                    iosversion = deviceinfo.2
-                    lowend = deviceinfo.3
+                    iosversion = deviceinfo.3
                     switch deviceinfo.0 {
                     case 0:
                         exploitMethod = "KFD"
@@ -231,12 +227,7 @@ struct SettingsView: View {
     @State private var selectedColorString: String = "#FFFFFF"
     @State private var selectedColor: Color = (Color(UIColor(hex: UserDefaults.standard.string(forKey: "accentColor") ?? "") ?? UIColor.systemPurple) )
     
-    // iPhones: 2048-3584 work well, iPads: 4096 is what you want (tho i think 3072 and 3584 would prob work)
-    private let puafPagesOptions = [16, 32, 64, 128, 256, 512, 1024, 2048, 3072, 3584, 4096]
-    private let puafMethodOptions = ["physpuppet", "smith"]
-    private let kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
-    private let kwriteMethodOptions = ["dup", "sem_open"]
-    private let respringOptions = ["Frontboard", "Backboard"]
+    private var respringOptions = ["Frontboard", "Backboard"]
     private let exploitOptions = ["KFD", "MDC", "Rootful (JB)", "Rootless (JB)"]
     private let appInstallOptions = ["Enterprise (Any Version)", "/Applications (Rootful JB)", "/var/jb/Applications (Rootless JB)"]
     
@@ -285,46 +276,9 @@ struct SettingsView: View {
             }
             
             if appData.UserData.exploit_method == 0 && appData.UserData.override_exploit_method {
-                Section(header: Text("Exploit Settings").foregroundColor(.accentColor)) {
-                    Picker("puaf pages:", selection: $appData.UserData.kfd.puaf_pages_index) {
-                        ForEach(0..<puafPagesOptions.count, id: \.self) {
-                            Text(String(puafPagesOptions[$0]))
-                        }
-                    }
-                    .tint(.accentColor)
-                    .foregroundColor(.accentColor)
-                    .clearListRowBackground()
-                    
-                    Picker("puaf method:", selection: $appData.UserData.kfd.puaf_method) {
-                        ForEach(0..<puafMethodOptions.count, id: \.self) {
-                            Text(puafMethodOptions[$0])
-                        }
-                    }
-                    .tint(.accentColor)
-                    .foregroundColor(.accentColor)
-                    .clearListRowBackground()
-                    
-                    Picker("kread method:", selection: $appData.UserData.kfd.kread_method) {
-                        ForEach(0..<kreadMethodOptions.count, id: \.self) {
-                            Text(kreadMethodOptions[$0])
-                        }
-                    }
-                    .tint(.accentColor)
-                    .foregroundColor(.accentColor)
-                    .clearListRowBackground()
-                    
-                    Picker("kwrite method:", selection: $appData.UserData.kfd.kwrite_method) {
-                        ForEach(0..<kwriteMethodOptions.count, id: \.self) {
-                            Text(kwriteMethodOptions[$0])
-                        }
-                    }
-                    .tint(.accentColor)
-                    .foregroundColor(.accentColor)
-                    .clearListRowBackground()
-                }
-                .listRowSeparator(.hidden)
-                .onChange(of: appData.UserData.kfd) {_ in appData.save()}
+                KFDExploitPickers()
             }
+            
             Section(header: Text("Extras").foregroundColor(.accentColor)) {
                 Toggle("Translate Prefs On Install", isOn: $appData.UserData.translateoninstall)
                     .onChange(of: appData.UserData.translateoninstall) { _ in
@@ -350,14 +304,85 @@ struct SettingsView: View {
                 .clearListRowBackground()
         }.navigationBarTitle("Settings", displayMode: .large)
     }
+    init() {
+        if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
+            self.respringOptions.append("mmaintenanced (userspace reboot)");
+        }
+    }
+}
+
+@available(iOS 15.0, *)
+struct KFDExploitPickers: View {
+    @EnvironmentObject var appData: AppData
+    // iPhones: 2048-3584 work well, iPads: 4096 is what you want (tho i think 3072 and 3584 would prob work)
+    private let puafPagesOptions = [16, 32, 64, 128, 256, 512, 1024, 2048, 3072, 3584, 4096]
+    // 16: Works with trollstore installs on some devices; 65536: Basically disables hogging
+    private let staticHeadroomOptions = [16, 128, 192, 256, 384, 512, 768, 1024, 1536, 2048, 4096, 65536]
+    private let puafMethodOptions = ["physpuppet", "smith"]
+    private let kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
+    private let kwriteMethodOptions = ["dup", "sem_open"]
+    
+    var body: some View {
+        Section(header: Text("Exploit Settings").foregroundColor(.accentColor)) {
+            Picker("puaf pages:", selection: $appData.UserData.kfd.puaf_pages_index) {
+                ForEach(0..<puafPagesOptions.count, id: \.self) {
+                    Text(String(puafPagesOptions[$0]))
+                }
+            }
+            .tint(.accentColor)
+            .foregroundColor(.accentColor)
+            .clearListRowBackground()
+            
+            Picker("puaf method:", selection: $appData.UserData.kfd.puaf_method) {
+                ForEach(0..<puafMethodOptions.count, id: \.self) {
+                    Text(puafMethodOptions[$0])
+                }
+            }
+            .tint(.accentColor)
+            .foregroundColor(.accentColor)
+            .clearListRowBackground()
+            
+            Picker("kread method:", selection: $appData.UserData.kfd.kread_method) {
+                ForEach(0..<kreadMethodOptions.count, id: \.self) {
+                    Text(kreadMethodOptions[$0])
+                }
+            }
+            .tint(.accentColor)
+            .foregroundColor(.accentColor)
+            .clearListRowBackground()
+            
+            Picker("kwrite method:", selection: $appData.UserData.kfd.kwrite_method) {
+                ForEach(0..<kwriteMethodOptions.count, id: \.self) {
+                    Text(kwriteMethodOptions[$0])
+                }
+            }
+            .tint(.accentColor)
+            .foregroundColor(.accentColor)
+            .clearListRowBackground()
+            
+            Picker("static headroom:", selection: $appData.UserData.kfd.static_headroom_sel) {
+                ForEach(0..<staticHeadroomOptions.count, id: \.self) {
+                    Text(String(staticHeadroomOptions[$0]))
+                }
+            }
+            .tint(.accentColor)
+            .foregroundColor(.accentColor)
+            .clearListRowBackground()
+            .onChange(of: appData.UserData.kfd.static_headroom_sel) {sel in
+                appData.UserData.kfd.static_headroom = staticHeadroomOptions[sel]
+            }
+        }
+        .listRowSeparator(.hidden)
+        .onChange(of: appData.UserData.kfd) {_ in appData.save()}
+    }
 }
 
 @available(iOS 15.0, *)
 struct CreditView: View {
     var body: some View {
         Section(header: Text("Credits").foregroundColor(.accentColor)) {
-            CreditRow(name: "Lrdsnow", role: "Developer", link: URL(string: "https://github.com/Lrdsnow")).foregroundStyle(.purple)
-            CreditRow(name: "Nick Chan", role: "KFD Stability", link: URL(string: "https://github.com/asdfugil")).foregroundStyle(.green)
+            CreditRow(name: "Lrdsnow", role: "Main Developer", link: URL(string: "https://github.com/Lrdsnow")).foregroundStyle(.purple)
+            CreditRow(name: "Nick Chan", role: "Developer", link: URL(string: "https://github.com/asdfugil")).foregroundStyle(.green)
             CreditRow(name: "leminlimez", role: "Springboard Color Manager", link: URL(string: "https://github.com/leminlimez")).foregroundStyle(.yellow)
             CreditRow(name: "icons8", role: "Plumpy Icons", link: URL(string: "https://icons8.com")).foregroundStyle(.green)
             CreditRow(name: "emmikat", role: "M1/M2 Fixes", link: URL(string: "https://github.com/emmikat")).foregroundStyle(.pink)
@@ -402,12 +427,13 @@ struct IconSelectorView: View {
 
     let iconSections: [String: [String]] = [
         "Grade A+": ["AppIcon1", "AppIcon11", "AppIconOG", "AppIcon12"],
-        "Good!": ["AppIcon14", "AppIcon15", "AppIcon9", "AppIcon10"],
+        "Good!": ["AppIcon15", "AppIcon9", "AppIcon10"],
         "Decent":["AppIcon13", "AppIcon8", "AppIcon7"],
         "Others": ["AppIcon2", "AppIcon3", "AppIcon4", "AppIcon5", "AppIcon6"],
+        "Winter!": ["AppIcon14", "AppIcon20", "AppIcon21", "AppIcon22"]
     ]
 
-    let sectionOrder = ["Grade A+", "Good!", "Decent", "Others"]
+    let sectionOrder = ["Grade A+", "Good!", "Decent", "Others", "Winter!"]
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -426,7 +452,7 @@ struct IconSelectorView: View {
                             HStack(spacing: 16) {
                                 ForEach(iconSections[section] ?? [], id: \.self) { iconName in
                                     Button(action: {
-                                        print(iconName)
+                                        NSLog("%@", iconName)
                                         setAppIcon(iconName)
                                     }) {
                                         Image(uiImage: UIImage(named: iconName) ?? UIImage())
@@ -458,10 +484,10 @@ struct IconSelectorView: View {
     private func setAppIcon(_ iconName: String) {
         UIApplication.shared.setAlternateIconName(iconName) { error in
             if let error = error {
-                print("Error changing app icon: \(error.localizedDescription)")
+                NSLog("Error changing app icon: %@", error.localizedDescription)
             } else {
                 selectedIconName = iconName
-                print("App icon changed successfully to: \(iconName)")
+                NSLog("App icon changed successfully to: %@", iconName)
             }
         }
     }

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0185EFEA2B24EA2800F8FB91 /* memoryControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 0185EFE92B24EA2800F8FB91 /* memoryControl.m */; };
+		0185EFED2B24FC2600F8FB91 /* userspaceReboot.c in Sources */ = {isa = PBXBuildFile; fileRef = 0185EFEC2B24FC2600F8FB91 /* userspaceReboot.c */; };
 		650AEEC52AC0226600B9F470 /* TweakCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650AEEC42AC0226600B9F470 /* TweakCreator.swift */; };
 		650AEEC72AC0231300B9F470 /* Developer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650AEEC62AC0231300B9F470 /* Developer.swift */; };
 		650AEEC92AC1540A00B9F470 /* prefCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650AEEC82AC1540A00B9F470 /* prefCreator.swift */; };
@@ -88,6 +90,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0185EFE62B24E69400F8FB91 /* memoryControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = memoryControl.h; sourceTree = "<group>"; };
+		0185EFE92B24EA2800F8FB91 /* memoryControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = memoryControl.m; sourceTree = "<group>"; };
+		0185EFEB2B24FC2600F8FB91 /* userspaceReboot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = userspaceReboot.h; sourceTree = "<group>"; };
+		0185EFEC2B24FC2600F8FB91 /* userspaceReboot.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = userspaceReboot.c; sourceTree = "<group>"; };
 		650AEEC42AC0226600B9F470 /* TweakCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweakCreator.swift; sourceTree = "<group>"; };
 		650AEEC62AC0231300B9F470 /* Developer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Developer.swift; sourceTree = "<group>"; };
 		650AEEC82AC1540A00B9F470 /* prefCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = prefCreator.swift; sourceTree = "<group>"; };
@@ -554,6 +560,10 @@
 			isa = PBXGroup;
 			children = (
 				65A69CE32AFD11B0000DB0AE /* IconServices.h */,
+				0185EFE62B24E69400F8FB91 /* memoryControl.h */,
+				0185EFE92B24EA2800F8FB91 /* memoryControl.m */,
+				0185EFEB2B24FC2600F8FB91 /* userspaceReboot.h */,
+				0185EFEC2B24FC2600F8FB91 /* userspaceReboot.c */,
 			);
 			path = others;
 			sourceTree = "<group>";
@@ -681,7 +691,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [ -d \"${BUILT_PRODUCTS_DIR}/Build\" ]; then\n    rm -r \"${BUILT_PRODUCTS_DIR}/Build\"\nfi\nmkdir ${BUILT_PRODUCTS_DIR}/Build\ncp -r ${BUILT_PRODUCTS_DIR}/PureKFD.app ${BUILT_PRODUCTS_DIR}/Build/PureKFD.app\nldid -S./entitlements.plist ${BUILT_PRODUCTS_DIR}/Build/PureKFD.app/PureKFD\ncd ${BUILT_PRODUCTS_DIR}/Build\nif [ -d \"Payload\" ]; then\n    rm -r \"Payload\"\nfi\nmkdir -p \"Payload\"\nmv PureKFD.app Payload/PureKFD.app\nzip -r purekfd.ipa Payload\nrm -r Payload\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [ -d \"${BUILT_PRODUCTS_DIR}/Build\" ]; then\n    rm -r \"${BUILT_PRODUCTS_DIR}/Build\"\nfi\nmkdir ${BUILT_PRODUCTS_DIR}/Build\ncp -r ${BUILT_PRODUCTS_DIR}/PureKFD.app ${BUILT_PRODUCTS_DIR}/Build/PureKFD.app\nldid -S./entitlements.plist ${BUILT_PRODUCTS_DIR}/Build/PureKFD.app/PureKFD\ncd ${BUILT_PRODUCTS_DIR}/Build\nif [ -d \"Payload\" ]; then\n    rm -r \"Payload\"\nfi\nmkdir -p \"Payload\"\nsed -i '' 's/<key>CFBundleIdentifier<\\/key>[[:space:]]*<string>[^<]*<\\/string>/<key>CFBundleIdentifier<\\/key><string>uwu.lrdsnow.purekfd<\\/string>/' PureKFD.app/Info.plist\nmv PureKFD.app Payload/PureKFD.app\nzip -r purekfd.ipa Payload\nrm -r Payload\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -713,6 +723,8 @@
 				65A38F562AB16B4200C23058 /* helpers.m in Sources */,
 				658D6BC12AAF1ACD0023A755 /* purePrefs.swift in Sources */,
 				65A38F572AB16B4200C23058 /* utils.m in Sources */,
+				0185EFEA2B24EA2800F8FB91 /* memoryControl.m in Sources */,
+				0185EFED2B24FC2600F8FB91 /* userspaceReboot.c in Sources */,
 				658EF0CF2ABBAE7100C9121F /* vm_unaligned_copy_switch_race.c in Sources */,
 				65A38F582AB16B4200C23058 /* thanks_opa334dev_htrowii.m in Sources */,
 				65A38F502AB16B4200C23058 /* grant_full_disk_access.m in Sources */,
@@ -799,6 +811,10 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"-Werror=format",
+					"-Werror=format-security",
+				);
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -855,6 +871,10 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = (
+					"-Werror=format",
+					"-Werror=format-security",
+				);
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
@@ -864,7 +884,7 @@
 		6596B1002AAAABBA0005EED9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconOG AppIcon2 AppIcon1 AppIcon4 AppIcon3 AppIcon5 AppIcon7 AppIcon6 AppIcon10 AppIcon9 AppIcon8 AppIcon11 AppIcon15 AppIcon14 AppIcon12 AppIcon13 AppIcon12 AppIcon17 AppIcon16 AppIcon16";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconOG AppIcon2 AppIcon1 AppIcon4 AppIcon3 AppIcon5 AppIcon7 AppIcon6 AppIcon10 AppIcon9 AppIcon8 AppIcon11 AppIcon15 AppIcon14 AppIcon12 AppIcon13 AppIcon12 AppIcon17 AppIcon16 AppIcon22 AppIcon21 AppIcon20";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -892,7 +912,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.5;
+				MARKETING_VERSION = 4.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "uwu.lrdsnow.purekfd-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -905,7 +925,7 @@
 		6596B1012AAAABBA0005EED9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconOG AppIcon2 AppIcon1 AppIcon4 AppIcon3 AppIcon5 AppIcon7 AppIcon6 AppIcon10 AppIcon9 AppIcon8 AppIcon11 AppIcon15 AppIcon14 AppIcon12 AppIcon13 AppIcon12 AppIcon17 AppIcon16 AppIcon16";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconOG AppIcon2 AppIcon1 AppIcon4 AppIcon3 AppIcon5 AppIcon7 AppIcon6 AppIcon10 AppIcon9 AppIcon8 AppIcon11 AppIcon15 AppIcon14 AppIcon12 AppIcon13 AppIcon12 AppIcon17 AppIcon16 AppIcon22 AppIcon21 AppIcon20";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -933,7 +953,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.5;
+				MARKETING_VERSION = 4.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "uwu.lrdsnow.purekfd-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

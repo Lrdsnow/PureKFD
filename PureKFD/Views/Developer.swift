@@ -11,7 +11,6 @@ import WebKit
 import AVKit
 import Dynamic
 
-
 @available(iOS 15.0, *)
 struct DeveloperView: View {
     @State private var popup = false
@@ -58,82 +57,18 @@ struct DeveloperView: View {
                     if appData.UserData.exploit_method == 0 {
                         NavigationLink(destination: AppManagerView(), label: {Image("dev_icon").renderingMode(.template); Text("App Manager (KFD)")})
                     }
-                    NavigationLink(destination: PiPView(htmlString: """
-                                <!DOCTYPE html>
-                                <html>
-                                    <body>
-                                        <video id="target" controls=false muted autoplay></video>
-                                        <button id="btn">request PiP</button>
-                                        <canvas id="canvas"></canvas>
-                                        <script>
-                                            const target = document.getElementById('target');
-                                            const source = document.createElement('canvas');
-                                            const ctx = source.getContext('2d');
-                                            source.width = 300;
-                                            source.height = 20;
-                                            ctx.font = "15px Arial";
-                                            ctx.textAlign = "left";
-                                            ctx.textBaseline = "middle";
-                                            ctx.imageSmoothingEnabled = true;
-                                            
-                                            const stream = source.captureStream();
-                                            target.srcObject = stream;
-                                            
-                                            // Attempt to request Picture in Picture immediately on load
-                                            target.requestPictureInPicture();
-                                            
-                                            if (typeof target.webkitSupportsPresentationMode === 'function' &&
-                                                target.webkitSupportsPresentationMode('picture-in-picture')) {
-                                                target.controls = false;
-                                                buildCustomControls(target);
-                                            }
-                                            
-                                            const btn = document.getElementById('btn');
-                                            if (target.requestPictureInPicture) {
-                                                target.controls = false
-                                                btn.onclick = e => target.requestPictureInPicture();
-                                            } else {
-                                                btn.disabled = true;
-                                            }
-                                            
-                                            function anim() {
-                                                ctx.fillStyle = "black";
-                                                ctx.fillRect(0, 0, source.width, source.height);
-                                                ctx.fillStyle = "purple";
-                                
-                                                var time = new Date();
-                                                var sec = time.getSeconds();
-                                                var min = time.getMinutes();
-                                                var hr = time.getHours();
-                                                var day = 'AM';
-                                                if (hr > 12) {
-                                                    day = 'PM';
-                                                    hr = hr - 12;
-                                                }
-                                                if (hr == 0) {
-                                                    hr = 12;
-                                                }
-                                                if (sec < 10) {
-                                                    sec = '0' + sec;
-                                                }
-                                                if (min < 10) {
-                                                    min = '0' + min;
-                                                }
-                                                if (hr < 10) {
-                                                    hr = '0' + hr;
-                                                }
-                                
-                                                ctx.fillText(new Date().toTimeString().split(' ')[0], 10, source.height / 2);
-                                                ctx.fillText(":3", source.width - 20, source.height / 2);
-                                                
-                                                requestAnimationFrame(anim);
-                                            }
-                                        </script>
-                                    </body>
-                                </html>
-                                
-                                
-                                """, canvasWidth: 300, canvasHeight: 20), label: {Image("dev_icon").renderingMode(.template); Text("pip test")})
+                    NavigationLink(destination: devPipView(), label: {Image("dev_icon").renderingMode(.template); Text("pip test")})
+                }
+                if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
+                    Button(action: {
+                        userspaceReboot()
+                        UIApplication.shared.alert(title: "Complete", body: "Device should userspace reboot in a moment", withButton: true)
+                    }, label: {
+                        HStack {
+                            Image("dev_icon").renderingMode(.template)
+                            Text("Userspace Reboot")
+                        }
+                    })
                 }
                 Button(action: {
                     clearIconCache()
@@ -182,37 +117,19 @@ var connection: NSXPCConnection?
 
 func clearIconCache() {
     for _ in 1...10000 {
-        print("removing icon cache")
+        NSLog("removing icon cache")
         if connection == nil {
             let myCookieInterface = NSXPCInterface(with: ISIconCacheServiceProtocol.self)
             connection = Dynamic.NSXPCConnection(machServiceName: "com.apple.iconservices", options: []).asObject as? NSXPCConnection
             connection!.remoteObjectInterface = myCookieInterface
             connection!.resume()
-            print("Connection: \(connection!)")
+            NSLog("Connection: %@", "\(connection!)")
         }
         
         (connection!.remoteObjectProxy as AnyObject).clearCachedItems(forBundeID: nil) { (a, b) in // passing nil to remove all icon cache
-            print("Successfully responded (\(a), \(b ?? "(null)"))")
+            NSLog("Successfully responded (%@, %@)", "\(a)", "\(b ?? "(null)")")
         }
     }
-}
-
-func smart_kopen(appData: AppData) -> Int {
-    // Get Exploit
-    let exploit_method = getDeviceInfo(appData: appData).0
-    let kfddata = getDeviceInfo(appData: appData).1
-    
-    // KFD Stuff
-    if exploit_method == 0 && !appData.kopened {
-        let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method))
-        if exploit_result == 0 {
-            return -1
-        }
-        fix_exploit()
-        appData.kopened = true
-    }
-    
-    return exploit_method
 }
 
 func rebuildIconCache(appData: AppData) {

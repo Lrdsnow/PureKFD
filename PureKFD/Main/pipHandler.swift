@@ -20,7 +20,7 @@ struct PiPView: UIViewRepresentable {
         var webView: WKWebView?
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            print(message)
+            NSLog("%@", "\(message)")
         }
         
         func triggerUpdate() {
@@ -40,7 +40,7 @@ struct PiPView: UIViewRepresentable {
 
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            print("WebView navigation failed with error: \(error.localizedDescription)")
+            NSLog("WebView navigation failed with error: %@", error.localizedDescription)
         }
 
         func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
@@ -100,7 +100,7 @@ struct PiPView: UIViewRepresentable {
 
     func openApp() {
         // Implement code to open the app
-        print("Opening the app...")
+        NSLog("Opening the app...")
     }
 }
 
@@ -152,3 +152,84 @@ struct PiPView: UIViewRepresentable {
 //                            }
 //                        </script>
 //        """
+
+struct devPipView: View {
+    var body: some View {
+        PiPView(htmlString: """
+                <!DOCTYPE html>
+                <html>
+                    <body>
+                        <video id="target" controls=false muted autoplay></video>
+                        <button id="btn">request PiP</button>
+                        <canvas id="canvas"></canvas>
+                        <script>
+                            const target = document.getElementById('target');
+                            const source = document.createElement('canvas');
+                            const ctx = source.getContext('2d');
+                            source.width = 300;
+                            source.height = 20;
+                            ctx.font = "15px Arial";
+                            ctx.textAlign = "left";
+                            ctx.textBaseline = "middle";
+                            ctx.imageSmoothingEnabled = true;
+                            
+                            const stream = source.captureStream();
+                            target.srcObject = stream;
+                            
+                            // Attempt to request Picture in Picture immediately on load
+                            target.requestPictureInPicture();
+                            
+                            if (typeof target.webkitSupportsPresentationMode === 'function' &&
+                                target.webkitSupportsPresentationMode('picture-in-picture')) {
+                                target.controls = false;
+                                buildCustomControls(target);
+                            }
+                            
+                            const btn = document.getElementById('btn');
+                            if (target.requestPictureInPicture) {
+                                target.controls = false
+                                btn.onclick = e => target.requestPictureInPicture();
+                            } else {
+                                btn.disabled = true;
+                            }
+                            
+                            function anim() {
+                                ctx.fillStyle = "black";
+                                ctx.fillRect(0, 0, source.width, source.height);
+                                ctx.fillStyle = "purple";
+                
+                                var time = new Date();
+                                var sec = time.getSeconds();
+                                var min = time.getMinutes();
+                                var hr = time.getHours();
+                                var day = 'AM';
+                                if (hr > 12) {
+                                    day = 'PM';
+                                    hr = hr - 12;
+                                }
+                                if (hr == 0) {
+                                    hr = 12;
+                                }
+                                if (sec < 10) {
+                                    sec = '0' + sec;
+                                }
+                                if (min < 10) {
+                                    min = '0' + min;
+                                }
+                                if (hr < 10) {
+                                    hr = '0' + hr;
+                                }
+                
+                                ctx.fillText(new Date().toTimeString().split(' ')[0], 10, source.height / 2);
+                                ctx.fillText(":3", source.width - 20, source.height / 2);
+                                
+                                requestAnimationFrame(anim);
+                            }
+                        </script>
+                    </body>
+                </html>
+                
+                
+                """, canvasWidth: 300, canvasHeight: 20)
+    }
+}

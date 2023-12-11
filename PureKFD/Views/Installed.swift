@@ -57,7 +57,12 @@ struct InstalledView: View {
                     }
                     Spacer()
                     if appData.queued.isEmpty {
-                        Button(action: {if(appData.UserData.respringMode == 0) {respring()} else {backboard_respring()}}, label: {HStack { Image("reload_icon").renderingMode(.template); Text("Respring")}})
+                        Button(action: {
+                            if(appData.UserData.respringMode == 0)
+                                {respring()}
+                            else if (appData.UserData.respringMode == 1) {backboard_respring()}
+                            else if (appData.UserData.respringMode == 2) {userspaceReboot()}
+                        }, label: {HStack { Image("reload_icon").renderingMode(.template); Text("Respring")}})
                             .padding(.horizontal).padding(.vertical, 5)
                             .contextMenu(menuItems: {
                                 Button(action: {respring()}, label: {Text("Frontboard Respring"); Image("reload_icon").renderingMode(.template)})

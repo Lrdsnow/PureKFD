@@ -151,7 +151,7 @@ struct CreatorView: View {
                     do {
                         try FileManager.default.copyItem(at: URL(fileURLWithPath: asset), to: pkgpath.appendingPathComponent(asset.components(separatedBy: "/").last ?? ""))
                     } catch {
-                        print("File Failed to copy!!!: \(asset) to \(pkgpath.appendingPathComponent(asset.components(separatedBy: "/").last ?? "").path)")
+                        NSLog("File Failed to copy!!!: %@ to %@", "\(asset)", "\(pkgpath.appendingPathComponent(asset.components(separatedBy: "/").last ?? "").path)")
                     }
                 }
                 
@@ -168,7 +168,7 @@ struct CreatorView: View {
                 try FileManager.default.removeItem(at: infoURL)
                 try FileManager.default.removeItem(at: tweakURL)
             } catch {
-                print("Error: \(error)")
+                NSLog("Error: %@", "\(error)")
             }
             // Install/Share
             if !install {
@@ -467,8 +467,8 @@ struct FilePickerView: View {
                                 
                                 try FileManager.default.createDirectory(at: assetsDirectoryURL, withIntermediateDirectories: true)
                                 let destinationURL = assetsDirectoryURL.appendingPathComponent(fileName)
-                                print(selectedURL)
-                                print(destinationURL)
+                                NSLog("%@", "\(selectedURL)")
+                                NSLog("%@", "\(destinationURL)")
                                 
                                 try FileManager.default.copyItem(at: selectedURL, to: destinationURL)
                                 pickedFilePath = "assets/\(fileName)"
@@ -477,7 +477,7 @@ struct FilePickerView: View {
                         }
                     }
                 } catch {
-                    print("Error picking file: \(error)")
+                    NSLog("Error picking file: %@", "\(error)")
                     pickedFile = "Error"
                 }
             }

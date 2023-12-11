@@ -34,7 +34,7 @@ struct FileBrowserView: View {
         }.task() {
             exploit_method = getDeviceInfo(appData: appData).0
             kfddata = getDeviceInfo(appData: appData).1
-            print(root)
+            NSLog("%@", "\(root)")
         }
     }
 }
@@ -51,7 +51,7 @@ struct ToggleButtonView: View {
                 if kopened {
                     do_kclose()
                 } else {
-                    let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method))
+                    let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(256))
                     if exploit_result == 0 {
                         return
                     }
@@ -191,7 +191,7 @@ struct FileBrowser: View {
                         try data.write(to: URL(fileURLWithPath: filePath))
                         shouldRefresh.toggle()
                     } catch {
-                        print("Error creating empty file: \(error)")
+                        NSLog("%@", "Error creating empty file: \(error)")
                     }
                 } else {
                     let folderPath = currentFullPath + "/" + newFileFolderName
@@ -199,7 +199,7 @@ struct FileBrowser: View {
                         try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: true, attributes: nil)
                         shouldRefresh.toggle()
                     } catch {
-                        print("Error creating empty folder: \(error)")
+                        NSLog("%@", "Error creating empty folder: \(error)")
                     }
                 }
             })
@@ -234,7 +234,7 @@ struct FileBrowser: View {
                         try data.write(to: URL(fileURLWithPath: filePath))
                         shouldRefresh.toggle()
                     } catch {
-                        print("Error creating empty file: \(error)")
+                        NSLog("%@", "Error creating empty file: \(error)")
                     }
                 } else {
                     var fullpath = ""
@@ -248,7 +248,7 @@ struct FileBrowser: View {
                         try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: true, attributes: nil)
                         shouldRefresh.toggle()
                     } catch {
-                        print("Error creating empty folder: \(error)")
+                        NSLog("%@", "Error creating empty folder: \(error)")
                     }
                 }
             }
@@ -259,9 +259,9 @@ struct FileBrowser: View {
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         var folderURL: URL = documentsURL.appendingPathComponent("mounted")
         
-        print(path)
-        print("KFD?",getDeviceInfo(appData: appData).0 == 0)
-        print("Root?",root)
+        NSLog(path)
+        NSLog("KFD? %d",getDeviceInfo(appData: appData).0 == 0)
+        NSLog("Root? %d",root)
         
         if path.hasPrefix("/var") && getDeviceInfo(appData: appData).0 == 0 && root && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
             folder_vdata = createFolderAndRedirect2("/private"+path)
@@ -274,7 +274,7 @@ struct FileBrowser: View {
             let contents = try FileManager.default.contentsOfDirectory(atPath: folderURL.path)
             dirContents = contents.map { isDirectory(url: folderURL.appendingPathComponent($0)) ? "[Folder]\($0)" : $0 }
         } catch {
-            print("Error loading directory contents: \(error)")
+            NSLog("%@", "Error loading directory contents: \(error)")
         }
     }
     
@@ -321,7 +321,7 @@ struct FileListItemView: View {
                     free(pathCString)
                     free(tempPathCString)
                 } else {
-                    print("Memory allocation failed for C strings.")
+                    NSLog("Memory allocation failed for C strings.")
                 }
             }
 
@@ -414,7 +414,7 @@ struct FileListFolderItemView: View {
             UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
         } catch {
             isCompressionCompleteAlertPresented = true
-            print("Error compressing folder: \(error)")
+            NSLog("%@", "Error compressing folder: \(error)")
         }
     }
     
@@ -425,7 +425,7 @@ struct FileListFolderItemView: View {
             shouldRefresh.toggle()
             isDeleteAlertPresented = false
         } catch {
-            print("Error deleting file: \(error)")
+            NSLog("%@", "Error deleting file: \(error)")
         }
     }
 }
@@ -582,7 +582,7 @@ struct FileListFileItemView: View {
                 item = newFileName
                 isRenameAlertPresented = false
             } catch {
-                print("Error renaming file: \(error)")
+                NSLog("Error renaming file: \(error)")
             }
         }
     }
@@ -598,7 +598,7 @@ struct FileListFileItemView: View {
                 isDeleteAlertPresented = false
             }
         } catch {
-            print("Error deleting file: \(error)")
+            NSLog("Error deleting file: %@", "\(error)")
         }
     }
 }
@@ -634,10 +634,10 @@ struct TextEditorView: View {
         }
 
         do {
-            print(fileURL)
+            NSLog("%@", "\(fileURL)")
             text = try String(contentsOf: fileURL)
         } catch {
-            print("Error loading text: \(error)")
+            NSLog("Error loading text: %@", "\(error)")
         }
     }
     
@@ -648,9 +648,9 @@ struct TextEditorView: View {
 
         do {
             try text.write(to: fileURL, atomically: false, encoding: .utf8)
-            print("Text saved successfully!")
+            NSLog("Text saved successfully!")
         } catch {
-            print("Error saving text: \(error)")
+            NSLog("Error saving text: %@", "\(error)")
         }
     }
 }
@@ -698,7 +698,7 @@ struct PlistEditorView: View {
             plistData = try PropertyListSerialization.propertyList(from: rawPlistData, options: [], format: nil)
             sectionStates = Array(repeating: Expandable(), count: 1) // Initialize with one section expanded
         } catch {
-            print("Error loading plist: \(error)")
+            NSLog("%@", "Error loading plist: \(error)")
         }
     }
 
@@ -711,9 +711,9 @@ struct PlistEditorView: View {
         do {
             let plistDataToSave = try PropertyListSerialization.data(fromPropertyList: plistData!, format: .xml, options: 0)
             try plistDataToSave.write(to: plistPath)
-            print("Plist saved successfully!")
+            NSLog("Plist saved successfully!")
         } catch {
-            print("Error saving plist: \(error)")
+            NSLog("%@", "Error saving plist: \(error)")
         }
     }
 }

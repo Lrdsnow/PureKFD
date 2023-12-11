@@ -50,7 +50,7 @@ class FileDownloader {
             }
 
             if let error = error {
-                print("Error downloading file: \(error.localizedDescription)")
+                NSLog("Error downloading file: %@", error.localizedDescription)
                 return
             }
 
@@ -58,7 +58,7 @@ class FileDownloader {
                 try FileManager.default.moveItem(at: location!, to: temporaryFileURL)
                 self.filePath = temporaryFileURL.path
             } catch {
-                print("Error moving file to temporary directory: \(error.localizedDescription)")
+                NSLog("Error moving file to temporary directory: %@", error.localizedDescription)
             }
         }
 
@@ -76,7 +76,7 @@ extension String {
             case .success(let path):
                 filePath = path
             case .failure(let error):
-                print("Error downloading file: \(error.localizedDescription)")
+                NSLog("Error downloading file: %@", error.localizedDescription)
             }
         }
         
@@ -102,7 +102,7 @@ func cleanTemp() {
         }
     } catch {
         // Handle any errors that occur during the deletion process.
-        print("Error clearing temporary directory: \(error)")
+        NSLog("Error clearing temporary directory: %@", "\(error)")
     }
 }
 
@@ -112,7 +112,7 @@ func getContentsOfFolder(folderURL: URL) -> [URL]? {
         let folderContents = try fileManager.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
         return folderContents
     } catch {
-        print("Error: \(error)")
+        NSLog("Error: %@","\(error)")
         return nil
     }
 }
@@ -180,7 +180,7 @@ extension Array {
 }
 
 func refreshView(appData:AppData) {
-    if getDeviceInfo(appData: nil).3 == false {
+    if getDeviceInfo(appData: nil).3.lowend == false {
         appData.UserData.refresh.toggle()
         appData.save()
     }
