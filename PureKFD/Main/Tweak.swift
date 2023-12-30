@@ -1,5 +1,13 @@
+//
+//  Tweak.swift
+//  PureKFD
+//
+//  Created by Lrdsnow on 12/22/23.
+//
+
 import Foundation
 import SwiftUI
+import libpurekfd
 
 func smart_kopen(appData: AppData) -> Int {
     // Get Exploit
@@ -8,7 +16,7 @@ func smart_kopen(appData: AppData) -> Int {
     
     // KFD Stuff
     if exploit_method == 0 && !appData.kopened {
-        let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(kfddata.static_headroom))
+        let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(kfddata.static_headroom), appData.UserData.kfd.use_static_headroom)
         if exploit_result == 0 {
             return -1
         }
@@ -29,15 +37,20 @@ struct DeviceInfo {
     var lowend: Bool = false
 }
 
-func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, Bool, DeviceInfo) {
+func getDeviceInfo(appData: AppData?, _ ignoreOverride: Bool = false) -> (Int, SavedKFDData, Bool, DeviceInfo) {
     var exploit_method = -1
     var kfddata = SavedKFDData(puaf_pages: 3072, puaf_method: 1, kread_method: 1, kwrite_method: 1)
     var deviceInfo = DeviceInfo()
     var lowend = false
     var ts = false
 #if targetEnvironment(simulator)
-    exploit_method = 2
-    appData?.UserData.exploit_method = 2
+    if !(appData?.UserData.override_exploit_method ?? false) || ignoreOverride {
+        exploit_method = 2
+        appData?.UserData.exploit_method = 2
+    } else {
+        exploit_method = appData?.UserData.exploit_method ?? exploit_method
+        kfddata = appData?.UserData.kfd ?? kfddata
+    }
     let systemVersion = UIDevice.current.systemVersion
     let versionComponents = systemVersion.split(separator: ".").compactMap { Int($0) }
     if versionComponents.count >= 2 {
@@ -85,7 +98,7 @@ func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, Bool, DeviceInfo) {
                                 modelIdentifier: modelIdentifier,
                                 lowend: lowend)
         
-        if !(appData?.UserData.override_exploit_method ?? false) {
+        if !(appData?.UserData.override_exploit_method ?? false) || ignoreOverride {
             if (major == 14) ||
                 (major == 15 && (sub <= 6 || (sub <= 7 && minor <= 1))) ||
                 (major == 16 && sub <= 1) {
@@ -102,16 +115,16 @@ func getDeviceInfo(appData: AppData?) -> (Int, SavedKFDData, Bool, DeviceInfo) {
             kfddata = appData?.UserData.kfd ?? kfddata
         }
         
-        //            NSLog("Device Info:")
-        //            NSLog(modelIdentifier)
-        //            NSLog(build_number)
-        //            NSLog("iOS \(major).\(sub).\(minor)")
+        //            log("Device Info:")
+        //            log(modelIdentifier)
+        //            log(build_number)
+        //            log("iOS \(major).\(sub).\(minor)")
     }
     appData?.UserData.exploit_method = exploit_method
     appData?.UserData.kfd = kfddata
     ts = hasEntitlement("com.apple.private.security.no-sandbox" as CFString)
 #endif
-    //    NSLog(kfddata)
+    //    log(kfddata)
     return (exploit_method, kfddata, ts, deviceInfo)
 }
 
@@ -136,7 +149,7 @@ func applyTweaks(appData: AppData) {
             }
         }
         if true_exploit_method == 0 {
-            NSLog("Closing Kernel")
+            log("Closing Kernel")
             do_kclose()
         }
     }
@@ -159,7 +172,7 @@ func asyncApplyTweaks(_ exploit_method: Int, _ writeErrors: inout [String], appD
             }
         }
     }
-    NSLog("All Done")
+    log("All Done")
 }
 
 func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, writeErrors: inout [String]) async {
@@ -194,7 +207,7 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                             try await readFileAsData(atURL: itemURL)!.write(to: URL(fileURLWithPath: relativePath))
                         }
                     } else {
-                        NSLog("\nPURE BINARY INIT\n")
+                        log("\nPURE BINARY INIT\n")
                         do {
                             let path = relativePath.replacingOccurrences(of: "?pure_binary.", with: "")
                             // Read the JSON data containing replacements
@@ -212,8 +225,8 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                                 
                                 // Apply the replacements to the binary data
                                 for (offset, replacement) in jsonDictionary["Overwrite"] as? [String:String] ?? [:] {
-                                    NSLog("OFFSET", offset)
-                                    NSLog("REPLACEMENT", (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") ?? "N/A")
+                                    log("OFFSET", offset)
+                                    log("REPLACEMENT", (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") ?? "N/A")
                                     if let offset = Int(offset), let replacementData = Data(hex: (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") as? String ?? "") {
                                         binaryData.replaceSubrange(offset..<offset + replacementData.count, with: replacementData)
                                     }
@@ -233,9 +246,9 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                                 do{try fileManager.removeItem(at: URL.documents.appendingPathComponent("temp"))}catch{}
                             }
                         } catch {
-                            NSLog("%@", "\(error)")
+                            log("%@", "\(error)")
                         }
-                        NSLog("\nPURE BINARY FINISHED\n")
+                        log("\nPURE BINARY FINISHED\n")
                     }
                 } catch {
                     if relativePath.hasPrefix("/var/mobile/Containers/Data/Application") {
@@ -254,7 +267,7 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                                     throw "Permission Denied"
                                 }
                             } catch {
-                                NSLog("%@", "\(error)")
+                                log("%@", "\(error)")
                                 writeErrors.append("\(error)")
                             }
                             
@@ -271,7 +284,7 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                             }
                         }
                     } else if relativePath.hasPrefix("/var/mobile/Documents") {
-                        NSLog("(rdir) relativepath %@", "\(relativePath)")
+                        log("(rdir) relativepath %@", "\(relativePath)")
                         if exploit_method == 0 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
                             let fileManager = FileManager.default
                             let pathfromdocs = URL(fileURLWithPath: relativePath).deletingLastPathComponent().path.replacingOccurrences(of: "/var/mobile/Documents/", with: "")
@@ -294,36 +307,36 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                                 if vdata != UInt64.max {
                                     do {
                                         try fileManager.createDirectory(at: URL.documents.appendingPathComponent("mounted/\(part)"), withIntermediateDirectories: true)
-                                    } catch {NSLog("%@", "\(error)")}
+                                    } catch {log("%@", "\(error)")}
                                     UnRedirectAndRemoveFolder2(vdata)
                                 } else {
-                                    NSLog("(rdir) Failed to redirect")
+                                    log("(rdir) Failed to redirect")
                                 }
                             }
                             
-                            NSLog("(rdir) writing to %@ %@", URL.documents.appendingPathComponent(filename).path, "(\(relativePath))")
+                            log("(rdir) writing to %@ %@", URL.documents.appendingPathComponent(filename).path, "(\(relativePath))")
                             let vdata = createFolderAndRedirect2(URL(fileURLWithPath: relativePath).deletingLastPathComponent().path)
                             if vdata != UInt64.max {
                                 do {
                                     try await readFileAsData(atURL: itemURL)!.write(to: URL.documents.appendingPathComponent("mounted/\(filename)"))
-                                    NSLog("(rdir) successfully wrote to %@ %@", URL.documents.appendingPathComponent("mounted/\(filename)").path, "(\(relativePath))")
-                                } catch {NSLog("%@", "\(error)")}
+                                    log("(rdir) successfully wrote to %@ %@", URL.documents.appendingPathComponent("mounted/\(filename)").path, "(\(relativePath))")
+                                } catch {log("%@", "\(error)")}
                                 UnRedirectAndRemoveFolder2(vdata)
                             } else {
-                                NSLog("(rdir) Failed to redirect")
+                                log("(rdir) Failed to redirect")
                             }
                             
 //                            do {
 //                                do {
 //                                    try FileManager.default.createDirectory(at: path, withIntermediateDirectories: true)
 //                                } catch {
-//                                    NSLog(error)
+//                                    log(error)
 //                                    writeErrors.append("\(error)")
 //                                }
-//                                NSLog(filepath.path)
+//                                log(filepath.path)
 //                                try await readFileAsData(atURL: itemURL)!.write(to: filepath)
 //                            } catch {
-//                                NSLog(error)
+//                                log(error)
 //                                writeErrors.append("\(error)")
 //                            }
                             
@@ -354,7 +367,7 @@ func readFileAsData(atURL url: URL) async throws -> Data? {
         let fileData = try Data(contentsOf: url)
         return fileData
     } catch {
-        NSLog("Error reading file: \(error)")
+        log("Error reading file: \(error)")
         throw error
     }
 }
@@ -404,7 +417,7 @@ func getTweaksData(_ fileURL: URL) throws -> [String: Any] {
             return jsonDictionary
         }
     } catch {
-        NSLog("Error loading JSON data: \(error)")
+        log("Error loading JSON data: \(error)")
         throw error
     }
     return [:]
@@ -433,7 +446,7 @@ func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData:
                 MDC.setResolution(height: hight, width: width)
             }
         case "panic":
-            do_kopen(0, 0, 0, 0, 0)
+            do_kopen(0, 0, 0, 0, 0, true)
         case "remove3app":
             if getDeviceInfo(appData: appData).0 == 1 {
                 //patch_installd()
@@ -481,7 +494,7 @@ func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData:
                 } catch {}
             }
         default:
-            NSLog("Unsupported Tweak: \(operationType ?? "")")
+            log("Unsupported Tweak: \(operationType ?? "")")
         }
     }
 }
@@ -504,7 +517,7 @@ extension String {
                 let fileName = parseMisakaSegment(from: item)[0]
                 let variableName = parseMisakaSegment(from: item)[1]
                 let variableValue = parseMisakaSegment(from: item)[2]
-                NSLog("fileName: %@\nvariableName: %@\nvariableValue: %@", fileName, variableName, variableValue)
+                log("fileName: %@\nvariableName: %@\nvariableValue: %@", fileName, variableName, variableValue)
                 if variableName == "iOSver" {
                     let deviceInfo = getDeviceInfo(appData: nil).3
                     if variableValue == "\(deviceInfo.major)" {
@@ -524,7 +537,7 @@ extension String {
                 if misakaOperationValues(from: item)[1] == "Data" {
                     do {
                         path = try path.replacingOccurrences(of: "/var/mobile/Containers/Data/Application/"+item, with: getDataDir(bundleID: bundleid, exploit_method: exploit_method).path)
-                    } catch {NSLog("failed")}
+                    } catch {log("failed")}
                 }
             }
         }
@@ -554,14 +567,14 @@ func getBundleID(path: String, uuid: String, exploit_method: Int) throws -> Stri
     
     if exploit_method == 0 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
         let mmpath = mounted + "/.com.apple.mobile_container_manager.metadata.plist"
-        NSLog("%@", mmpath)
+        log("%@", mmpath)
         let vdata = createFolderAndRedirectTemp(path+"/"+uuid)
         do {
             if vdata != UInt64.max {
                 var mmDict: [String: Any]
                 if fm.fileExists(atPath: mmpath) {
                     mmDict = try PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: mmpath)), options: [], format: nil) as? [String: Any] ?? [:]
-                    NSLog("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
+                    log("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
                     if let bundleID = mmDict["MCMMetadataIdentifier"] as? String {
                         returnedurl = URL(fileURLWithPath: "/var/mobile/Containers/Data/Application/").appendingPathComponent(uuid)
                         savedAppDataPaths[bundleID] = returnedurl?.path
@@ -585,7 +598,7 @@ func getBundleID(path: String, uuid: String, exploit_method: Int) throws -> Stri
             var mmDict: [String: Any]
             if fm.fileExists(atPath: mmpath) {
                 mmDict = try PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: mmpath)), options: [], format: nil) as? [String: Any] ?? [:]
-                NSLog("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
+                log("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
                 if let bundleID = mmDict["MCMMetadataIdentifier"] as? String {
                     returnedurl = URL(fileURLWithPath: "/var/mobile/Containers/Data/Application/").appendingPathComponent(uuid)
                     savedAppDataPaths[bundleID] = returnedurl?.path
@@ -620,7 +633,7 @@ func getDataDir(bundleID: String, exploit_method: Int) throws -> URL {
             
             do {
                 dirlist = try fm.contentsOfDirectory(atPath: URL.documents.appendingPathComponent("mounted").path)
-                // NSLog(dirlist)
+                // log(dirlist)
             } catch {
                 throw "Could not access /var/mobile/Containers/Data/Application.\n\(error.localizedDescription)"
             }
@@ -634,7 +647,7 @@ func getDataDir(bundleID: String, exploit_method: Int) throws -> URL {
                     var mmDict: [String: Any]
                     if fm.fileExists(atPath: mmpath) {
                         mmDict = try PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: mmpath)), options: [], format: nil) as? [String: Any] ?? [:]
-                        NSLog("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
+                        log("%@", "\(mmDict["MCMMetadataIdentifier"] ?? "")")
                         if mmDict["MCMMetadataIdentifier"] as! String == bundleID {
                             returnedurl = URL(fileURLWithPath: "/var/mobile/Containers/Data/Application/").appendingPathComponent(dir)
                             savedAppDataPaths[bundleID] = returnedurl?.path
@@ -656,20 +669,20 @@ func getDataDir(bundleID: String, exploit_method: Int) throws -> URL {
         
         do {
             dirlist = try fm.contentsOfDirectory(atPath: "/var/mobile/Containers/Data/Application")
-            // NSLog(dirlist)
+            // log(dirlist)
         } catch {
             throw "Could not access /var/mobile/Containers/Data/Application.\n\(error.localizedDescription)"
         }
         
         for dir in dirlist {
-            // NSLog(dir)
+            // log(dir)
             let mmpath = "/var/mobile/Containers/Data/Application/" + dir + "/.com.apple.mobile_container_manager.metadata.plist"
-            // NSLog(mmpath)
+            // log(mmpath)
             do {
                 var mmDict: [String: Any]
                 if fm.fileExists(atPath: mmpath) {
                     mmDict = try PropertyListSerialization.propertyList(from: Data(contentsOf: URL(fileURLWithPath: mmpath)), options: [], format: nil) as? [String: Any] ?? [:]
-                    // NSLog(mmDict as Any)
+                    // log(mmDict as Any)
                     if mmDict["MCMMetadataIdentifier"] as! String == bundleID {
                         returnedurl = URL(fileURLWithPath: "/var/mobile/Containers/Data/Application/").appendingPathComponent(dir)
                         savedAppDataPaths[bundleID] = returnedurl?.path
@@ -707,7 +720,7 @@ func misakaOperationValues(from inputString: String) -> [String] {
             }
         }
     } catch {
-        NSLog("Error: %@", "\(error)")
+        log("Error: %@", "\(error)")
     }
 
     return extractedValues
@@ -728,7 +741,7 @@ func parseMisakaSegment(from inputString: String) -> [String] {
             }
         }
     } catch {
-        NSLog("Error: %@", "\(error)")
+        log("Error: %@", "\(error)")
     }
 
     return extractedValues

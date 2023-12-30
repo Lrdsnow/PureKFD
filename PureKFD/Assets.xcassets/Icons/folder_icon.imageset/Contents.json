@@ -1,16 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icons8-folder-30.png",
+      "filename" : "folder-invoices--v1.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icons8-folder-60.png",
+      "filename" : "folder-invoices--v1-2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "folder-invoices--v1-3.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

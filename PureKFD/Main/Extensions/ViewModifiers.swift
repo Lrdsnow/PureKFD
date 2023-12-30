@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 extension View {
-    
     @ViewBuilder
     func `if`<Content: View>(_ condition: Bool, content: (Self) -> Content) -> some View {
         if condition {
@@ -17,6 +16,20 @@ extension View {
         } else {
             self
         }
+    }
+    @ViewBuilder
+    func iconImg() -> some View {
+        if self is Image {
+            AnyView((self as! Image).resizable().renderingMode(.template).frame(maxWidth: 32, maxHeight: 32))
+        } else {
+            AnyView(self)
+        }
+    }
+    @ViewBuilder
+    func listBG() -> some View {
+        self.listRowBackground(
+            VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).ignoresSafeArea().opacity(0.2).tint(Color(uiColor: .systemFill))
+        )
     }
     @ViewBuilder
     func plainList() -> some View {
@@ -27,17 +40,17 @@ extension View {
         }
     }
     @ViewBuilder
-    func clearBackground() -> some View {
-        if !UserDefaults.standard.bool(forKey: "noClearRows") {
-            self.background(Color.clear)
+    func plainList(_ e: Bool) -> some View {
+        if e {
+            self.listStyle(.plain)
         } else {
-            self
+            self.listStyle(.insetGrouped)
         }
     }
     @ViewBuilder
-    func clearListRowBackground() -> some View {
+    func clearBackground() -> some View {
         if !UserDefaults.standard.bool(forKey: "noClearRows") {
-            self.listRowBackground(Color.clear)
+            self.background(Color.clear)
         } else {
             self
         }
@@ -87,6 +100,53 @@ extension View {
         } else {
             self
         }
+    }
+    @ViewBuilder
+    func blurredBG() -> some View {
+        if #available(iOS 16.4, *) {
+            self.presentationBackground(.ultraThinMaterial)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
+    func clearBG() -> some View {
+        if #available(iOS 16.4, *) {
+            self.scrollContentBackground(.hidden)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
+    func bgImage(_ appData: AppData? = nil) -> some View {
+//        if hasEntitlement("com.apple.private.security.no-sandbox" as CFString),
+//           let bg = loadWallpapers(appData) {
+//            self.background(
+//                    Image(uiImage: bg)
+//                        .resizable()
+//                        .scaledToFill()
+//                        .edgesIgnoringSafeArea(.top)
+//                        .edgesIgnoringSafeArea(.bottom)
+//                        .overlay(
+//                            VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial)).ignoresSafeArea()
+//                        )
+//            )
+//        } else {
+            self.background(
+                VStack {
+                    Image("Default_BG")
+                        .resizable()
+                        .scaledToFill()
+                        .edgesIgnoringSafeArea(.top)
+                        .edgesIgnoringSafeArea(.bottom)
+                        .overlay(
+                            VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial)).ignoresSafeArea()
+                        )
+                }.edgesIgnoringSafeArea(.top)
+                    .edgesIgnoringSafeArea(.bottom)
+                    .frame(width: UIScreen.main.bounds.width)
+            )
+//        }
     }
     @ViewBuilder
     func mainViewTweaks() -> some View {

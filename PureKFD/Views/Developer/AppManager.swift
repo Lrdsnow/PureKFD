@@ -8,43 +8,46 @@
 import Foundation
 import SwiftUI
 import SDWebImageSwiftUI
+import libpurekfd
 
 @available(iOS 15.0, *)
 struct AppManagerView: View {
     @EnvironmentObject var appData: AppData
     @State var apps: [String:[String:[String:Any]]] = UserDefaults.standard.dictionary(forKey: "app_data") as? [String:[String:[String:Any]]] ?? [:]
     var body: some View {
-        if !apps.isEmpty {
-            List {
-                ForEach(apps.sorted(by: { $0.0 < $1.0 }), id: \.0) { key, value in
-                    HStack {
-                        if let appIconPath = (value["extras"] ?? [:])["icon"] as? String {
-                            WebImage(url: URL(fileURLWithPath: appIconPath)).resizable().frame(width: 40, height: 40).cornerRadius(10).scaledToFit().onAppear()
-                        }
-                        if let infoDict = value["info"] {
-                            Text("\(infoDict["CFBundleDisplayName"] as? String ?? (value["imDict"] ?? [:])["itemName"] as? String ?? "Unknown App") (\(key))")
-                        } else if let imDict = value["imDict"] {
-                            Text("\(imDict["itemName"] as? String ?? "Unknown iTunes App") (\(key))")
-                        } else {
-                            Text(key)
+        VStack {
+            if !apps.isEmpty {
+                List {
+                    ForEach(apps.sorted(by: { $0.0 < $1.0 }), id: \.0) { key, value in
+                        HStack {
+                            if let appIconPath = (value["extras"] ?? [:])["icon"] as? String {
+                                WebImage(url: URL(fileURLWithPath: appIconPath)).resizable().frame(width: 40, height: 40).cornerRadius(10).scaledToFit().onAppear()
+                            }
+                            if let infoDict = value["info"] {
+                                Text("\(infoDict["CFBundleDisplayName"] as? String ?? (value["imDict"] ?? [:])["itemName"] as? String ?? "Unknown App") (\(key))")
+                            } else if let imDict = value["imDict"] {
+                                Text("\(imDict["itemName"] as? String ?? "Unknown iTunes App") (\(key))")
+                            } else {
+                                Text(key)
+                            }
                         }
                     }
                 }
-            }
-        } else {
-            ProgressView().task {
-                NSLog("%@", "\(UserDefaults.standard.dictionary(forKey: "app_data") ?? [:])")
-                let exploit_method = smart_kopen(appData: appData)
-                if exploit_method == 0 && appData.kopened {
-                    do {
-                        apps = try getApps(exploit_method: 0)
-                    } catch { NSLog("%@","\(error)") }
-                    do_kclose()
-                    appData.kopened = false
-                    UserDefaults.standard.set(apps, forKey: "app_data")
+            } else {
+                ProgressView().task {
+                    NSLog("%@", "\(UserDefaults.standard.dictionary(forKey: "app_data") ?? [:])")
+                    let exploit_method = smart_kopen(appData: appData)
+                    if exploit_method == 0 && appData.kopened {
+                        do {
+                            apps = try getApps(exploit_method: 0)
+                        } catch { NSLog("%@","\(error)") }
+                        do_kclose()
+                        appData.kopened = false
+                        UserDefaults.standard.set(apps, forKey: "app_data")
+                    }
                 }
             }
-        }
+        }.bgImage(appData)
     }
 }
 
@@ -170,7 +173,7 @@ func getApps(exploit_method: Int) throws -> [String:[String:[String:Any]]] {
                                                         // } catch {
                                                         //     NSLog("Error: \(error.localizedDescription)")
                                                         // }
-                                                        overwriteFileVar(filePath, to)
+                                                        overwriteFile2(filePath, to)
                                                         // symlink(to, sym_to)
                                                         // overwriteFileVar(filePath, sym_to)
                                                         // do {

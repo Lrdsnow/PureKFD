@@ -1,16 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icons8-package-30.png",
+      "filename" : "open-parcel.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icons8-package-60.png",
+      "filename" : "open-parcel-2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "open-parcel-3.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

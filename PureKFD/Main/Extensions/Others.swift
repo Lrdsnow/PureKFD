@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 func haptic() {
     let impactFeedbackgenerator = UIImpactFeedbackGenerator(style: .medium)
@@ -87,12 +88,6 @@ extension String {
         return filePath
     }
 }
-
-extension String: LocalizedError {
-    public var errorDescription: String? { return self }
-}
-
-
 
 func cleanTemp() {
     do {

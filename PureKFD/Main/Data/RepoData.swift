@@ -16,8 +16,9 @@ struct Repo: Codable, Identifiable {
     var desc: String
     var url: URL?
     let icon: String
+    var categorized: Bool = true
     let accent: String?
-    let featured: [Featured]?
+    var featured: [Featured]?
     var packages: [Package]
     // Repo Data
     let repotype: String // Can be "PureKFD", "misaka" or "picasso"
@@ -37,6 +38,8 @@ struct Package: Codable, Identifiable {
     let screenshots: [URL?]?
     let banner: URL?
     let previewbg: URL?
+    let category: String
+    var beta: Bool = false
     // Install Values:
     var path: URL?
     var installtype: String?
@@ -75,6 +78,7 @@ struct PureKFDPkg: Codable {
      let long_description: String?
      let version: String
      let accent: String?
+     let category: String?
      let icon: String
      let screenshots: [URL?]?
      let banner: String?
@@ -307,6 +311,7 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            screenshots: screenshotsWithRepoURL,
                            banner: URL(string: String(String(repourl?.absoluteString ?? "") + (PureKFDPackage.banner ?? ""))),
                            previewbg: nil,
+                           category: PureKFDPackage.category ?? "Misc",
                            path: URL(string: String(String(repourl?.absoluteString ?? "") + PureKFDPackage.path)),
                            installtype: PureKFDPackage.installtype ?? "kfd",
                            install_actions: [],
@@ -345,6 +350,7 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            screenshots: misakaPackage.Screenshot?.compactMap { URL(string: $0) },
                            banner: URL(string: misakaPackage.HeaderImage ?? ""), 
                            previewbg: nil,
+                           category: misakaPackage.Category ?? "Misc",
                            path: URL(string: sortedVersionsDictionary.values.first ?? ""),
                            installtype: "kfd",
                            versions: sortedVersionsDictionary,
@@ -369,7 +375,8 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            accent: nil,
                            screenshots: nil,
                            banner: nil, 
-                           previewbg: nil,
+                           previewbg: nil, 
+                           category: "Picasso",
                            path: URL(string: String(String(repourl?.absoluteString ?? "") + picassoPackage.path)),
                            installtype: "kfd",
                            install_actions: [],
@@ -398,6 +405,7 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            screenshots: [URL(string: fluxPackage.1.preview ?? "")],
                            banner: nil,
                            previewbg: nil,
+                           category: "Misc",
                            path: URL(string: fluxPackage.1.link ?? ""),
                            installtype: "shortcut",
                            install_actions: [],
@@ -419,6 +427,7 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            screenshots: nil,
                            banner: nil,
                            previewbg: nil,
+                           category: "Misc",
                            path: repourl?.appendingPathComponent(jbPkg["Filename"] ?? ""),
                            installtype: "unknown",
                            install_actions: [],
@@ -440,6 +449,7 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            screenshots: nil,
                            banner: nil,
                            previewbg: nil,
+                           category: "Misc",
                            path: URL(string: String(String(repourl?.absoluteString ?? "") + cowabungaPackage.url)),
                            installtype: installtype ?? "unknown",
                            install_actions: [],
@@ -461,6 +471,7 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            screenshots: altstoreApp.screenshotURLs?.compactMap { URL(string: $0) },
                            banner: nil,
                            previewbg: nil,
+                           category: "Misc",
                            path: URL(string: altstoreApp.downloadURL ?? "none"),
                            installtype: "ipa",
                            install_actions: [],
@@ -482,6 +493,7 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            screenshots: [],
                            banner: nil,
                            previewbg: nil,
+                           category: "Misc",
                            path: URL(string: esignApp.downloadURL ?? "none"),
                            installtype: "ipa",
                            install_actions: [],
@@ -503,6 +515,7 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            screenshots: scarletApp.screenshots?.compactMap { URL(string: $0) },
                            banner: nil,
                            previewbg: nil,
+                           category: "Misc",
                            path: URL(string: scarletApp.down ?? "none"),
                            installtype: "ipa",
                            install_actions: [],

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Zip
+import libpurekfd
 
 @available(iOS 15.0, *)
 struct TweakConverterView: View {
@@ -24,7 +25,7 @@ struct TweakConverterView: View {
     var body: some View {
         List {
             Section("In") {
-                AutoFilePickerView(appData: _appData, pickedFilePath: $pickedFilePath, pickedFileFullPath: $pickedFileFullPath, type: [.data], label: "Input Tweak/Package", bundleID: "temp")
+                AutoFilePickerView(appData: _appData, pickedFilePath: $pickedFilePath, pickedFileFullPath: $pickedFileFullPath, type: [.data], label: "Input Tweak/Package", bundleID: "temp").listRowBackground(Color.clear)
                 Picker("Input Tweak/Package Type:", selection: $inpkgtype) {
                     ForEach(0..<pkgtypes.count, id: \.self) {
                         Text(pkgtypes[$0])
@@ -32,8 +33,8 @@ struct TweakConverterView: View {
                 }
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
-                .clearListRowBackground()
-            }
+                .listRowBackground(appData.appColors.background)
+            }.listRowBackground(Color.clear)
             Section("Out") {
                 Picker("Output Tweak Type:", selection: $outpkgtype) {
                     ForEach(0..<outpkgtypes.count, id: \.self) {
@@ -42,7 +43,7 @@ struct TweakConverterView: View {
                 }
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
-                .clearListRowBackground()
+                .listRowBackground(appData.appColors.background)
                 Button(action: {
                     Task {
                         tweakpath = convertTweak(intype: true_pkgtypes[inpkgtype], outtype: true_outpkgtypes[outpkgtype], pkgpath: URL(fileURLWithPath: pickedFileFullPath))
@@ -53,9 +54,9 @@ struct TweakConverterView: View {
                             UIApplication.shared.alert(title: "Error", body: "Unknown Error Occured", withButton: true)
                         }
                     }
-                }, label: {Text("Convert")})
-            }
-        }.navigationBarTitle("Tweak Converter", displayMode: .large)
+                }, label: {Text("Convert")}).listRowBackground(Color.clear)
+            }.listRowBackground(Color.clear)
+        }.navigationBarTitle("Tweak Converter", displayMode: .large).bgImage(appData)
     }
 }
 
@@ -81,7 +82,7 @@ func convertTweak(intype: String, outtype: String, pkgpath: URL) -> String? {
         let pkgid = "\(UUID())"
         let pkgfolderpath = FileManager.default.temporaryDirectory.appendingPathComponent("CowabungaLock")
         do {
-            let jsonData = try JSONEncoder().encode(Package(name: "CowabungaLock", bundleID: pkgid, author: "Unknown", desc: "Lock Ported From Cowabunga", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, install_actions: [], uninstall_actions: [], url: nil, pkgtype: "PureKFD"))
+            let jsonData = try JSONEncoder().encode(Package(name: "CowabungaLock", bundleID: pkgid, author: "Unknown", desc: "Lock Ported From Cowabunga", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, category: "Misc", install_actions: [], uninstall_actions: [], url: nil, pkgtype: "PureKFD"))
             try jsonData.write(to: work.appendingPathComponent("info.json"))
         } catch {}
         let pkgtemppath = FileManager.default.temporaryDirectory.appendingPathComponent("CowabungaLock.PureKFD.zip")

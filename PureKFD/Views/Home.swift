@@ -18,29 +18,53 @@ extension NSLock {
 @available(iOS 15.0, *)
 struct HomeView: View {
     @EnvironmentObject var appData: AppData
+    @Binding var showSetup: Bool
+    @Binding var updated: Bool
     @State private var exploitMethod = "None"
     @State private var iosversion = DeviceInfo()
     @State private var repoSections: [String:[Repo]] = [:]
     @State private var featuredPackages: [Featured] = []
     @State private var packageList: [Package] = []
+    @State private var ts = false
+    @State private var exploitString = "None"
+    @State private var refreshed = false
+    let mainView: MainView
     
     var body: some View {
         NavigationView {
             ZStack {
                 List {
+                    if updated {
+                        Button(action: {
+                            updated = false
+                            try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("config/setup_done"))
+                            showSetup = true
+                            mainView.updateRepos()
+                        }) {
+                            Text("Looks like you've updated! Would you like to rerun Setup?")
+                                .font(.headline)
+                                .padding(.horizontal)
+                        }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).hideListRowSeparator()
+                            .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2).listRowBackground(appData.appColors.background)
+                    }
+                    
                     // Featured Packages
                     if !featuredPackages.isEmpty {
                         FeaturedPackagesView(featuredPackages: featuredPackages, homeView: true)
-                            .padding(.horizontal, -12)
+                            .padding(.horizontal, -16)
                             .padding(.bottom, -35)
                             .listRowSeparator(.hidden)
                             .listStyle(.plain)
+                            .background(Color.clear)
+                            .listRowBackground(appData.appColors.background)
                     } else {
                         PlaceholderFeaturedView()
                             .padding(.horizontal, -12)
                             .padding(.bottom, -35)
                             .listRowSeparator(.hidden)
                             .listStyle(.plain)
+                            .background(Color.clear)
+                            .listRowBackground(appData.appColors.background)
                     }
                     
                     Section("Need Ideas?") {
@@ -58,22 +82,24 @@ struct HomeView: View {
                                                     .renderingMode(.template)
                                             }}, preview: {PackagePreviewView(package: package).if(package.accent != nil) { view in
                                                 view.accentColor(package.accent!.toColor())
-                                            }})
+                                            }}).background(Color.clear)
                                     } else {
-                                        PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package, installedPackageView: true)
+                                        PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package, installedPackageView: true).background(Color.clear)
                                     }
-                                }
+                                }.background(Color.clear)
                                 .listRowSeparator(.hidden)
                             }
                         } else {
                             PlaceholderPackageListView()
                                 .listRowSeparator(.hidden)
+                                .background(Color.clear)
                         }
-                    }
+                    }.background(Color.clear).listRowBackground(appData.appColors.background)
                     
-                    Text("\(iosversion.modelIdentifier)\(iosversion.lowend ? " (LPM)":"") • \(iosversion.major == 0 ? "Unknown Version" : "iOS \(iosversion.major).\(iosversion.sub)\(iosversion.minor == 0 ? "" : ".\(iosversion.minor)")")\(iosversion.beta ? " Beta" : "")\(iosversion.build_number == "0" ? "" : " (\(iosversion.build_number))") • PureKFD v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0") • \(exploitMethod)").frame(maxWidth: .infinity, alignment: .center).opacity(0.7).font(.footnote).listRowSeparator(.hidden)
-                }
+                    Text("PureKFD v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0") • \(exploitString)\n\(iosversion.modelIdentifier)\(iosversion.lowend ? " (LPM)":"") • \(iosversion.major == 0 ? "Unknown Version" : "iOS \(iosversion.major).\(iosversion.sub)\(iosversion.minor == 0 ? "" : ".\(iosversion.minor)")")\(iosversion.beta ? " Beta" : "")\(iosversion.build_number == "0" ? "" : " (\(iosversion.build_number))")").frame(maxWidth: .infinity, alignment: .center).opacity(0.7).font(.footnote).listRowSeparator(.hidden).multilineTextAlignment(.center).listRowBackground(appData.appColors.background)
+                }.background(Color.clear)
             }
+            .bgImage(appData)
             .task {
                 haptic()
             }
@@ -85,27 +111,37 @@ struct HomeView: View {
                 packageList = []
                 await fetchRepos()
             }.task() {
-                Task {
-                    let deviceinfo = getDeviceInfo(appData: appData)
-                    iosversion = deviceinfo.3
-                    switch deviceinfo.0 {
-                    case 0:
-                        exploitMethod = "KFD"
-                    case 1:
-                        exploitMethod = "MDC"
-                    case 2:
-                        exploitMethod = "Rootful"
-                    case 3:
-                        exploitMethod = "Rootless"
-                    default:
-                        exploitMethod = "None"
-                        appData.UserData.filters.jb = true
-                        appData.UserData.filters.kfd = true
+                if !refreshed {
+                    Task {
+                        let deviceinfo = getDeviceInfo(appData: appData)
+                        iosversion = deviceinfo.3
+                        ts = deviceinfo.2
+                        switch deviceinfo.0 {
+                        case 0:
+                            exploitMethod = "KFD"
+                            if ts {
+                                exploitString = "KFD (w/ TS)"
+                            }
+                        case 1:
+                            exploitMethod = "MDC"
+                            if ts {
+                                exploitString = "MDC (w/ TS)"
+                            }
+                        case 2:
+                            exploitMethod = "Rootful"
+                        case 3:
+                            exploitMethod = "Rootless"
+                        default:
+                            exploitMethod = "None"
+                            appData.UserData.filters.jb = true
+                            appData.UserData.filters.kfd = true
+                            if ts {
+                                exploitString = "Trollstore"
+                            }
+                        }
                     }
-                }
-                await fetchRepos()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                    updateUI()
+                    fetchRepos()
+                    refreshed = true
                 }
             }
         }.navigationViewStyle(.stack)
@@ -113,7 +149,7 @@ struct HomeView: View {
     
     private var gearButton: some View {
         NavigationLink(destination: SettingsView()) {
-            Image("gear_icon")
+            Image("tabbar_gear_icon")
                 .renderingMode(.template)
                 .font(.system(size: 24))
                 .frame(width: 44, height: 44)
@@ -133,26 +169,24 @@ struct HomeView: View {
         }
     }
     
-    private func fetchRepos() async {
+    private func fetchRepos() {
         repoSections = [:]
-        await getRepos(appdata: appData) { repo in
-            DispatchQueue.main.async {
-                let repoType = repo.repotype
-                if var existingRepos = repoSections[repoType] {
-                    if let existingRepoIndex = existingRepos.firstIndex(where: { $0.url == repo.url }) {
-                        existingRepos[existingRepoIndex] = repo
-                    } else {
-                        existingRepos.append(repo)
-                    }
-                    repoSections[repoType] = existingRepos
+        
+        let repos = getCachedRepos()
+        
+        for repo in repos {
+            let repoType = repo.repotype
+            if var existingRepos = repoSections[repoType] {
+                if let existingRepoIndex = existingRepos.firstIndex(where: { $0.url == repo.url }) {
+                    existingRepos[existingRepoIndex] = repo
                 } else {
-                    repoSections[repoType] = [repo]
+                    existingRepos.append(repo)
                 }
+                repoSections[repoType] = existingRepos
+            } else {
+                repoSections[repoType] = [repo]
             }
         }
-    }
-    
-    func updateUI() {
         var temp_featuredPackages: [Featured] = []
         var temp_packageList: [Package] = []
         for (_, repoList) in repoSections {
@@ -162,6 +196,7 @@ struct HomeView: View {
                 }
             }
         }
+        
         temp_featuredPackages = Array(temp_featuredPackages.shuffled().prefix(5)) as? [Featured] ?? []
         for (_, repoList) in repoSections {
             for repo in repoList {
@@ -172,6 +207,7 @@ struct HomeView: View {
                 temp_packageList.append(contentsOf: filteredPackages)
             }
         }
+        
         temp_packageList = Array(temp_packageList.shuffled().prefix(10)) as? [Package] ?? []
         packageList = temp_packageList
         featuredPackages = temp_featuredPackages
@@ -223,9 +259,141 @@ struct PlaceholderFeaturedView: View {
 
 @available(iOS 15.0, *)
 struct SettingsView: View {
+    var body: some View {
+        List {
+            HStack {
+                Button(action: {
+                    
+                }) {
+                    HStack {
+                        Spacer()
+                        HStack {
+                            Image("dev_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
+                            Text("Exploit Setup")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+            }.listRowBackground(Color.clear).hideListRowSeparator()
+            
+            HStack {
+                Button(action: {
+                    
+                }) {
+                    HStack {
+                        Spacer()
+                        HStack {
+                            Image("edit_row").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
+                            Text("Change Row Theming")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+            }.listRowBackground(Color.clear).hideListRowSeparator()
+            
+            HStack {
+                Button(action: {
+                    
+                }) {
+                    HStack {
+                        Spacer()
+                        HStack {
+                            Image("app_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
+                            Text("Change Icon")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+            }.listRowBackground(Color.clear).hideListRowSeparator()
+            
+            HStack {
+                Button(action: {
+                    
+                }) {
+                    HStack {
+                        Spacer()
+                        HStack {
+                            Image("phone_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
+                            Text("Background Setup")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+            }.listRowBackground(Color.clear).hideListRowSeparator()
+            
+            HStack {
+                Button(action: {
+                    
+                }) {
+                    HStack {
+                        Spacer()
+                        HStack {
+                            Image("dev_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
+                            Text("Advanced Setup")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+            }.listRowBackground(Color.clear).hideListRowSeparator()
+            
+            HStack {
+                Button(action: {
+                    
+                }) {
+                    HStack {
+                        Spacer()
+                        HStack {
+                            Image("credits_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
+                            Text("Credits")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+            }.listRowBackground(Color.clear).hideListRowSeparator()
+            
+            CustomNavigationLink {oSettingsView()} label: {
+                HStack {
+                    Spacer()
+                    HStack {
+                        Image("gear_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
+                        Text("v4 Settings")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        Spacer()
+                        Image("arrow_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 24)
+                    }
+                    Spacer()
+                }
+            }.listRowBackground(Color.clear).hideListRowSeparator()
+        }.bgImage().navigationTitle("Settings").navigationBarTitleDisplayMode(.inline).listRowSpacing(-10)
+    }
+}
+
+@available(iOS 15.0, *)
+struct oSettingsView: View {
     @EnvironmentObject var appData: AppData
-    @State private var selectedColorString: String = "#FFFFFF"
-    @State private var selectedColor: Color = (Color(UIColor(hex: UserDefaults.standard.string(forKey: "accentColor") ?? "") ?? UIColor.systemPurple) )
+    @State private var selectedColorString: String = "#E3CCF8"
+    @State private var selectedColor: Color = (Color(UIColor(hex: UserDefaults.standard.string(forKey: "accentColor") ?? "") ?? UIColor(hex: "#E3CCF8")!) )
+    @State private var detectedExploit = -1
+    @State private var ts = false
     
     private var respringOptions = ["Frontboard", "Backboard"]
     private let exploitOptions = ["KFD", "MDC", "Rootful (JB)", "Rootless (JB)"]
@@ -242,16 +410,16 @@ struct SettingsView: View {
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                .clearListRowBackground()
+                .listRowBackground(appData.appColors.background)
                 Toggle("Override Exploit Method", isOn: $appData.UserData.override_exploit_method)
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
                     .onChange(of: appData.UserData.override_exploit_method) {_ in appData.save()}
-                    .clearListRowBackground()
+                    .listRowBackground(appData.appColors.background)
                 
                 if appData.UserData.override_exploit_method {
                     if appData.UserData.exploit_method == 1 {
-                        Text("Your device was detected as an MDC device, KFD IS NOT RECOMMENDED on these devices").clearListRowBackground()
+                        Text("Your device was detected as an MDC device, KFD IS NOT RECOMMENDED on these devices").listRowBackground(appData.appColors.background)
                     }
                     Picker("Exploit:", selection: $appData.UserData.exploit_method) {
                         ForEach(0..<exploitOptions.count, id: \.self) {
@@ -261,7 +429,7 @@ struct SettingsView: View {
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
                     .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                    .clearListRowBackground()
+                    .listRowBackground(appData.appColors.background)
                 }
                 
                 Picker("App Install Type:", selection: $appData.UserData.install_method) {
@@ -272,7 +440,7 @@ struct SettingsView: View {
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                .clearListRowBackground()
+                .listRowBackground(appData.appColors.background)
             }
             
             if appData.UserData.exploit_method == 0 && appData.UserData.override_exploit_method {
@@ -283,26 +451,26 @@ struct SettingsView: View {
                 Toggle("Translate Prefs On Install", isOn: $appData.UserData.translateoninstall)
                     .onChange(of: appData.UserData.translateoninstall) { _ in
                         appData.save()
-                    }.clearListRowBackground()
+                    }.listRowBackground(appData.appColors.background)
                 Toggle("Use BuiltIn File Picker", isOn: $appData.UserData.PureKFDFilePicker)
                     .onChange(of: appData.UserData.PureKFDFilePicker) { _ in
                         appData.save()
-                    }.clearListRowBackground()
+                    }.listRowBackground(appData.appColors.background)
                 Toggle("Developer Mode", isOn: $appData.UserData.dev)
                     .onChange(of: appData.UserData.dev) { _ in
                         appData.save()
-                    }.clearListRowBackground()
+                    }.listRowBackground(appData.appColors.background)
                 NavigationLink(destination: IconSelectorView(), label: {
                     Text("Change Icon")
-                }).clearListRowBackground()
+                }).listRowBackground(appData.appColors.background)
                 NavigationLink(destination: ExtrasView(selectedColor: $selectedColor, selectedColorString: $selectedColorString), label: {
                     Text("Other Extras")
-                }).clearListRowBackground()
+                }).listRowBackground(appData.appColors.background)
             }
-            .clearListRowBackground()
+            .listRowBackground(appData.appColors.background)
             CreditView()
-                .clearListRowBackground()
-        }.navigationBarTitle("Settings", displayMode: .large)
+                .listRowBackground(appData.appColors.background)
+        }.navigationBarTitle("Settings", displayMode: .large).bgImage(appData)
     }
     init() {
         if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
@@ -331,7 +499,10 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .clearListRowBackground()
+            .listRowBackground(appData.appColors.background)
+            .onChange(of: appData.UserData.kfd.puaf_pages_index) {sel in
+                appData.UserData.kfd.puaf_pages = puafPagesOptions[sel]
+            }
             
             Picker("puaf method:", selection: $appData.UserData.kfd.puaf_method) {
                 ForEach(0..<puafMethodOptions.count, id: \.self) {
@@ -340,7 +511,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .clearListRowBackground()
+            .listRowBackground(appData.appColors.background)
             
             Picker("kread method:", selection: $appData.UserData.kfd.kread_method) {
                 ForEach(0..<kreadMethodOptions.count, id: \.self) {
@@ -349,7 +520,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .clearListRowBackground()
+            .listRowBackground(appData.appColors.background)
             
             Picker("kwrite method:", selection: $appData.UserData.kfd.kwrite_method) {
                 ForEach(0..<kwriteMethodOptions.count, id: \.self) {
@@ -358,7 +529,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .clearListRowBackground()
+            .listRowBackground(appData.appColors.background)
             
             Picker("static headroom:", selection: $appData.UserData.kfd.static_headroom_sel) {
                 ForEach(0..<staticHeadroomOptions.count, id: \.self) {
@@ -367,7 +538,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .clearListRowBackground()
+            .listRowBackground(appData.appColors.background)
             .onChange(of: appData.UserData.kfd.static_headroom_sel) {sel in
                 appData.UserData.kfd.static_headroom = staticHeadroomOptions[sel]
             }
@@ -519,28 +690,28 @@ struct ExtrasView: View {
                         refreshView(appData: appData)
                     }
             }
-            .clearListRowBackground()
+            .listRowBackground(appData.appColors.background)
             Section(header: Text("App Data").foregroundColor(.accentColor)) {
                 Button(action: {
                     appData.RepoData = SavedRepoData(urls: [])
                     appData.repoSections = [:]
                     appData.save()
-                }, label: {Text("Clear Repo Data")}).clearListRowBackground()
+                }, label: {Text("Clear Repo Data")}).listRowBackground(appData.appColors.background)
                 Button(action: {
                     appData.UserData = SavedUserData()
                     appData.save()
-                }, label: {Text("Clear User Data")}).clearListRowBackground()
+                }, label: {Text("Clear User Data")}).listRowBackground(appData.appColors.background)
                 Button(action: {
                     UserDefaults.standard.set("", forKey: "accentColor")
                     refreshView(appData: appData)
-                }, label: {Text("Clear Accent Color")}).clearListRowBackground()
+                }, label: {Text("Clear Accent Color")}).listRowBackground(appData.appColors.background)
                 Spacer()
                 Button(action: {
                     BackupManager().exportBackup()
-                }, label: {Text("Backup Data")}).clearListRowBackground()
+                }, label: {Text("Backup Data")}).listRowBackground(appData.appColors.background)
                 Spacer()
                 
-            }.clearListRowBackground()
+            }.listRowBackground(appData.appColors.background)
         }.navigationBarTitle("Extras", displayMode: .large)
     }
 }

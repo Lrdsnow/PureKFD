@@ -25,7 +25,7 @@ struct InstalledView: View {
     @State private var packages: [String:[Package]] = [:]
     
     @State private var showDetailView = false
-    @State private var CurrentPackage = Package(name: "Nil", bundleID: "nil", author: "Nil", version: "Nil", desc: "Nil", longdesc: "", icon: URL(string: ""), accent: nil, screenshots: [], banner: nil, previewbg: nil, install_actions: [], uninstall_actions: [], url: nil, pkgtype: "unknown")
+    @State private var CurrentPackage = Package(name: "Nil", bundleID: "nil", author: "Nil", version: "Nil", desc: "Nil", longdesc: "", icon: URL(string: ""), accent: nil, screenshots: [], banner: nil, previewbg: nil, category: "Misc", install_actions: [], uninstall_actions: [], url: nil, pkgtype: "unknown")
     
     var body: some View {
         NavigationView {
@@ -89,7 +89,7 @@ struct InstalledView: View {
                             }
                         }
                     }
-                    .hideListRowSeparator()
+                    .listRowBackground(Color.clear)
                 }
                 .onAppear() {
                     Task { await updatePackages() }
@@ -102,7 +102,8 @@ struct InstalledView: View {
             }
             .onAppear {haptic()}
             .navigationTitle("Installed")
-        }
+            .bgImage(appData)
+        }.navigationViewStyle(.stack)
     }
     
     private struct InstalledPkgRow: View {
@@ -169,3 +170,5 @@ struct InstalledView: View {
         packages["Installed"] = getInstalledPackages().sorted(by: { $0.name < $1.name })
     }
 }
+
+

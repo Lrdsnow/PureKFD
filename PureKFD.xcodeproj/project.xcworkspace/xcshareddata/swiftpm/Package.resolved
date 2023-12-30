@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "dynamic",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mhdhejazi/Dynamic",
-      "state" : {
-        "revision" : "ab9a2570862d54aed2663691bb767f881226a12f",
-        "version" : "1.2.0"
-      }
-    },
-    {
       "identity" : "marqueetext",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/joekndy/MarqueeText.git",
@@ -19,12 +10,30 @@
       }
     },
     {
+      "identity" : "octokit.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nerdishbynature/octokit.swift.git",
+      "state" : {
+        "revision" : "f762f1566f7cd0e683b9329f169c28ab6ef993cc",
+        "version" : "0.12.0"
+      }
+    },
+    {
+      "identity" : "requestkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nerdishbynature/RequestKit.git",
+      "state" : {
+        "revision" : "8b0258ea2a4345cbcac90509b764faacea12efb0",
+        "version" : "3.2.1"
+      }
+    },
+    {
       "identity" : "sdwebimage",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage.git",
       "state" : {
-        "revision" : "36e484b317522667a4b2de9b50daaa01dfa30809",
-        "version" : "5.18.0"
+        "revision" : "fd1950de05a5ad77cb252fd88576c1e1809ee50d",
+        "version" : "5.18.4"
       }
     },
     {
@@ -32,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImageSwiftUI.git",
       "state" : {
-        "revision" : "e837c37d45449fbd3b4745c10c5b5274e73edead",
-        "version" : "2.2.3"
+        "revision" : "5f025e54a03d3d33dff24d7a19331f446f00ed9d",
+        "version" : "2.2.4"
       }
     },
     {

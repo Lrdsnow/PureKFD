@@ -1,16 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icons8-app-30-2.png",
+      "filename" : "notification-center.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icons8-app-60-2.png",
+      "filename" : "notification-center-2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "notification-center-3.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

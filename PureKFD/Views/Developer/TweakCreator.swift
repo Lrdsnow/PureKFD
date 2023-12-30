@@ -108,7 +108,7 @@ struct CreatorView: View {
                         .cornerRadius(8)
                 }.buttonStyle(.bordered).disabled(generatingpackage)
                 Spacer()
-            }.clearListRowBackground()
+            }
         }.listStyle(.insetGrouped).navigationBarTitle("Tweak Creator", displayMode: .large)
     }
     
@@ -179,7 +179,7 @@ struct CreatorView: View {
                 do {
                     try FileManager.default.moveItem(at: destURL ?? URL(fileURLWithPath: ""), to: tempFileURL)
                 } catch {}
-                let results = installPackage(pkg: Package(name: name, bundleID: bundleID, author: author, desc: "", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, install_actions: [], uninstall_actions: [], url: nil, pkgtype: "PureKFD"), path: tempFileURL, appData: appData)
+                let results = installPackage(pkg: Package(name: name, bundleID: bundleID, author: author, desc: "", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, category: "Misc", install_actions: [], uninstall_actions: [], url: nil, pkgtype: "PureKFD"), path: tempFileURL, appData: appData)
                 if results?.localizedDescription == nil {
                     UIApplication.shared.alert(title: "Success", body: "Package Installed", animated: false, withButton: true)
                 } else {

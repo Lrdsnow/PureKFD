@@ -1,16 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icons8-gear-30.png",
+      "filename" : "settings--v1-5.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icons8-gear-60.png",
+      "filename" : "settings--v1-4.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "settings--v1-3.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

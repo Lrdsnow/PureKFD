@@ -16,6 +16,8 @@ class AppData: ObservableObject {
     @Published var kopened = false
     @Published var queued: [Package] = []
     @Published var reloading_browse = false // wether or not browse is being reloaded
+    @Published var bg: UIImage? = nil
+    @Published var appColors: AppColors = AppColors()
 
     func save() {
         do {
@@ -25,13 +27,19 @@ class AppData: ObservableObject {
                 try FileManager.default.createDirectory(at: configDirectory, withIntermediateDirectories: true, attributes: nil)
             }
             // save repodata
-            let encodedRepoData = try JSONEncoder().encode(RepoData)
+            var rdata = RepoData
+            let default_urls = defaulturls()
+            for url in default_urls.urls {
+                rdata.urls = rdata.urls.filter { $0 != url }
+            }
+            let encodedRepoData = try JSONEncoder().encode(rdata)
             try encodedRepoData.write(to: configDirectory.appendingPathComponent("repoData.json"))
             // save userdata
+            NSLog("%@", "userData: \(UserData)")
             let encodedUserData = try JSONEncoder().encode(UserData)
             try encodedUserData.write(to: configDirectory.appendingPathComponent("userData.json"))
         } catch {
-            print("Error saving data: \(error)")
+            NSLog("%@", "Error saving data: \(error)")
         }
     }
 
@@ -52,7 +60,7 @@ class AppData: ObservableObject {
                 UserData = decodedData
             }
         } catch {
-            print("Error loading data: \(error)")
+            NSLog("%@", "Error loading data: \(error)")
         }
     }
 
@@ -72,12 +80,16 @@ struct SavedUserData: Codable {
     var respringMode = 0 // [frontboard, backboard] Sets the respring type
     var customback = false // Shows a cool circle back button
     var allowlight = false // Allows Light Mode (not normally allowed)
+    var hideMissingEntitlementWarning = false // Whether the user has hidden the notification about not having the increased memory limit entitlement
     var dev = true // Developer Mode!
     var translateoninstall = true // Translate Prefs on install
     var defaultPkgCreatorType = "picasso" // eta s0n
     var PureKFDFilePicker = true // Use built in file picker
     var filters = SavedFilters() // Filters packages
     var lastCopiedFile = "" // Clipboard for the file manager
+    var savedAppColors = SavedAppColors()
+    var betaRepos = false
+    var ghToken: String? = nil
     // Dummy values
     var refresh = false // This just gets toggled on or off to refresh the view
 }
@@ -89,22 +101,41 @@ struct SavedFilters: Codable, Equatable {
     var shortcuts = false // Hides shortcuts
 }
 
+struct SavedAppColors: Codable {
+    var name: String = ""
+    var author: String = ""
+    var description: String = ""
+    var background: String = ""
+    var accent: String = ""
+}
+
+struct AppColors {
+    var name: Color = Color.accentColor
+    var author: Color = Color.accentColor.opacity(0.5)
+    var description: Color = Color.accentColor.opacity(0.7)
+    var background: Color = Color.clear
+    var accent: Color = Color.accentColor
+}
+
 struct SavedKFDData: Codable, Equatable {
     var puaf_pages = 4096 // Puaf Pages (pls dont change this unless you have less then 4gb of ram, it should be 3072)
     var puaf_pages_index = 8 // Puaf Pages (pls dont change this unless you have less then 4gb of ram, it should be 8)
     var puaf_method = 1 // Physpuppet or Smith (smith works for all)
     var kread_method = 1 // kqueue_workloop_ctl or sem_open (sem_open works for all)
     var kwrite_method = 1 // dup or sem_open (sem_open works for all)
+    var use_static_headroom = false // just dont use static headroom if the user doesnt wanna
     var static_headroom = 256 // headroom for ram hogger
     var static_headroom_sel = 2 // headroom selection
 }
 
 struct defaulturls {
     let urls: [URL] = [
+        // litterally my pc
+        //URL(string: "http://192.168.50.135:8000/bridge.json")!,
         // PureKFD Repos
-        URL(string: "https://raw.githubusercontent.com/Lrdsnow/lrdsnows-repo/main/PureKFDv4/purerepo.json")!,
+        URL(string: "https://raw.githubusercontent.com/Lrdsnow/lrdsnows-repo/main/PureKFDv5/bridge.json")!,
         URL(string: "https://raw.githubusercontent.com/Dreel0akl/poopypoopermaybeworking/master/Essentials/manifest.json")!,
-        URL(string: "https://raw.githubusercontent.com/dora727/KaedeFriedDora/master/Essentials/manifest.json")!,
+        URL(string: "https://raw.githubusercontent.com/dora727/KaedeFriedDora/master/bridge.json")!,
         // Picasso Repos
         URL(string: "https://raw.githubusercontent.com/circularsprojects/circles-repo/main/manifest.json")!,
         URL(string: "https://raw.githubusercontent.com/sourcelocation/Picasso-test-repo/main/manifest.json")!,
@@ -147,7 +178,7 @@ struct defaulturls {
         URL(string: "https://raw.githubusercontent.com/roeegh/Puck/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/hanabiADHD/nbxyRepo/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/huligang/coolwcat/main/repo.json")!,
-        URL(string: "https://yangjiii.tech/file/Repo/repo.json")!,
+        URL(string: "https://yangjiii.tech/file/Repo/yangji.json")!,
         URL(string: "https://raw.githubusercontent.com/leminlimez/leminrepo/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/ichitaso/misaka/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/chimaha/misakarepo/main/repo.json")!,
@@ -156,8 +187,8 @@ struct defaulturls {
         URL(string: "https://raw.githubusercontent.com/EPOS05/EPOSbox/main/misaka.json")!,
         URL(string: "https://raw.githubusercontent.com/tdquang266/MDC/main/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/kloytofyexploiter/Misaka-repo_MRX/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/main/pure.json")!,
+        URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/870c6ed0d0fc73bce5bfe521261c938cc62107fe/repo.json")!,
         URL(string: "https://raw.githubusercontent.com/tyler10290/MisakaRepoBackup/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/hanabiADHD/DekotasMirror/main/dekotas.json")!,
+        //URL(string: "https://raw.githubusercontent.com/hanabiADHD/DekotasMirror/main/dekotas.json")!,
     ]
 }

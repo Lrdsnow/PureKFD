@@ -11,6 +11,7 @@ import MarqueeText
 import TextFieldAlert
 import Foundation
 import Zip
+import libpurekfd
 
 struct PackagePreviewView: View {
     let package: Package
@@ -104,6 +105,7 @@ struct PackageDetailView: View {
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: UIScreen.main.bounds.width-30, height: 180)
+                                .shadow(color: Color.black.opacity(0.7), radius: 5, x: 3, y: 5)
                             //.clipped()
                                 .cornerRadius(15)
                             
@@ -133,6 +135,7 @@ struct PackageDetailView: View {
                             .frame(width: 118, height: 118)
                             .cornerRadius(20)
                             .padding(.leading)
+                            .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                             .contextMenu(menuItems: {
                                 Button(action: {
                                     let pasteboard = UIPasteboard.general
@@ -149,6 +152,7 @@ struct PackageDetailView: View {
                             .scaledToFit()
                             .frame(width: 120, height: 120)
                             .cornerRadius(10)
+                            .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                             .padding(.leading)
                     }
                     
@@ -156,11 +160,13 @@ struct PackageDetailView: View {
                         Text(package.name)
                             .font(.title2)
                             .fontWeight(.bold)
+                            .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                         
                         Text("By \(package.author) v\(String(package.version ?? ""))" + (package.path?.isFileURL ?? false ? " (local)" : ""))
                             .font(.subheadline)
                             .foregroundColor(Color.accentColor.opacity(0.7))
                             .lineLimit(1)
+                            .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                         
                         MarqueeText(
                             text: package.desc,
@@ -168,7 +174,7 @@ struct PackageDetailView: View {
                             leftFade: 16,
                             rightFade: 16,
                             startDelay: 3
-                        )
+                        ).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                         
                         Spacer()
                         
@@ -192,7 +198,7 @@ struct PackageDetailView: View {
                                     .background(isDownloading || isInstalled || isExtracting || downloadFailed ? Color.accentColor.opacity(0.7) : Color.accentColor)
                                     .cornerRadius(20)
                             }
-                        }.onAppear() {isInstalled = isPackageInstalled(package.bundleID)}.contextMenu(menuItems: {
+                        }.shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2).onAppear() {isInstalled = isPackageInstalled(package.bundleID)}.contextMenu(menuItems: {
                             if package.pkgtype == "misaka" && !isInstalled {
                                 ForEach(package.versions?.keys.sorted() ?? [], id: \.self) { versionKey in
                                     if let release = package.versions?[versionKey] {
@@ -228,9 +234,11 @@ struct PackageDetailView: View {
                         .font(.title3)
                         .fontWeight(.bold)
                         .padding(.horizontal)
+                        .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                     Text(package.longdesc ?? "")
                         .padding(.horizontal)
                         .font(.body)
+                        .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                 }
                 
                 Rectangle()
@@ -243,6 +251,7 @@ struct PackageDetailView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding(.horizontal)
+                        .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                         
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -253,6 +262,7 @@ struct PackageDetailView: View {
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: 185, height: 400)
+                                        .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                                         .cornerRadius(10)
                                         .contextMenu(menuItems: {
                                             Button(action: {
@@ -293,7 +303,7 @@ struct PackageDetailView: View {
         }
         .onDisappear() {
             refreshView(appData: appData)
-        }
+        }.bgImage(appData)
         .navigationBarTitle("", displayMode: .inline)
     }
     
@@ -302,7 +312,7 @@ struct PackageDetailView: View {
         let tempDirectory = documentsDirectory.appendingPathComponent("temp", isDirectory: true)
         isDownloading = true
         
-        NSLog("download")
+        log("download")
         
         // Create the temp directory if it doesn't exist
         do {
@@ -331,6 +341,7 @@ struct PackageDetailView: View {
                         isDownloading = false
                         isExtracting = true
                         let error = installPackage(pkg: package, path: path ?? URL(string: "file:///")!, appData: appData)
+                        try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("temp"))
                         if error == nil {
                             isInstalled = true
                             isExtracting = false
@@ -520,7 +531,7 @@ class ViewModel: ObservableObject {
                     try FileManager.default.moveItem(at: tempURL, to: destinationURL)
                     downloadedURL = destinationURL
                 } catch {
-                    NSLog("%@", "Error moving downloaded file: \(error)")
+                    log("%@", "Error moving downloaded file: \(error)")
                 }
             }
             semaphore.signal()
@@ -565,7 +576,7 @@ func extractPackage(_ url: URL, readPackageInfo: Bool = false, appdata: AppData?
     do {
         try fileManager.createDirectory(at: extractedDir, withIntermediateDirectories: true, attributes: nil)
     } catch {
-        NSLog("%@", "Error creating directory: \(error.localizedDescription)")
+        log("%@", "Error creating directory: \(error.localizedDescription)")
         return (error, nil)
     }
     
@@ -593,7 +604,8 @@ func extractPackage(_ url: URL, readPackageInfo: Bool = false, appdata: AppData?
                     accent: nil,
                     screenshots: [],
                     banner: nil,
-                    previewbg: nil,
+                    previewbg: nil, 
+                    category: "Misc",
                     install_actions: [],
                     uninstall_actions: [],
                     url: nil,
@@ -626,10 +638,10 @@ func extractPackage(_ url: URL, readPackageInfo: Bool = false, appdata: AppData?
             return (nil, package)
         } catch {
             if !FileManager.default.fileExists(atPath: extractedDir.appendingPathComponent(url.lastPathComponent.removingFileExtensions(2)).appendingPathComponent("Overwrite").path) {
-                NSLog("%@", "Error reading info.json or decoding package: \(error.localizedDescription)")
+                log("%@", "Error reading info.json or decoding package: \(error.localizedDescription)")
                 return (error, nil)
             } else {
-                return (nil, Package(name: "Misaka Package", bundleID: "\(UUID())", author: "Unknown", desc: "Unknown", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, install_actions: [], uninstall_actions: [], url: nil, pkgtype: "misaka"))
+                return (nil, Package(name: "Misaka Package", bundleID: "\(UUID())", author: "Unknown", desc: "Unknown", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, category: "Misc", install_actions: [], uninstall_actions: [], url: nil, pkgtype: "misaka"))
             }
         }
     }
@@ -647,9 +659,9 @@ func translatePrefs(_ preftype: String, pkgpath: URL) {
            let jsonString = String(data: jsonData, encoding: .utf8) {
             do {
                 try jsonString.write(toFile: tofile.path, atomically: true, encoding: .utf8)
-                NSLog("%@", "Data saved to file: \(pkgpath.path)")
+                log("%@", "Data saved to file: \(pkgpath.path)")
             } catch {
-                NSLog("%@", "Error saving data to file: \(error)")
+                log("%@", "Error saving data to file: \(error)")
             }
         }
     } else if preftype == "misaka" {
@@ -659,9 +671,9 @@ func translatePrefs(_ preftype: String, pkgpath: URL) {
             let jsonString = String(data: jsonData, encoding: .utf8) {
             do {
                 try jsonString.write(toFile: tofile.path, atomically: true, encoding: .utf8)
-                NSLog("%@", "Data saved to file: \(pkgpath.path)")
+                log("%@", "Data saved to file: \(pkgpath.path)")
             } catch {
-                NSLog("%@", "Error saving data to file: \(error)")
+                log("%@", "Error saving data to file: \(error)")
             }
         }
     }

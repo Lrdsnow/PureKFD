@@ -23,6 +23,7 @@ extension UIApplication {
             currentUIAlertController?.dismiss(animated: animated)
         }
     }
+    
     func alert(title: String = errorString, body: String, animated: Bool = true, withButton: Bool = true) {
         DispatchQueue.main.async {
             var body = body

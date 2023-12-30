@@ -17,6 +17,7 @@ struct BrowseView: View {
     @EnvironmentObject var appData: AppData
     @State private var repoSections: [String:[Repo]] = [:]
     @State private var reloading = false
+    @State private var downloadingRepos_Status = (0, 0)
     
     var body: some View {
         if !repoSections.isEmpty {
@@ -25,15 +26,15 @@ struct BrowseView: View {
                     let repoTypes = sortedRepoTypes()
                     ForEach(repoTypes, id: \.self) { repoType in
                         if let repos = appData.repoSections[repoType]?.sorted(by: { $0.name < $1.name }) {
-                            Section(header: Text(repoType.capitalized.replacingOccurrences(of: "PureKFD", with: "PureKFD") + " Repos")) {
+                            Section(header: Text(repoType.capitalized.replacingOccurrences(of: "Purekfd", with: "PureKFD") + " Repos")) {
                                 ForEach(repos.sorted(by: { $0.name < $1.name })) { repo in
                                     NavigationLink(destination: RepoView(repo: repo, appData: appData).navigationTitle(repo.name).if(repo.accent != nil) { view in
                                         view.accentColor(repo.accent!.toColor())
                                     }) {
-                                        RepoRow(reponame: repo.name, repodesc: repo.desc, repoicon: repo.icon, repo: repo, appData: appData)
+                                        RepoRow(reponame: repo.name, repodesc: repo.desc, repoicon: repo.icon, repo: repo, appData: appData).listRowBackground(Color.clear)
                                     }
                                 }
-                            }.hideListRowSeparator()
+                            }.hideListRowSeparator().listRowBackground(Color.clear)
                         }
                     }
                 }
@@ -68,21 +69,22 @@ struct BrowseView: View {
                                 await addRepo()
                             }
                         }
-                }
-            }
+                }.bgImage(appData)
+            }.navigationViewStyle(.stack)
         } else {
             ZStack {
+                
                 ProgressView().onAppear() {
                     if appData.repoSections.isEmpty || reloading {
                         Task {
+                            await downloadRepos()
                             await fetchRepos()
                         }
-                        reloading = false
                     } else {
                         repoSections = appData.repoSections
                     }
                 }
-                Text("\n\nGetting Repos...")
+                Text("\n\nGetting Repos (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))...")
             }
         }
     }
@@ -94,30 +96,43 @@ struct BrowseView: View {
     }
     
     func fetchRepos() async {
-        let temp_repoSections = Dictionary(grouping: await getAllRepos(appdata: appData), by: { $0.repotype }).mapValues { $0.sorted { $0.repotype < $1.repotype } }
+        let temp_repoSections = Dictionary(grouping: getCachedRepos(), by: { $0.repotype }).mapValues { $0.sorted { $0.repotype < $1.repotype } }
         repoSections = temp_repoSections
         appData.repoSections = repoSections
         appData.refreshedRepos = true
     }
-
-//    func fetchRepos() async {
-//        appData.repoSections = [:]
-//        await getRepos(appdata: appData) { repo in
-//            DispatchQueue.main.async {
-//                let repoType = repo.repotype
-//                if var existingRepos = appData.repoSections[repoType] {
-//                    if let existingRepoIndex = existingRepos.firstIndex(where: { $0.url == repo.url }) {
-//                        existingRepos[existingRepoIndex] = repo
-//                    } else {
-//                        existingRepos.append(repo)
-//                    }
-//                    appData.repoSections[repoType] = existingRepos
-//                } else {
-//                    appData.repoSections[repoType] = [repo]
-//                }
-//            }
-//        }
-//    }
+    
+    func downloadRepos() async {
+        reloading = true
+        var repourls = SavedRepoData()
+        repourls.urls += appData.RepoData.urls
+        let repoCount = repourls.urls.count
+        downloadingRepos_Status = (0, repoCount)
+        let repoCacheDir = URL.documents.appendingPathComponent("config/repoCache")
+        if FileManager.default.fileExists(atPath: repoCacheDir.path) {
+            try? FileManager.default.removeItem(at: repoCacheDir)
+        }
+        try? FileManager.default.createDirectory(at: repoCacheDir, withIntermediateDirectories: true)
+        await getRepos(appdata: appData, completion: { repo in
+            if repo.name != "Unkown" {
+                downloadingRepos_Status.0 += 1
+                let jsonEncoder = JSONEncoder()
+                do {
+                    let jsonData = try jsonEncoder.encode(repo)
+                    do {
+                        try jsonData.write(to: repoCacheDir.appendingPathComponent("\(repo.name).json"))
+                    } catch {
+                        log("Error saving repo data: \(error)")
+                    }
+                } catch {
+                    log("Error encoding repo: \(error)")
+                }
+            } else {
+                log("\(repo.desc)")
+            }
+        })
+        reloading = false
+    }
     
     func addRepo() async {
         guard let url = URL(string: newRepoURL) else {
@@ -196,35 +211,6 @@ struct BrowseOptionsView: View {
                     .mainViewTweaks()
                     .listRowBackground(Color.accentColor.opacity(0.2))
             }
-            
-//            Section(header: Text("Personalization")) {
-//                ForEach(appData.repoSections.keys.sorted(), id: \.self) { sectionKey in
-//                    Group {
-//                        @State var default_name = "\(sectionKey.capitalized) Repo"
-//                        @State var default_desc = "\(sectionKey.capitalized) Description"
-//                        VStack(alignment: .leading) {
-//                            Text("Customize \(sectionKey.capitalized) Dummy Values")
-//                                .font(.footnote)
-//                            HStack {
-//                                WebImage(url: URL(string: ""))
-//                                    .resizable()
-//                                    .placeholder(Image("folder_icon").resizable().renderingMode(.template))
-//                                    .indicator(.progress)
-//                                    .transition(.fade)
-//                                    .aspectRatio(contentMode: .fit)
-//                                    .frame(width: 30, height: 30, alignment: .leading)
-//                                    .cornerRadius(5)
-//                                VStack(alignment: .leading) {
-//                                    TextField("", text: $default_name)
-//                                        .padding(.vertical, -5)
-//                                    TextField("", text: $default_desc)
-//                                        .padding(.vertical, -5)
-//                                }
-//                            }
-//                        }
-//                    }.listRowBackground(Color.accentColor.opacity(0.2))
-//                }
-//            }
         }.listStyle(.insetGrouped).padding().onChange(of: appData.UserData.filters) {_ in
             appData.save()
             appData.repoSections = [:]
@@ -250,42 +236,77 @@ struct RepoView: View {
                         .frame(width: UIScreen.main.bounds.width)
                 }
             }
-            ForEach(repo.packages.indices, id: \.self) { index in
-                let package = repo.packages[index]
-                NavigationLink(destination: PackageDetailView(package: package, appData: appData).if(package.accent != nil) { view in
-                    view.accentColor(package.accent!.toColor())
-                }) {
-                    if #available(iOS 16, *) {
-                        PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: repo.packages[index].icon, pkg: repo.packages[index])
-                            .contextMenu(menuItems: {Button(action: {
-                                let pasteboard = UIPasteboard.general
-                                pasteboard.string = package.bundleID
-                                }) {
-                                    Text("Copy Bundle ID")
-                                    Image("copy_icon")
-                                        .renderingMode(.template)
-                                }
-                                Button(action: {
-                                    appData.queued.append(package)
-                                }) {
-                                    Text("Add to queue")
-                                    Image("download_icon")
-                                        .renderingMode(.template)
-                                }}, preview: {PackagePreviewView(package: package).if(package.accent != nil) { view in
-                                view.accentColor(package.accent!.toColor())
-                            }})
-                    } else {
-                        PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: repo.packages[index].icon, pkg: repo.packages[index])
+
+            if repo.categorized {
+                let uniqueCategories = repo.packages.map { $0.category }.uniqueOrderedElements()
+
+                ForEach(uniqueCategories, id: \.self) { category in
+                    let packagesForCategory = repo.packages.filter { $0.category == category }
+
+                    Section(header: Text(category)) {
+                        packageRows(packages: packagesForCategory)
                     }
                 }
-                .hideListRowSeparator()
+            } else {
+                packageRows(packages: repo.packages)
             }
-        }.onAppear() {
+        }
+        .bgImage(appData)
+        .onAppear() {
             refreshView(appData: appData)
             haptic()
         }
     }
+
+    @ViewBuilder
+    private func packageRows(packages: [Package]) -> some View {
+        ForEach(packages.indices, id: \.self) { index in
+            let package = packages[index]
+            NavigationLink(destination: PackageDetailView(package: package, appData: appData)) {
+                if #available(iOS 16, *) {
+                    PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package)
+                        .contextMenu(menuItems: {
+                            Button(action: {
+                                let pasteboard = UIPasteboard.general
+                                pasteboard.string = package.bundleID
+                            }) {
+                                Text("Copy Bundle ID")
+                                Image("copy_icon")
+                                    .renderingMode(.template)
+                            }
+                            Button(action: {
+                                appData.queued.append(package)
+                            }) {
+                                Text("Add to queue")
+                                Image("download_icon")
+                                    .renderingMode(.template)
+                            }
+                        }, preview: {
+                            PackagePreviewView(package: package)
+                        })
+                } else {
+                    PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package)
+                }
+            }
+            .listRowBackground(Color.clear)
+            .hideListRowSeparator()
+        }
+    }
 }
+
+// Extension to maintain the order of unique elements
+extension Array where Element: Equatable {
+    func uniqueOrderedElements() -> [Element] {
+        var uniqueElements: [Element] = []
+        for element in self {
+            if !uniqueElements.contains(element) {
+                uniqueElements.append(element)
+            }
+        }
+        return uniqueElements
+    }
+}
+
 
 struct RepoRow: View {
     @State var reponame: String?
@@ -302,16 +323,19 @@ struct RepoRow: View {
                 .indicator(.progress)
                 .transition(.fade)
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 30, height: 30, alignment: .leading)
-                .cornerRadius(5)
+                .frame(width: 43, height: 43)
+                .cornerRadius(8)
+                .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
             
             VStack(alignment: .leading) {
                 Text(reponame ?? "Unknown Repo Name")
                     .font(.headline)
                     .foregroundColor(Color.accentColor)
+                    .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                 Text(repodesc ?? "Unknown Repo Description")
                     .font(.subheadline)
                     .foregroundColor(Color.accentColor.opacity(0.7))
+                    .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
             }
         }.contextMenu(menuItems: {
             if repo != nil {
@@ -366,9 +390,10 @@ struct PkgRow: View {
                 .placeholder(Image("pkg_icon").resizable().renderingMode(.template))
                 .indicator(.progress)
                 .transition(.fade)
-                .frame(width: 43, height: 43)
+                .frame(width: 50, height: 50)
                 .cornerRadius(8)
                 .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.5 : 1.0)
+                .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
             
             VStack(alignment: .leading) {
                 Text(pkgname ?? "Unknown Package Name")
@@ -376,12 +401,14 @@ struct PkgRow: View {
                     .lineLimit(1)
                     .foregroundColor(Color.accentColor)
                     .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.5 : 1.0)
+                    .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                 
-                Text(String(pkgauthor ?? "Unknown Package Author") + " v" + String(pkg?.version ?? ""))
+                Text(String(pkgauthor ?? "Unknown Package Author") + " v" + String(pkg?.version ?? "0") + "\((pkg?.beta ?? false) ? " (Beta)" : "")")
                     .font(.footnote)
                     .lineLimit(1)
                     .foregroundColor(Color.accentColor)
                     .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.3 : 0.5)
+                    .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                 
                 MarqueeText(
                     text: pkg?.desc ?? "",
@@ -394,14 +421,17 @@ struct PkgRow: View {
                 .padding(.top, -10)
                 .frame(height: 8)
                 .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.4 : 0.7)
+                .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
             }
             
             HStack() {
                 if pkg != nil && !installedPackageView {
                     if isPackageInstalled(pkg?.bundleID ?? "") {
                         Image(systemName: "checkmark.circle.fill")
+                            .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                     } else {
                         Image(systemName: "circle")
+                            .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                     }
                 }
             }
@@ -439,7 +469,7 @@ struct FeaturedPackagesView: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 25) {
+            HStack(spacing: homeView ? 25 : 30) {
                 ForEach(featuredPackages ?? [], id: \.bundleid) { package in
                     if let foundPackage = findPackageViaBundleID(package.bundleid, appdata: appData) {
                         NavigationLink(destination: PackageDetailView(package: foundPackage, appData: appData)) {
@@ -450,13 +480,13 @@ struct FeaturedPackagesView: View {
                                 packageShowName: package.showname ?? true,
                                 homeView: homeView,
                                 square: package.square ?? false
-                            )
-                        }
+                            ).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                        }.background(Color.clear).listRowBackground(Color.clear)
                     }
                 }
             }
-            .padding()
-        }.if(!homeView){view in view.padding(.leading, 10)}
+            .padding().background(Color.clear).listRowBackground(Color.clear)
+        }.if(!homeView){view in view.padding(.leading, 10)}.background(Color.clear).listRowBackground(Color.clear)
     }
 }
 
@@ -493,8 +523,8 @@ struct FeaturedPackageView: View {
                 
                 if packageShowName {
                     Text(packageName)
-                        .padding([.leading], -1)
-                        .padding([.bottom], 1)
+                        .padding([.leading], homeView ? 1 : -1)
+                        .padding([.bottom], homeView ? 1 : 4)
                         .font(homeView ? .title.weight(.bold) : .title2.weight(.bold))
                         .shadow(color: Color.black.opacity(0.5), radius: 5, x: 0, y: 4)
                         .foregroundStyle(Color(UIColor(hex: packageFontColor) ?? UIColor.white))

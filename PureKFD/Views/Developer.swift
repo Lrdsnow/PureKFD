@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 import WebKit
 import AVKit
-import Dynamic
+import SDWebImage
+import libpurekfd
 
 @available(iOS 15.0, *)
 struct DeveloperView: View {
@@ -20,7 +21,14 @@ struct DeveloperView: View {
             List {
                 Section("TS") {
                     if appData.UserData.exploit_method == 0 {
-                        Text("Recommended Install Instructions:\n1. Hit Install Trollstore\n2. Immediately Force Shutdown When it finsihes (vol down+power)\n3. Open Tips And Install Trollstore\nNote: If tips crashes or you get error 1, reinstall tips and try again")
+                        Text("""
+                        Installation Instructions:
+                        1. Click on "Install Trollstore Helper"
+                        2. Once it finishes, forcefully shut down your device by pressing the volume up button followed by the volume down button and the power button.
+                        3. Open the Tips app and install Trollstore.
+
+                        Note: If Tips crashes or you encounter error 1, reinstall Tips and try the installation process again.
+                        """)
                     } else {
                         Text("Your device was not detected as an KFD device, TS install is currently not compatible with anything other then KFD Devices.")
                     }
@@ -39,97 +47,107 @@ struct DeveloperView: View {
                         }
                     }, label: {
                         HStack {
-                            Image("dev_icon").renderingMode(.template)
-                            Text("Install Trollstore Helper (KFD)")
+                            Image("dev_icon").iconImg()
+                            Text("Install Trollstore Helper")
                         }
                     }).disabled(appData.UserData.exploit_method != 0).opacity(appData.UserData.exploit_method != 0 ? 0.7 : 1)
-                }
+                }.listBG()
                 
                 Section("Files") {
-                    NavigationLink(destination: FileBrowserView(root: true), label: {Image("folder_icon").renderingMode(.template); Text("File Browser")})
-                    NavigationLink(destination: FileBrowserView(root: false), label: {Image("folder_icon").renderingMode(.template); Text("File Browser (Sandboxed)")})
-                }
-                Section("Tweak Creation") {
-                    NavigationLink(destination: TweakCreatorView(), label: {Image("gear_icon").renderingMode(.template); Text("Tweak Creator")})
-                    NavigationLink(destination: TweakConverterView(), label: {Image("gear_icon").renderingMode(.template); Text("Tweak Converter")})
-                }
+                    NavigationLink(destination: FileBrowserView(root: true), label: {Image("folder_icon").iconImg(); Text("File Browser")})
+                    NavigationLink(destination: FileBrowserView(root: false), label: {Image("folder_icon").iconImg(); Text("File Browser (Sandboxed)")})
+                    if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
+                        Button(action: {
+                            let (status, out, error) = spawnRootHelper(args: [ "remount-preboot" ])
+                            if (status != 0) {
+                                if (status == -1) {
+                                    UIApplication.shared.alert(title: "Failed", body: "\(out) \(error)", withButton: true)
+                                } else {
+                                    let desc_cstring: UnsafeMutablePointer<CChar> = waitpid_decode(Int32(status));
+                                    let desc = String(cString: desc_cstring);
+                                    free(desc_cstring);
+                                    UIApplication.shared.alert(title: "Failed", body: "RootHelper \(desc)", withButton: true)
+                                }
+                            } else {
+                                UIApplication.shared.alert(title: "Complete", body: "/private/preboot is now writable", withButton: true)
+                            }
+                        }, label: {
+                            HStack {
+                                Image("disk_icon").resizable().renderingMode(.template).frame(maxWidth: 32, maxHeight: 32);
+                                Text("Remount /private/preboot");
+                            }
+                        })
+                    }
+                }.listBG()
+                Section("Creator") {
+                    NavigationLink(destination: RepoCreatorView(), label: {Image("gear_icon").iconImg(); Text("Repo Creator")})
+                    NavigationLink(destination: TweakCreatorView(), label: {Image("gear_icon").iconImg(); Text("Tweak Creator")})
+                    NavigationLink(destination: TweakConverterView(), label: {Image("gear_icon").iconImg(); Text("Tweak Converter")})
+                }.listBG()
                 Section("Tests") {
                     if appData.UserData.exploit_method == 0 {
-                        NavigationLink(destination: AppManagerView(), label: {Image("dev_icon").renderingMode(.template); Text("App Manager (KFD)")})
+                        NavigationLink(destination: AppManagerView(), label: {Image("dev_icon").iconImg(); Text("App Manager (KFD)")})
                     }
-                    NavigationLink(destination: devPipView(), label: {Image("dev_icon").renderingMode(.template); Text("pip test")})
-                }
-                if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
+                    NavigationLink(destination: devPipView(), label: {Image("dev_icon").iconImg(); Text("pip test")})
+                    if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
+                        Button(action: {
+                            userspaceReboot()
+                            UIApplication.shared.alert(title: "Complete", body: "Device should userspace reboot in a moment", withButton: true)
+                        }, label: {
+                            HStack {
+                                Image("dev_icon").iconImg()
+                                Text("Userspace Reboot")
+                            }
+                        })
+                    }
                     Button(action: {
-                        userspaceReboot()
-                        UIApplication.shared.alert(title: "Complete", body: "Device should userspace reboot in a moment", withButton: true)
+                        clearIconCache()
+                        UIApplication.shared.alert(title: "Complete", body: "Cleared Icon Cache", withButton: true)
                     }, label: {
                         HStack {
-                            Image("dev_icon").renderingMode(.template)
-                            Text("Userspace Reboot")
+                            Image("dev_icon").iconImg()
+                            Text("Clear Icon Cache")
                         }
                     })
-                }
-                Button(action: {
-                    clearIconCache()
-                    UIApplication.shared.alert(title: "Complete", body: "Cleared Icon Cache", withButton: true)
-                }, label: {
-                    HStack {
-                        Image("dev_icon").renderingMode(.template)
-                        Text("Clear Icon Cache")
+                    if appData.UserData.exploit_method == 0 {
+                        Button(action: {
+                            rebuildIconCache(appData: appData)
+                            UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
+                        }, label: {
+                            HStack {
+                                Image("dev_icon").iconImg()
+                                Text("Rebuild Icon Cache (KFD)")
+                            }
+                        })
+                        Button(action: {
+                            rebuildIconCache2(appData: appData)
+                            UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
+                        }, label: {
+                            HStack {
+                                Image("dev_icon").iconImg()
+                                Text("Rebuild Icon Cache 2 (KFD)")
+                            }
+                        })
                     }
-                })
-                if appData.UserData.exploit_method == 0 {
                     Button(action: {
-                        rebuildIconCache(appData: appData)
-                        UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
+                        cleanTemp()
+                        UIApplication.shared.alert(title: "Complete", body: "Cleared PureKFD's temp files", withButton: true)
                     }, label: {
                         HStack {
-                            Image("dev_icon").renderingMode(.template)
-                            Text("Rebuild Icon Cache (KFD)")
+                            Image("dev_icon").iconImg()
+                            Text("Clear PureKFD temp")
                         }
                     })
-                    Button(action: {
-                        rebuildIconCache2(appData: appData)
-                        UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
-                    }, label: {
-                        HStack {
-                            Image("dev_icon").renderingMode(.template)
-                            Text("Rebuild Icon Cache 2 (KFD)")
-                        }
-                    })
-                }
-                Button(action: {
-                    cleanTemp()
-                    UIApplication.shared.alert(title: "Complete", body: "Cleared PureKFD's temp files", withButton: true)
-                }, label: {
-                    HStack {
-                        Image("dev_icon").renderingMode(.template)
-                        Text("Clear PureKFD temp")
-                    }
-                })
-            }.navigationBarTitle("Developer", displayMode: .large).task {haptic()}
-        }
+                }.listBG()
+            }.navigationBarTitle("Developer", displayMode: .large).task {haptic()}.bgImage(appData).listStyle(.insetGrouped).clearBG()
+        }.navigationViewStyle(.stack)
     }
 }
 
 var connection: NSXPCConnection?
 
 func clearIconCache() {
-    for _ in 1...10000 {
-        NSLog("removing icon cache")
-        if connection == nil {
-            let myCookieInterface = NSXPCInterface(with: ISIconCacheServiceProtocol.self)
-            connection = Dynamic.NSXPCConnection(machServiceName: "com.apple.iconservices", options: []).asObject as? NSXPCConnection
-            connection!.remoteObjectInterface = myCookieInterface
-            connection!.resume()
-            NSLog("Connection: %@", "\(connection!)")
-        }
-        
-        (connection!.remoteObjectProxy as AnyObject).clearCachedItems(forBundeID: nil) { (a, b) in // passing nil to remove all icon cache
-            NSLog("Successfully responded (%@, %@)", "\(a)", "\(b ?? "(null)")")
-        }
-    }
+
 }
 
 func rebuildIconCache(appData: AppData) {

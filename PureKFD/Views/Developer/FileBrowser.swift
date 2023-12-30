@@ -31,7 +31,7 @@ struct FileBrowserView: View {
                     .navigationTitle("File Browser")
                     .navigationBarItems(trailing: ToggleButtonView(kopened: $appData.kopened, exploit_method: $exploit_method, kfddata: $kfddata))
             }
-        }.task() {
+        }.bgImage(appData).task() {
             exploit_method = getDeviceInfo(appData: appData).0
             kfddata = getDeviceInfo(appData: appData).1
             NSLog("%@", "\(root)")
@@ -51,7 +51,7 @@ struct ToggleButtonView: View {
                 if kopened {
                     do_kclose()
                 } else {
-                    let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(256))
+                    let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(256), false)
                     if exploit_result == 0 {
                         return
                     }
@@ -119,6 +119,7 @@ struct FileBrowser: View {
                         }
                     }
                 }
+                .listRowBackground(Color.clear)
                 .padding(.vertical, 10)
                 .listRowSeparator(.hidden)
             }
@@ -344,9 +345,13 @@ struct FileListFolderItemView: View {
     var body: some View {
         HStack {
             Image("folder_icon")
+                .resizable()
                 .renderingMode(.template)
+                .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                .aspectRatio(contentMode: .fit).frame(maxHeight: 50)
             VStack(alignment: .leading) {
                 Text((UUID(uuidString: item) != nil) ? (try? getBundleID(path: path, uuid: item, exploit_method: kfd ? 0 : 1)) ?? "" : item)
+                    .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                     .contextMenu {
                         Button(action: {
                             isInfoPresented = true
@@ -461,8 +466,12 @@ struct FileListFileItemView: View {
     var body: some View {
         HStack {
             Image("file_icon")
+                .resizable()
                 .renderingMode(.template)
+                .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                .aspectRatio(contentMode: .fit).frame(maxHeight: 50)
             Text(item)
+                .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                 .contextMenu {
                     Button(action: {
                         isInfoPresented = true
@@ -625,7 +634,7 @@ struct TextEditorView: View {
                 }.onAppear {
                     loadText()
                 }
-        }
+        }.navigationViewStyle(.stack)
     }
     
     private func loadText() {
@@ -684,7 +693,7 @@ struct PlistEditorView: View {
             .onAppear {
                 loadPlist()
             }
-        }
+        }.navigationViewStyle(.stack)
     }
 
     // Load plist data from the file
@@ -824,7 +833,7 @@ struct FileInfoView: View {
             .navigationBarItems(trailing: Button(action: {popover = false}) {
                 Text("Done").bold()
             })
-        }
+        }.navigationViewStyle(.stack)
     }
 
     // Function to convert NSFileType to a user-friendly string
