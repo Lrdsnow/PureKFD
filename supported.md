@@ -1,4 +1,4 @@
-# How to use landa with Versions 16.6+ (and 16.5.1):
+# How to use PureKFD with Versions 16.6+ (and 16.5.1):
 <div style="display: flex;">
     <img src="https://github.com/PureKFD/PureKFD/blob/beta/screenshots/1.png?raw=true" width="200" height="420">
     <img src="https://github.com/PureKFD/PureKFD/blob/beta/screenshots/2.png?raw=true" width="200" height="420">
