@@ -226,8 +226,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				654DED032B383CA200DACD2E /* IOKit.framework in Frameworks */,
 				6558AB1A2B380C62002DA52B /* libpurekfd.a in Frameworks */,
+				654DED032B383CA200DACD2E /* IOKit.framework in Frameworks */,
 				65BBD0B42B364EC300ABBC1C /* OctoKit in Frameworks */,
 				65B475A12AAD586500172BD3 /* MarqueeText in Frameworks */,
 				65B4759C2AAD098E00172BD3 /* SDWebImageSwiftUI in Frameworks */,

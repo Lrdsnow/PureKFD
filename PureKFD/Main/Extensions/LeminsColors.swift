@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import libpurekfd
 
 // Color Manager by Lemin!
 class SpringboardColorManager {

@@ -10,7 +10,6 @@ import SwiftUI
 import WebKit
 import AVKit
 import SDWebImage
-import libpurekfd
 
 @available(iOS 15.0, *)
 struct DeveloperView: View {

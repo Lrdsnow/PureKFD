@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import SDWebImageSwiftUI
-import libpurekfd
 
 @available(iOS 15.0, *)
 struct AppManagerView: View {
