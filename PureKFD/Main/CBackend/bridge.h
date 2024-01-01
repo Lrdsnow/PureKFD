@@ -12,5 +12,6 @@
 #include "waitpid_decode.h"
 #include "memoryControl.h"
 #include "roothelper_bridge.h"
+#include "../../Exploit/libpurekfd_bridge.h"
 
 #endif /* bridge_h */

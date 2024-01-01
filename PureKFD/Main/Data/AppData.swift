@@ -120,7 +120,7 @@ struct AppColors {
 struct SavedKFDData: Codable, Equatable {
     var puaf_pages = 4096 // Puaf Pages (pls dont change this unless you have less then 4gb of ram, it should be 3072)
     var puaf_pages_index = 8 // Puaf Pages (pls dont change this unless you have less then 4gb of ram, it should be 8)
-    var puaf_method = 1 // Physpuppet or Smith (smith works for all)
+    var puaf_method = 2 // Physpuppet or Smith or Landa (smith works for all)
     var kread_method = 1 // kqueue_workloop_ctl or sem_open (sem_open works for all)
     var kwrite_method = 1 // dup or sem_open (sem_open works for all)
     var use_static_headroom = false // just dont use static headroom if the user doesnt wanna

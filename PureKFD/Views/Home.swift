@@ -486,7 +486,7 @@ struct KFDExploitPickers: View {
     private let puafPagesOptions = [16, 32, 64, 128, 256, 512, 1024, 2048, 3072, 3584, 4096]
     // 16: Works with trollstore installs on some devices; 65536: Basically disables hogging
     private let staticHeadroomOptions = [16, 128, 192, 256, 384, 512, 768, 1024, 1536, 2048, 4096, 65536]
-    private let puafMethodOptions = ["physpuppet", "smith"]
+    private let puafMethodOptions = ["physpuppet", "smith", "landa"]
     private let kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
     private let kwriteMethodOptions = ["dup", "sem_open"]
     
