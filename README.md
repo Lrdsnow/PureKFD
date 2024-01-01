@@ -14,11 +14,11 @@
 
 ## Overview
 
-PureKFD is a KFD Focused Package Manager for iOS, focusing on iOS versions 14.0 through 16.7.2 using KFD (CVE-2023-41974) and MDC (CVE-2022-46689). PureKFD allows users to customize their iOS experience through a user-friendly interface, utilizing community-developed tweaks available from the community’s repositories.
+PureKFD is a KFD Focused Package Manager for iOS, focusing on iOS versions 14.0 through 16.7.4 using KFD (CVE-2023-41974) and MDC (CVE-2022-46689). PureKFD allows users to customize their iOS experience through a user-friendly interface, utilizing community-developed tweaks available from the community’s repositories.
 
 ## Getting Started
 
-1. **Compatibility:** Ensure your iOS device is running an iOS version 14.0 through 16.7.2.
+1. **Compatibility:** Ensure your iOS device is running an iOS version 14.0 through 16.7.4.
 2. **Installation:** Download PureKFD from the [github releases](https://github.com/PureKFD/PureKFD/releases/latest) for the latest release or [our discord](https://discord.gg/Mve4nWJMrz) for the latest betas.
 3. **Customize:** Explore the vast array of tweaks, personalize your iOS experience, and make your device truly yours.
 
