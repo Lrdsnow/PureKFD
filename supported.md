@@ -1,3 +1,12 @@
+# How to use landa with PureKFD:
+<div style="display: flex;">
+    <img src="https://github.com/PureKFD/PureKFD/blob/beta/screenshots/1.png?raw=true" width="200" height="420">
+    <img src="https://github.com/PureKFD/PureKFD/blob/beta/screenshots/2.png?raw=true" width="200" height="420">
+    <img src="https://github.com/PureKFD/PureKFD/blob/beta/screenshots/3.png?raw=true" width="200" height="420">
+</div>
+
+
+# Supported Landa Device List:
 - iPhone13,2 on 16.5.1 (20F75)
 - iPhone12,1 on 16.5.1 (20F75)
 - iPad11,7 on 16.6.1 (20G81)
