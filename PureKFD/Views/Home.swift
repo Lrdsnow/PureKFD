@@ -258,7 +258,7 @@ struct PlaceholderFeaturedView: View {
 }
 
 @available(iOS 15.0, *)
-struct SettingsView: View {
+struct nSettingsView: View {
     var body: some View {
         List {
             HStack {
@@ -369,7 +369,7 @@ struct SettingsView: View {
                 }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
             }.listRowBackground(Color.clear).hideListRowSeparator()
             
-            CustomNavigationLink {oSettingsView()} label: {
+            CustomNavigationLink {SettingsView()} label: {
                 HStack {
                     Spacer()
                     HStack {
@@ -388,7 +388,7 @@ struct SettingsView: View {
 }
 
 @available(iOS 15.0, *)
-struct oSettingsView: View {
+struct SettingsView: View {
     @EnvironmentObject var appData: AppData
     @State private var selectedColorString: String = "#E3CCF8"
     @State private var selectedColor: Color = (Color(UIColor(hex: UserDefaults.standard.string(forKey: "accentColor") ?? "") ?? UIColor(hex: "#E3CCF8")!) )
@@ -400,7 +400,7 @@ struct oSettingsView: View {
     private let appInstallOptions = ["Enterprise (Any Version)", "/Applications (Rootful JB)", "/var/jb/Applications (Rootless JB)"]
     
     var body: some View {
-        Form {
+        List {
             Section(header: Text("Main Settings").foregroundColor(.accentColor)) {
                 Picker("Respring Mode:", selection: $appData.UserData.respringMode) {
                     ForEach(0..<respringOptions.count, id: \.self) {
@@ -410,27 +410,27 @@ struct oSettingsView: View {
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                .listRowBackground(appData.appColors.background)
-                Toggle("Override Exploit Method", isOn: $appData.UserData.override_exploit_method)
-                    .tint(.accentColor)
-                    .foregroundColor(.accentColor)
-                    .onChange(of: appData.UserData.override_exploit_method) {_ in appData.save()}
-                    .listRowBackground(appData.appColors.background)
-                
-                if appData.UserData.override_exploit_method {
-                    if appData.UserData.exploit_method == 1 {
-                        Text("Your device was detected as an MDC device, KFD IS NOT RECOMMENDED on these devices").listRowBackground(appData.appColors.background)
-                    }
-                    Picker("Exploit:", selection: $appData.UserData.exploit_method) {
-                        ForEach(0..<exploitOptions.count, id: \.self) {
-                            Text(exploitOptions[$0])
-                        }
-                    }
-                    .tint(.accentColor)
-                    .foregroundColor(.accentColor)
-                    .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                    .listRowBackground(appData.appColors.background)
-                }
+                .listBG()
+//                Toggle("Override Exploit Method", isOn: $appData.UserData.override_exploit_method)
+//                    .tint(.accentColor)
+//                    .foregroundColor(.accentColor)
+//                    .onChange(of: appData.UserData.override_exploit_method) {_ in appData.save()}
+//                    .listRowBackground(appData.appColors.background)
+//                
+//                if appData.UserData.override_exploit_method {
+//                    if appData.UserData.exploit_method == 1 {
+//                        Text("Your device was detected as an MDC device, KFD IS NOT RECOMMENDED on these devices").listRowBackground(appData.appColors.background)
+//                    }
+//                    Picker("Exploit:", selection: $appData.UserData.exploit_method) {
+//                        ForEach(0..<exploitOptions.count, id: \.self) {
+//                            Text(exploitOptions[$0])
+//                        }
+//                    }
+//                    .tint(.accentColor)
+//                    .foregroundColor(.accentColor)
+//                    .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
+//                    .listRowBackground(appData.appColors.background)
+//                }
                 
                 Picker("App Install Type:", selection: $appData.UserData.install_method) {
                     ForEach(0..<appInstallOptions.count, id: \.self) {
@@ -440,37 +440,37 @@ struct oSettingsView: View {
                 .tint(.accentColor)
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-                .listRowBackground(appData.appColors.background)
-            }
+                .listBG()
+            }.listRowBackground(Color.clear).hideListRowSeparator()
             
-            if appData.UserData.exploit_method == 0 && appData.UserData.override_exploit_method {
+//            if appData.UserData.exploit_method == 0 && appData.UserData.override_exploit_method {
                 KFDExploitPickers()
-            }
+//            }
             
             Section(header: Text("Extras").foregroundColor(.accentColor)) {
                 Toggle("Translate Prefs On Install", isOn: $appData.UserData.translateoninstall)
                     .onChange(of: appData.UserData.translateoninstall) { _ in
                         appData.save()
-                    }.listRowBackground(appData.appColors.background)
+                    }.listBG()
                 Toggle("Use BuiltIn File Picker", isOn: $appData.UserData.PureKFDFilePicker)
                     .onChange(of: appData.UserData.PureKFDFilePicker) { _ in
                         appData.save()
-                    }.listRowBackground(appData.appColors.background)
+                    }.listBG()
                 Toggle("Developer Mode", isOn: $appData.UserData.dev)
                     .onChange(of: appData.UserData.dev) { _ in
                         appData.save()
-                    }.listRowBackground(appData.appColors.background)
+                    }.listBG()
                 NavigationLink(destination: IconSelectorView(), label: {
                     Text("Change Icon")
-                }).listRowBackground(appData.appColors.background)
+                }).listBG()
                 NavigationLink(destination: ExtrasView(selectedColor: $selectedColor, selectedColorString: $selectedColorString), label: {
                     Text("Other Extras")
-                }).listRowBackground(appData.appColors.background)
-            }
-            .listRowBackground(appData.appColors.background)
+                }).listBG()
+            }.listRowBackground(Color.clear).hideListRowSeparator()
+            
             CreditView()
-                .listRowBackground(appData.appColors.background)
-        }.navigationBarTitle("Settings", displayMode: .large).bgImage(appData)
+                .listBG()
+        }.navigationBarTitle("Settings", displayMode: .large).bgImage(appData).listBG().listStyle(.insetGrouped).clearBG()
     }
     init() {
         if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
@@ -499,7 +499,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .listRowBackground(appData.appColors.background)
+            .listBG()
             .onChange(of: appData.UserData.kfd.puaf_pages_index) {sel in
                 appData.UserData.kfd.puaf_pages = puafPagesOptions[sel]
             }
@@ -511,7 +511,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .listRowBackground(appData.appColors.background)
+            .listBG()
             
             Picker("kread method:", selection: $appData.UserData.kfd.kread_method) {
                 ForEach(0..<kreadMethodOptions.count, id: \.self) {
@@ -520,7 +520,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .listRowBackground(appData.appColors.background)
+            .listBG()
             
             Picker("kwrite method:", selection: $appData.UserData.kfd.kwrite_method) {
                 ForEach(0..<kwriteMethodOptions.count, id: \.self) {
@@ -529,7 +529,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .listRowBackground(appData.appColors.background)
+            .listBG()
             
             Picker("static headroom:", selection: $appData.UserData.kfd.static_headroom_sel) {
                 ForEach(0..<staticHeadroomOptions.count, id: \.self) {
@@ -538,7 +538,7 @@ struct KFDExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .listRowBackground(appData.appColors.background)
+            .listBG()
             .onChange(of: appData.UserData.kfd.static_headroom_sel) {sel in
                 appData.UserData.kfd.static_headroom = staticHeadroomOptions[sel]
             }

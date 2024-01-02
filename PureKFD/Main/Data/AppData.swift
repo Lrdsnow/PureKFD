@@ -75,7 +75,7 @@ struct SavedRepoData: Codable {
 struct SavedUserData: Codable {
     var exploit_method = 0 // For Overriding the Exploit Method
     var install_method = 0 // Install Method
-    var override_exploit_method = false // For Overriding the Exploit Method
+    var override_exploit_method = true // For Overriding the Exploit Method
     var kfd = SavedKFDData() // For Overriding the Exploit Method
     var respringMode = 0 // [frontboard, backboard] Sets the respring type
     var customback = false // Shows a cool circle back button
@@ -124,8 +124,8 @@ struct SavedKFDData: Codable, Equatable {
     var kread_method = 1 // kqueue_workloop_ctl or sem_open (sem_open works for all)
     var kwrite_method = 1 // dup or sem_open (sem_open works for all)
     var use_static_headroom = false // just dont use static headroom if the user doesnt wanna
-    var static_headroom = 256 // headroom for ram hogger
-    var static_headroom_sel = 2 // headroom selection
+    var static_headroom = 65536 // headroom for ram hogger
+    var static_headroom_sel = 11 // headroom selection
 }
 
 struct defaulturls {
