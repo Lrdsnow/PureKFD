@@ -137,7 +137,7 @@ struct ContentView: View {
                 // Unsandbox
                 #if targetEnvironment(simulator)
                 #else
-                if getDeviceInfo(appData: appData).0 == 1 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
+                if getDeviceInfo(appData: appData, true).0 == 1 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
 //                    grant_wallpaper_access() { error in
 //                        if (error != nil) {
 //                            UIApplication.shared.alert(title: "Access Error", body: "Error: \(String(describing: error!.localizedDescription))\nPlease close the app and retry.")
