@@ -149,25 +149,26 @@ struct ContentView: View {
                         }
                     }
                 }
-                
-                if (!hasEntitlement("com.apple.developer.kernel.increased-memory-limit" as CFString)
-                    && appData.UserData.hideMissingEntitlementWarning != true) {
-                    let OKAction = UIAlertAction(title: "OK",
-                                         style: .default) { (action) in
-                     // Do nothing
-                    }
-                    let DontShowMeAgainAction = UIAlertAction(title: "Don't show me again",
-                                                              style: .default) { (action) in
-                        appData.UserData.hideMissingEntitlementWarning = true;
-                        appData.save();
-                    }
-                    let alert = UIAlertController(title: "Missing entitlement",
-                             message: "Your sideloading tool is incorrectly removing the increased memory limit entitlement. KFD reliability might suffer.",
-                             preferredStyle: .alert)
-                    alert.addAction(OKAction);
-                    alert.addAction(DontShowMeAgainAction);
-                    UIApplication.shared.present(alert: alert);
-                }
+
+                // Sorry Nick Chan i'll add this back in later
+//                if (!hasEntitlement("com.apple.developer.kernel.increased-memory-limit" as CFString)
+//                    && appData.UserData.hideMissingEntitlementWarning != true) {
+//                    let OKAction = UIAlertAction(title: "OK",
+//                                         style: .default) { (action) in
+//                     // Do nothing
+//                    }
+//                    let DontShowMeAgainAction = UIAlertAction(title: "Don't show me again",
+//                                                              style: .default) { (action) in
+//                        appData.UserData.hideMissingEntitlementWarning = true;
+//                        appData.save();
+//                    }
+//                    let alert = UIAlertController(title: "Missing entitlement",
+//                             message: "Your sideloading tool is incorrectly removing the increased memory limit entitlement. KFD reliability might suffer.",
+//                             preferredStyle: .alert)
+//                    alert.addAction(OKAction);
+//                    alert.addAction(DontShowMeAgainAction);
+//                    UIApplication.shared.present(alert: alert);
+//                }
                 #endif
                 try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("temp")) // clear temp
             }
