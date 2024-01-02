@@ -39,7 +39,7 @@ struct DeviceInfo {
 
 func getDeviceInfo(appData: AppData?, _ ignoreOverride: Bool = false) -> (Int, SavedKFDData, Bool, DeviceInfo) {
     var exploit_method = -1
-    var kfddata = SavedKFDData(puaf_pages: 3072, puaf_method: 1, kread_method: 1, kwrite_method: 1)
+    var kfddata = SavedKFDData(puaf_pages: 3072, puaf_method: 2, kread_method: 1, kwrite_method: 1)
     var deviceInfo = DeviceInfo()
     var lowend = false
     var ts = false
@@ -103,7 +103,7 @@ func getDeviceInfo(appData: AppData?, _ ignoreOverride: Bool = false) -> (Int, S
                 (major == 15 && (sub <= 6 || (sub <= 7 && minor <= 1))) ||
                 (major == 16 && sub <= 1) {
                 exploit_method = 1
-            } else if (major == 16 && sub >= 2 && sub <= 6) && !(sub == 6 && build_number != "20G5026e") && !lowend {
+            } else if (major == 16 && sub >= 2) && !lowend {
                 exploit_method = 0
             } else if ((try? FileManager.default.contentsOfDirectory(atPath: "/var/jb")) != nil) {
                 exploit_method = 3
