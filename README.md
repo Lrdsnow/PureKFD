@@ -7,7 +7,7 @@
 <p align="left">
   <strong><a href="https://github.com/PureKFD/PureKFD/releases/latest">Download</a></strong>
   •
-  <strong><a href="https://discord.gg/Kh8aKRfD3K">Discord</a></strong>
+  <strong><a href="https://discord.gg/Mve4nWJMrz">Discord</a></strong>
   •
   <strong><a href="https://twitter.com/Lrdsnow101">Twitter</a></strong>
 </p>
