@@ -396,7 +396,6 @@ struct SettingsView: View {
     @State private var ts = false
     
     private var respringOptions = ["Frontboard", "Backboard"]
-    private let exploitOptions = ["KFD", "MDC", "Rootful (JB)", "Rootless (JB)"]
     private let appInstallOptions = ["Enterprise (Any Version)", "/Applications (Rootful JB)", "/var/jb/Applications (Rootless JB)"]
     
     var body: some View {
@@ -489,59 +488,99 @@ struct KFDExploitPickers: View {
     private let puafMethodOptions = ["physpuppet", "smith", "landa"]
     private let kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
     private let kwriteMethodOptions = ["dup", "sem_open"]
+    @State private var exploitOptions = ["KFD", "MDC", "Rootful (JB)", "Rootless (JB)"]
+    @State private var exploitMethod = 0
+    @State private var kfd_allowed = true
     
     var body: some View {
         Section(header: Text("Exploit Settings").foregroundColor(.accentColor)) {
-            Picker("puaf pages:", selection: $appData.UserData.kfd.puaf_pages_index) {
-                ForEach(0..<puafPagesOptions.count, id: \.self) {
-                    Text(String(puafPagesOptions[$0]))
+            Picker("Exploit:", selection: $appData.UserData.exploit_method) {
+                ForEach(0..<exploitOptions.count, id: \.self) {
+                    Text(exploitOptions[$0])
                 }
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .listBG()
-            .onChange(of: appData.UserData.kfd.puaf_pages_index) {sel in
-                appData.UserData.kfd.puaf_pages = puafPagesOptions[sel]
-            }
-            
-            Picker("puaf method:", selection: $appData.UserData.kfd.puaf_method) {
-                ForEach(0..<puafMethodOptions.count, id: \.self) {
-                    Text(puafMethodOptions[$0])
+            .onChange(of: exploitMethod) { _ in
+                if kfd_allowed {
+                    appData.UserData.exploit_method = exploitMethod
+                } else {
+                    appData.UserData.exploit_method = exploitMethod + 1
                 }
+                appData.save()
             }
-            .tint(.accentColor)
-            .foregroundColor(.accentColor)
             .listBG()
             
-            Picker("kread method:", selection: $appData.UserData.kfd.kread_method) {
-                ForEach(0..<kreadMethodOptions.count, id: \.self) {
-                    Text(kreadMethodOptions[$0])
+            if appData.UserData.exploit_method == 0 {
+                Picker("puaf pages:", selection: $appData.UserData.kfd.puaf_pages_index) {
+                    ForEach(0..<puafPagesOptions.count, id: \.self) {
+                        Text(String(puafPagesOptions[$0]))
+                    }
+                }
+                .tint(.accentColor)
+                .foregroundColor(.accentColor)
+                .listBG()
+                .onChange(of: appData.UserData.kfd.puaf_pages_index) {sel in
+                    appData.UserData.kfd.puaf_pages = puafPagesOptions[sel]
+                }
+                
+                Picker("puaf method:", selection: $appData.UserData.kfd.puaf_method) {
+                    ForEach(0..<puafMethodOptions.count, id: \.self) {
+                        Text(puafMethodOptions[$0])
+                    }
+                }
+                .tint(.accentColor)
+                .foregroundColor(.accentColor)
+                .listBG()
+                
+                Picker("kread method:", selection: $appData.UserData.kfd.kread_method) {
+                    ForEach(0..<kreadMethodOptions.count, id: \.self) {
+                        Text(kreadMethodOptions[$0])
+                    }
+                }
+                .tint(.accentColor)
+                .foregroundColor(.accentColor)
+                .listBG()
+                
+                Picker("kwrite method:", selection: $appData.UserData.kfd.kwrite_method) {
+                    ForEach(0..<kwriteMethodOptions.count, id: \.self) {
+                        Text(kwriteMethodOptions[$0])
+                    }
+                }
+                .tint(.accentColor)
+                .foregroundColor(.accentColor)
+                .listBG()
+                
+                Toggle("Use Static Headroom", isOn: $appData.UserData.kfd.use_static_headroom)
+                    .tint(.accentColor)
+                    .foregroundColor(.accentColor)
+                    .onChange(of: appData.UserData.kfd.use_static_headroom) {_ in appData.save()}
+                    .listRowBackground(appData.appColors.background)
+                
+                if appData.UserData.kfd.use_static_headroom {
+                    Picker("static headroom:", selection: $appData.UserData.kfd.static_headroom_sel) {
+                        ForEach(0..<staticHeadroomOptions.count, id: \.self) {
+                            Text(String(staticHeadroomOptions[$0]))
+                        }
+                    }
+                    .tint(.accentColor)
+                    .foregroundColor(.accentColor)
+                    .listBG()
+                    .onChange(of: appData.UserData.kfd.static_headroom_sel) {sel in
+                        appData.UserData.kfd.static_headroom = staticHeadroomOptions[sel]
+                    }
                 }
             }
-            .tint(.accentColor)
-            .foregroundColor(.accentColor)
-            .listBG()
-            
-            Picker("kwrite method:", selection: $appData.UserData.kfd.kwrite_method) {
-                ForEach(0..<kwriteMethodOptions.count, id: \.self) {
-                    Text(kwriteMethodOptions[$0])
-                }
-            }
-            .tint(.accentColor)
-            .foregroundColor(.accentColor)
-            .listBG()
-            
-            Picker("static headroom:", selection: $appData.UserData.kfd.static_headroom_sel) {
-                ForEach(0..<staticHeadroomOptions.count, id: \.self) {
-                    Text(String(staticHeadroomOptions[$0]))
-                }
-            }
-            .tint(.accentColor)
-            .foregroundColor(.accentColor)
-            .listBG()
-            .onChange(of: appData.UserData.kfd.static_headroom_sel) {sel in
-                appData.UserData.kfd.static_headroom = staticHeadroomOptions[sel]
-            }
+        }
+        .task() {
+//            let versions: [dynamic_info] = Array<_>.fromTuple(kern_versions) ?? []
+//            for version in versions {
+//                if let deviceID = version.device_id {
+//                    print("Device ID: \(String(cString: deviceID))")
+//                }
+//            }
+//            exploitOptions = ["MDC", "Rootful (JB)", "Rootless (JB)"]
+//            kfd_allowed = false
         }
         .listRowSeparator(.hidden)
         .onChange(of: appData.UserData.kfd) {_ in appData.save()}
