@@ -8,7 +8,6 @@
 import UIKit
 import SwiftUI
 import Darwin
-import libpurekfd
 
 // Setup
 @main
@@ -60,7 +59,7 @@ struct PureKFDApp: App {
                                     UIApplication.shared.alert(title: "Error", body: error.localizedDescription, animated: false, withButton: true)
                                 }
                             }
-                        case "purekfd", "misaka", "picasso":
+                        case "purekfd", "picasso":
                             if url.startAccessingSecurityScopedResource() {
                                 defer { url.stopAccessingSecurityScopedResource() }
                                 selectedPackage = viewModel.openFile(url, appdata: appData)

@@ -51,7 +51,7 @@ func translatePicassoPrefs(picassoData: [String: [[String: Any]]]) -> [String: A
     return finalDictionary
 }
 
-func translateMisakaPrefsTweaks(_ tweaks: [[String: Any]], hidertoggle: Bool = false) -> [String: Any] {
+func translateLegacyEncryptedPrefsTweaks(_ tweaks: [[String: Any]], hidertoggle: Bool = false) -> [String: Any] {
     var resultDict: [String: Any] = [:]
 
     NSLog("%@", "\(tweaks)")
@@ -78,7 +78,7 @@ func translateMisakaPrefsTweaks(_ tweaks: [[String: Any]], hidertoggle: Bool = f
             case "NavigationLink":
                 if let labelText = tweak["Label"] as? String,
                    let categories = tweak["Categories"] as? [[String: Any]] {
-                    let categoryContents = translateMisakaPrefsTweaks(categories)
+                    let categoryContents = translateLegacyEncryptedPrefsTweaks(categories)
                     let key = "\(labelText):navlink"
                     resultDict[key] = categoryContents
                 }
@@ -122,10 +122,10 @@ func translateMisakaPrefsTweaks(_ tweaks: [[String: Any]], hidertoggle: Bool = f
                         if let hidden = tweak["Hide"] as? Int,
                            let identifier = tweak["Identifier"] as? String {
                             if disableTweaks.contains(identifier) {
-                                hiddenTweaks["false"] = translateMisakaPrefsTweaks([tweak], hidertoggle: true)
+                                hiddenTweaks["false"] = translateLegacyEncryptedPrefsTweaks([tweak], hidertoggle: true)
                             }
                             if enableTweaks.contains(identifier) {
-                                hiddenTweaks["true"] = translateMisakaPrefsTweaks([tweak], hidertoggle: true)
+                                hiddenTweaks["true"] = translateLegacyEncryptedPrefsTweaks([tweak], hidertoggle: true)
                             }
                         }
                     }
@@ -160,7 +160,7 @@ func translateMisakaPrefsTweaks(_ tweaks: [[String: Any]], hidertoggle: Bool = f
         }
         if let label = tweak["Category"] as? String,
            let tweaks = tweak["Tweaks"] as? [[String: Any]] {
-            let categoryContents = translateMisakaPrefsTweaks(tweaks)
+            let categoryContents = translateLegacyEncryptedPrefsTweaks(tweaks)
             let key = "\(label):section"
             resultDict[key] = categoryContents
         }
@@ -171,7 +171,7 @@ func translateMisakaPrefsTweaks(_ tweaks: [[String: Any]], hidertoggle: Bool = f
     return resultDict
 }
 
-func translateMisakaPrefs(plistData: Data) -> [String: Any]? {
+func translateLegacyEncryptedPrefs(plistData: Data) -> [String: Any]? {
     do {
         if let plistArray = try PropertyListSerialization.propertyList(from: plistData, format: nil) as? [[String: Any]] {
             let sortedPlistArray = plistArray.sorted { (dict1, dict2) -> Bool in
@@ -187,7 +187,7 @@ func translateMisakaPrefs(plistData: Data) -> [String: Any]? {
                 if let category = item["Category"] as? String,
                    let tweaks = item["Tweaks"] as? [[String: Any]] {
                     let categoryPrefix = !category.isEmpty ? "\(category):" : ""
-                    let categoryContents = translateMisakaPrefsTweaks(tweaks)
+                    let categoryContents = translateLegacyEncryptedPrefsTweaks(tweaks)
                     if let desc = item["Description"] as? String {
                         jsonItems.append(["\(category):section":[desc, categoryContents]])
                     } else {

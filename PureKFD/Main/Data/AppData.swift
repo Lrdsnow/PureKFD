@@ -130,14 +130,18 @@ struct SavedKFDData: Codable, Equatable {
 
 struct defaulturls {
     let urls: [URL] = [
-        // litterally my pc
-        //URL(string: "http://192.168.50.135:8000/bridge.json")!,
         // PureKFD Repos
-        URL(string: "https://raw.githubusercontent.com/Lrdsnow/lrdsnows-repo/main/PureKFDv5/bridge.json")!,
-        URL(string: "https://raw.githubusercontent.com/Dreel0akl/poopypoopermaybeworking/master/Essentials/manifest.json")!,
-        URL(string: "https://raw.githubusercontent.com/dora727/KaedeFriedDora/master/bridge.json")!,
+        URL(string: "https://raw.githubusercontent.com/PureKFD/PureKFDRepo/main/bridge.json")!, // PureKFD Repo - Offical PureKFD Repo
+        URL(string: "https://raw.githubusercontent.com/Dreel0akl/poopypoopermaybeworking/master/Essentials/manifest.json")!, // Poop Repo - Main Repo - Built for PureKFD
+        URL(string: "https://raw.githubusercontent.com/dora727/KaedeFriedDora/master/bridge.json")!, // MeowRepo - Main & Beta Repo's - Built for PureKFD
+        URL(string: "https://raw.githubusercontent.com/circularsprojects/circles-repo/main/purekfd.json")!, // Circular's Repo - Main Repo - Built for PureKFD
+        URL(string: "https://raw.githubusercontent.com/EPOS05/EPOSbox/main/purekfd.json")!, // EPOS Box - Main Repo - Built for PureKFD
+        URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/main/purekfd.json")!, // Aurora - Main Repo - Built for PureKFD
+        URL(string: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/main/file/Repo/purekfd.json")!, // YangJiii's Repo - Main Repo - Built for PureKFD
+        URL(string: "https://raw.githubusercontent.com/Lrdsnow/misakarepo/main/purekfd.json")!, // Phuc Do's Repo - PureKFD Fork - Awaiting Merge
+        URL(string: "https://raw.githubusercontent.com/Lrdsnow/romlayrepo_fork/main/purekfd.json")!, // Rom Lay's Repo - PureKFD Fork - Awaiting Merge
+        URL(string: "https://raw.githubusercontent.com/Lrdsnow/iPA/main/PureKFD/purekfd.json")!, // Huy's Repo - PureKFD Fork - Awaiting Merge
         // Picasso Repos
-        URL(string: "https://raw.githubusercontent.com/circularsprojects/circles-repo/main/manifest.json")!,
         URL(string: "https://raw.githubusercontent.com/sourcelocation/Picasso-test-repo/main/manifest.json")!,
         URL(string: "https://bomberfish.ca/PicassoRepos/Essentials/manifest.json")!,
         // Cowabunga Explore Repos:
@@ -148,7 +152,6 @@ struct defaulturls {
         // Flux Repos
         //URL(string: "https://purekfd.pages.dev/pureflux/fluxrepo.json")!,
         // Altstore Repos
-        //URL(string: "https://ipa.cypwn.xyz/cypwn.json")!,
         //URL(string: "https://skadz.online/repo")!,
         //URL(string: "https://quarksources.github.io/dist/quantumsource.min.json")!,
         //URL(string: "https://cdn.altstore.io/file/altstore/apps.json")!,
@@ -156,39 +159,5 @@ struct defaulturls {
         //URL(string: "https://raw.githubusercontent.com/azu0609/repo/main/scarlet_repo.json")!,
         // Esign Repos
         //URL(string: "https://raw.githubusercontent.com/iwishkem/iwishkem.github.io/main/esign.json")!,
-        // JB Repos
-        //URL(string: "https://raw.githubusercontent.com/34306/34306.github.io/master/Release")!,
-//        URL(string: "https://havoc.app/Release")!,
-//        URL(string: "https://repo.alexia.lol/Release")!,
-//        URL(string: "https://repo.anamy.gay/Release")!,
-//        URL(string: "https://repo.chariz.com/Release")!,
-//        URL(string: "https://cokepokes.github.io/Release")!,
-//        URL(string: "https://repo.cypwn.xyz/Release")!,
-//        URL(string: "https://ginsu.dev/repo/Release")!,
-//        URL(string: "https://hacx.org/repo/Release")!,
-//        URL(string: "https://havoc.app/Release")!,
-//        URL(string: "https://julioverne.github.io/Release")!,
-//        URL(string: "https://repo.packix.com/Release")!,
-//        URL(string: "https://paisseon.github.io/Release")!,
-//        URL(string: "https://repo.palera.in/Release")!,
-        // Misaka Repos
-        //URL(string: "http://phucdo-repo.pages.dev/repo.json")!,
-        //URL(string: "https://raw.githubusercontent.com/shimajiron/Misaka_Network/main/repo.json")!,
-        //URL(string: "https://raw.githubusercontent.com/34306/iPA/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/roeegh/Puck/c3f73c1e978d183738ee1883e17c4c85a4b0bb6a/repo.json")!,
-        //URL(string: "https://raw.githubusercontent.com/hanabiADHD/nbxyRepo/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/huligang/coolwcat/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/a237899ff920baf900587021e5ed0f08e19490cd/file/Repo/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/leminlimez/leminrepo/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/ichitaso/misaka/main/repo.json")!,
-        //URL(string: "https://raw.githubusercontent.com/chimaha/misakarepo/main/repo.json")!,
-        //URL(string: "https://raw.githubusercontent.com/sugiuta/repo-mdc/master/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/Fomri/fomrirepo/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/EPOS05/EPOSbox/0bbdff591a208a18c6b7b8adf8b305eb3ce0871f/misaka.json")!,
-        URL(string: "https://raw.githubusercontent.com/tdquang266/MDC/main/repo.json")!,
-        //URL(string: "https://raw.githubusercontent.com/kloytofyexploiter/Misaka-repo_MRX/main/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/870c6ed0d0fc73bce5bfe521261c938cc62107fe/repo.json")!,
-        URL(string: "https://raw.githubusercontent.com/tyler10290/MisakaRepoBackup/main/repo.json")!,
-        //URL(string: "https://raw.githubusercontent.com/hanabiADHD/DekotasMirror/main/dekotas.json")!,
     ]
 }

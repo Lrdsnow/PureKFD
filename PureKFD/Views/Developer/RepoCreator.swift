@@ -10,7 +10,6 @@ import SwiftUI
 import WebKit
 import OctoKit
 import QuickLook
-import libpurekfd
 
 class Github: NSObject, WKNavigationDelegate {
     var accessTokenCompletion: ((String?) -> Void)?
@@ -18,7 +17,7 @@ class Github: NSObject, WKNavigationDelegate {
     
     func handleAuthorizationCode(_ code: String?, completion: @escaping (String?) -> Void) {
         let clientId = "106f6a7cce8861504a0d"
-        let clientSecret = ask_rs()
+        let clientSecret = ""
         let tokenUrl = "https://github.com/login/oauth/access_token"
         let tokenBody = "client_id=\(clientId)&client_secret=\(clientSecret)&code=\(code ?? "")&redirect_uri=purekfd://github-oauth-callback"
         

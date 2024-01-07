@@ -11,7 +11,6 @@ import MarqueeText
 import TextFieldAlert
 import Foundation
 import Zip
-import libpurekfd
 
 struct PackagePreviewView: View {
     let package: Package
@@ -199,7 +198,7 @@ struct PackageDetailView: View {
                                     .cornerRadius(20)
                             }
                         }.shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2).onAppear() {isInstalled = isPackageInstalled(package.bundleID)}.contextMenu(menuItems: {
-                            if package.pkgtype == "misaka" && !isInstalled {
+                            if package.pkgtype == "legacyencrypted" && !isInstalled {
                                 ForEach(package.versions?.keys.sorted() ?? [], id: \.self) { versionKey in
                                     if let release = package.versions?[versionKey] {
                                         Button(action: {
@@ -451,7 +450,7 @@ func installPackage(pkg: Package, path: URL, appData: AppData) -> Error? {
                         // Read Package & Save Info
                         var package = pkg
                         var preftype = "none"
-                        if FileManager.default.fileExists(atPath: pkgdir.appendingPathComponent("config.plist").path) {package.hasprefs = true; preftype="misaka"}
+                        if FileManager.default.fileExists(atPath: pkgdir.appendingPathComponent("config.plist").path) {package.hasprefs = true; preftype="legacyencrypted"}
                         if FileManager.default.fileExists(atPath: pkgdir.appendingPathComponent("config.json").path) {package.hasprefs = true; preftype="purekfd"}
                         if FileManager.default.fileExists(atPath: pkgdir.appendingPathComponent("prefs.json").path) {
                             let jsonData = try Data(contentsOf: pkgdir.appendingPathComponent("prefs.json"))
@@ -472,7 +471,7 @@ func installPackage(pkg: Package, path: URL, appData: AppData) -> Error? {
                         return NSError(domain: "YourDomain", code: 123, userInfo: [NSLocalizedDescriptionKey: "Unknown error occurred on extract! (extracted folder empty)"])
                     }
                     do {try FileManager.default.removeItem(at: tempDirectory)} catch {}
-                    do {try FileManager.default.removeItem(at: documentsDirectory.appendingPathComponent("Misaka"))} catch {}
+                    do {try FileManager.default.removeItem(at: documentsDirectory.appendingPathComponent("Legacy Encrypted"))} catch {}
                     cleanTemp()
                     return nil
                 } catch {
@@ -543,13 +542,20 @@ class ViewModel: ObservableObject {
     }
 }
 
+// unzip function i might adapt later
+public func unzip(Data_zip: URL, Extract: URL) throws {
+    try Zip.unzipFile(Data_zip, destination: Extract, overwrite: true, password: nil, progress: { (progress) -> () in
+        log("%@", "\(progress)")
+    })
+}
+
 // I'll fix this later
 class BackupManager: ObservableObject {
     func importBackup(_ url: URL, appdata: AppData) throws {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let backupPath = documentsDirectory.appendingPathComponent("temp_purekfdbackup.zip")
         do {try FileManager.default.copyItem(atPath: url.path, toPath: backupPath.path)} catch {}
-        if unzip(Data_zip: backupPath, Extract: documentsDirectory) == false {
+        do {try unzip(Data_zip: backupPath, Extract: documentsDirectory)} catch {
             do {try FileManager.default.removeItem(at: backupPath)} catch {}
             throw "Failed to extract"
         }
@@ -580,7 +586,7 @@ func extractPackage(_ url: URL, readPackageInfo: Bool = false, appdata: AppData?
         return (error, nil)
     }
     
-    if !unzip(Data_zip: url, Extract: extractedDir) {
+    do {try unzip(Data_zip: url, Extract: extractedDir)} catch {
         return (NSError(domain: "YourDomain", code: 123, userInfo: [NSLocalizedDescriptionKey: "Failed To Extract"]), nil)
     }
     
@@ -641,7 +647,7 @@ func extractPackage(_ url: URL, readPackageInfo: Bool = false, appdata: AppData?
                 log("%@", "Error reading info.json or decoding package: \(error.localizedDescription)")
                 return (error, nil)
             } else {
-                return (nil, Package(name: "Misaka Package", bundleID: "\(UUID())", author: "Unknown", desc: "Unknown", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, category: "Misc", install_actions: [], uninstall_actions: [], url: nil, pkgtype: "misaka"))
+                return (nil, Package(name: "Legacy Encrypted Package", bundleID: "\(UUID())", author: "Unknown", desc: "Unknown", longdesc: nil, accent: nil, screenshots: nil, banner: nil, previewbg: nil, category: "Misc", install_actions: [], uninstall_actions: [], url: nil, pkgtype: "legacyencrypted"))
             }
         }
     }
@@ -664,9 +670,9 @@ func translatePrefs(_ preftype: String, pkgpath: URL) {
                 log("%@", "Error saving data to file: \(error)")
             }
         }
-    } else if preftype == "misaka" {
+    } else if preftype == "legacyencrypted" {
         if let plistData = FileManager.default.contents(atPath: pkgpath.appendingPathComponent("config.plist").path),
-            let jsonDictionary = translateMisakaPrefs(plistData: plistData),
+            let jsonDictionary = translateLegacyEncryptedPrefs(plistData: plistData),
             let jsonData = try? JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted),
             let jsonString = String(data: jsonData, encoding: .utf8) {
             do {

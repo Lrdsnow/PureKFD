@@ -243,12 +243,9 @@ func getRepoInfo(_ repourl: String, appData: AppData, usedata: Data? = nil, lowe
         return blankrepo
     }
     do {
-        var data = usedata == nil ? try await downloadJSON(from: url, lowend: lowend) : usedata!
+        let data = usedata == nil ? try await downloadJSON(from: url, lowend: lowend) : usedata!
         var repo: Repo = blankrepo
         let decoder = JSONDecoder()
-        // fucking misaka.app fixes - fix misaka repo on runtime omg
-        let fixed_jsonstring = (String(data: data, encoding: .utf8) ?? "").replacingOccurrences(of: "\"Label\": \"Twitter\", //", with: "\"Label\": \"Twitter\",").replacingOccurrences(of: "https://raw.githubusercontent.com/hackzy01/misio/main/", with: "https://raw.githubusercontent.com/HackZy01/aurora/870c6ed0d0fc73bce5bfe521261c938cc62107fe/").replacingOccurrences(of: "https://puck.roeegh.com/", with: "https://raw.githubusercontent.com/roeegh/Puck/c3f73c1e978d183738ee1883e17c4c85a4b0bb6a/").replacingOccurrences(of: "https://yangjiii.tech/", with: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/a237899ff920baf900587021e5ed0f08e19490cd/").replacingOccurrences(of: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/main/", with: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/a237899ff920baf900587021e5ed0f08e19490cd/").replacingOccurrences(of: "https://raw.githubusercontent.com/EPOS05/EPOSbox/main/", with: "https://raw.githubusercontent.com/EPOS05/EPOSbox/0bbdff591a208a18c6b7b8adf8b305eb3ce0871f/")
-        data = fixed_jsonstring.data(using: .utf8) ?? data
         do {
             switch getRepoType(String(data: data, encoding: .utf8) ?? "") {
             case "bridge":
@@ -283,11 +280,11 @@ func getRepoInfo(_ repourl: String, appData: AppData, usedata: Data? = nil, lowe
                     repodata.url = url.deletingLastPathComponent()
                     repo = translateToRepo(repoType: "PureKFD", repo: repodata) ?? blankrepo
                 }
-            case "misaka":
+            case "legacyencrypted":
                 if !appData.UserData.filters.kfd {
-                    var repodata = try decoder.decode(MisakaRepo.self, from: data)
+                    var repodata = try decoder.decode(LegacyEncryptedRepo.self, from: data)
                     repodata.RepositoryURL = url.deletingLastPathComponent()
-                    repo = translateToRepo(repoType: "misaka", repo: repodata) ?? blankrepo
+                    repo = translateToRepo(repoType: "legacyencrypted", repo: repodata) ?? blankrepo
                 }
             case "picasso":
                 if !appData.UserData.filters.kfd {
@@ -367,7 +364,7 @@ func getRepoType(_ jsonString: String) -> String {
                 if json["repotype"] is String {
                     return "purekfd"
                 } else if json["RepositoryName"] is String {
-                    return "misaka"
+                    return "legacyencrypted"
                 } else if json["META"] is [String: String] {
                     return "scarlet"
                 } else if json["identifier"] is String {

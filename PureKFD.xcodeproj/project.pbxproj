@@ -24,7 +24,6 @@
 		651FFEC42AAE2E81005D6223 /* TextFieldAlert in Frameworks */ = {isa = PBXBuildFile; productRef = 651FFEC32AAE2E81005D6223 /* TextFieldAlert */; };
 		651FFEC82AAE7518005D6223 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651FFEC72AAE7518005D6223 /* Package.swift */; };
 		654DED032B383CA200DACD2E /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 654DED022B383CA200DACD2E /* IOKit.framework */; };
-		6558AB1A2B380C62002DA52B /* libpurekfd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6558AB192B380C62002DA52B /* libpurekfd.a */; };
 		6558AB222B381BAB002DA52B /* waitpid_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = 6558AB1C2B381BAB002DA52B /* waitpid_decode.c */; };
 		6558AB232B381BAB002DA52B /* userspaceReboot.c in Sources */ = {isa = PBXBuildFile; fileRef = 6558AB1F2B381BAB002DA52B /* userspaceReboot.c */; };
 		6558AB242B381BAB002DA52B /* memoryControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 6558AB202B381BAB002DA52B /* memoryControl.m */; };
@@ -113,9 +112,7 @@
 		650E821D2AF701F600985508 /* Others.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Others.swift; sourceTree = "<group>"; };
 		651895902B302BF400B4C118 /* Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setup.swift; sourceTree = "<group>"; };
 		651FFEC72AAE7518005D6223 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		654DECFA2B38368700DACD2E /* libpurekfd.swiftmodule */ = {isa = PBXFileReference; lastKnownFileType = folder; name = libpurekfd.swiftmodule; path = lib/libpurekfd.swiftmodule; sourceTree = "<group>"; };
 		654DED022B383CA200DACD2E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
-		6558AB192B380C62002DA52B /* libpurekfd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpurekfd.a; path = lib/libpurekfd.a; sourceTree = "<group>"; };
 		6558AB1C2B381BAB002DA52B /* waitpid_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = waitpid_decode.c; sourceTree = "<group>"; };
 		6558AB1D2B381BAB002DA52B /* waitpid_decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = waitpid_decode.h; sourceTree = "<group>"; };
 		6558AB1E2B381BAB002DA52B /* memoryControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memoryControl.h; sourceTree = "<group>"; };
@@ -226,7 +223,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6558AB1A2B380C62002DA52B /* libpurekfd.a in Frameworks */,
 				654DED032B383CA200DACD2E /* IOKit.framework in Frameworks */,
 				65BBD0B42B364EC300ABBC1C /* OctoKit in Frameworks */,
 				65B475A12AAD586500172BD3 /* MarqueeText in Frameworks */,
@@ -618,8 +614,6 @@
 			isa = PBXGroup;
 			children = (
 				654DED022B383CA200DACD2E /* IOKit.framework */,
-				654DECFA2B38368700DACD2E /* libpurekfd.swiftmodule */,
-				6558AB192B380C62002DA52B /* libpurekfd.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -631,7 +625,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6596B0FF2AAAABBA0005EED9 /* Build configuration list for PBXNativeTarget "PureKFD" */;
 			buildPhases = (
-				654DED082B38AD8D00DACD2E /* ShellScript */,
 				6596B0ED2AAAABB90005EED9 /* Sources */,
 				6596B0EE2AAAABB90005EED9 /* Frameworks */,
 				6596B0EF2AAAABB90005EED9 /* Resources */,
@@ -748,25 +741,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif [ -d \"${BUILT_PRODUCTS_DIR}/Build\" ]; then\n    rm -r \"${BUILT_PRODUCTS_DIR}/Build\"\nfi\nmkdir ${BUILT_PRODUCTS_DIR}/Build\ncp -r ${BUILT_PRODUCTS_DIR}/PureKFD.app ${BUILT_PRODUCTS_DIR}/Build/PureKFD.app\nldid -S./entitlements.plist ${BUILT_PRODUCTS_DIR}/Build/PureKFD.app/PureKFD\ncd ${BUILT_PRODUCTS_DIR}/Build\nif [ -d \"Payload\" ]; then\n    rm -r \"Payload\"\nfi\nmkdir -p \"Payload\"\nsed -i '' 's/<key>CFBundleIdentifier<\\/key>[[:space:]]*<string>[^<]*<\\/string>/<key>CFBundleIdentifier<\\/key><string>uwu.lrdsnow.purekfd<\\/string>/' PureKFD.app/Info.plist\necho $(date '+%Y-%m-%d %H:%M:%S') > PureKFD.app/build.txt\nmv PureKFD.app Payload/PureKFD.app\nzip -r purekfd.ipa Payload\nrm -r Payload\n";
-		};
-		654DED082B38AD8D00DACD2E /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "rm -r \"${BUILT_PRODUCTS_DIR}/libpurekfd.swiftmodule\"\nrm \"${BUILT_PRODUCTS_DIR}/libpurekfd.a\"\nif [ -d \"./lib\" ]; then\n    cp -r \"lib/libpurekfd.swiftmodule\" \"${BUILT_PRODUCTS_DIR}/libpurekfd.swiftmodule\"\n    cp \"lib/libpurekfd.a\" \"${BUILT_PRODUCTS_DIR}/libpurekfd.a\"\nelse\n    cd ${BUILT_PRODUCTS_DIR}\n    rm libpurekfd.zip\n    curl -LJO https://github.com/Lrdsnow/lrdsnows-repo/raw/main/random/libpurekfd.zip\n    unzip libpurekfd.zip\nfi\n";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 

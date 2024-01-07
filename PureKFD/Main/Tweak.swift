@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import libpurekfd
 
 func smart_kopen(appData: AppData) -> Int {
     // Get Exploit
@@ -162,7 +161,7 @@ func asyncApplyTweaks(_ exploit_method: Int, _ writeErrors: inout [String], appD
             let pkgpath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("installed/\(pkg.bundleID)")
             let overwriteFolderPath = pkgpath.appendingPathComponent("Overwrite")
             if FileManager.default.fileExists(atPath: overwriteFolderPath.path) {
-                await overwriteMisaka(sourceFolderURL: overwriteFolderPath, pkgpath: pkgpath, exploit_method: exploit_method, writeErrors: &writeErrors)
+                await overwriteLegacyEncrypted(sourceFolderURL: overwriteFolderPath, pkgpath: pkgpath, exploit_method: exploit_method, writeErrors: &writeErrors)
             } else {
                 do {
                     try await runTweakOperations(getTweaksData(pkgpath.appendingPathComponent("tweak.json")), pkgpath: pkgpath, appData: appData)
@@ -175,7 +174,7 @@ func asyncApplyTweaks(_ exploit_method: Int, _ writeErrors: inout [String], appD
     log("All Done")
 }
 
-func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, writeErrors: inout [String]) async {
+func overwriteLegacyEncrypted(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, writeErrors: inout [String]) async {
     let fileManager = FileManager.default
 
     func processItem(at itemURL: URL, relativeTo baseURL: URL) async {
@@ -194,7 +193,7 @@ func overwriteMisaka(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, wr
                     writeErrors.append("\(error)")
                 }
             } else {
-                let relativePath = replaceBeforeAndSubstring(in: itemURL.path, targetSubstring: "/Overwrite", with: "").misakaOperations(pkgpath: pkgpath, exploit_method: exploit_method)
+                let relativePath = replaceBeforeAndSubstring(in: itemURL.path, targetSubstring: "/Overwrite", with: "").legacyencryptedOperations(pkgpath: pkgpath, exploit_method: exploit_method)
                 do {
                     if !URL(fileURLWithPath: relativePath).lastPathComponent.hasPrefix("?pure_binary.") {
                         if exploit_method == 0 { // KFD
@@ -500,7 +499,7 @@ func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData:
 }
 
 extension String {
-    func misakaOperations(pkgpath: URL, exploit_method: Int) -> String {
+    func legacyencryptedOperations(pkgpath: URL, exploit_method: Int) -> String {
         var save: [String: Any] = [:]
         if let savepath = FileManager.default.contents(atPath: pkgpath.appendingPathComponent("save.json").path),
            let savedict = try? JSONSerialization.jsonObject(with: savepath, options: []) {
@@ -508,15 +507,15 @@ extension String {
         }
         var path = self
             .replacingOccurrences(of: "%Optional%", with: "")
-            //.replacingOccurrences(of: "%Misaka_Binary%", with: "") // This is prob unsafe
-            .replacingOccurrences(of: "%Misaka_Resize%", with: "")
-            .replacingOccurrences(of: "%Misaka_Path{'SpringLang'}%", with: Locale.current.languageCode ?? "")
-            .replacingOccurrences(of: "%Misaka_Path{'DeviceType'}%", with: (UIDevice.current.userInterfaceIdiom == .phone) ? "iphone" : "ipad")
+            //.replacingOccurrences(of: "%LegacyEncrypted_Binary%", with: "") // This is prob unsafe
+            .replacingOccurrences(of: "%LegacyEncrypted_Resize%", with: "")
+            .replacingOccurrences(of: "%LegacyEncrypted_Path{'SpringLang'}%", with: Locale.current.languageCode ?? "")
+            .replacingOccurrences(of: "%LegacyEncrypted_Path{'DeviceType'}%", with: (UIDevice.current.userInterfaceIdiom == .phone) ? "iphone" : "ipad")
         for item in path.components(separatedBy: "/") {
-            if item.contains("Misaka_Segment") {
-                let fileName = parseMisakaSegment(from: item)[0]
-                let variableName = parseMisakaSegment(from: item)[1]
-                let variableValue = parseMisakaSegment(from: item)[2]
+            if item.contains("Legacy Encrypted_Segment") {
+                let fileName = parseLegacyEncryptedSegment(from: item)[0]
+                let variableName = parseLegacyEncryptedSegment(from: item)[1]
+                let variableValue = parseLegacyEncryptedSegment(from: item)[2]
                 log("fileName: %@\nvariableName: %@\nvariableValue: %@", fileName, variableName, variableValue)
                 if variableName == "iOSver" {
                     let deviceInfo = getDeviceInfo(appData: nil).3
@@ -530,11 +529,11 @@ extension String {
                 if "\(save[variableName] ?? 1)" == "\(variableValue)" {
                     path = path.replacingOccurrences(of: item, with: fileName)
                 }
-                path = path.replacingOccurrences(of: "%Misaka_Binary%", with: "?pure_binary.")
+                path = path.replacingOccurrences(of: "%LegacyEncrypted_Binary%", with: "?pure_binary.")
             }
-            if item.contains("Misaka_AppUUID") {
-                let bundleid = misakaOperationValues(from: item)[0]
-                if misakaOperationValues(from: item)[1] == "Data" {
+            if item.contains("Legacy Encrypted_AppUUID") {
+                let bundleid = legacyencryptedOperationValues(from: item)[0]
+                if legacyencryptedOperationValues(from: item)[1] == "Data" {
                     do {
                         path = try path.replacingOccurrences(of: "/var/mobile/Containers/Data/Application/"+item, with: getDataDir(bundleID: bundleid, exploit_method: exploit_method).path)
                     } catch {log("failed")}
@@ -703,9 +702,9 @@ func getDataDir(bundleID: String, exploit_method: Int) throws -> URL {
     }
 }
 
-// Funni Misaka Parse stuff written by chatgpt
+// Funni LegacyEncrypted Parse stuff written by chatgpt
 
-func misakaOperationValues(from inputString: String) -> [String] {
+func legacyencryptedOperationValues(from inputString: String) -> [String] {
     var extractedValues = [String]()
 
     do {
@@ -726,7 +725,7 @@ func misakaOperationValues(from inputString: String) -> [String] {
     return extractedValues
 }
 
-func parseMisakaSegment(from inputString: String) -> [String] {
+func parseLegacyEncryptedSegment(from inputString: String) -> [String] {
     var extractedValues = [String]()
 
     do {

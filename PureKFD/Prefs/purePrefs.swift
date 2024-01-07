@@ -22,7 +22,7 @@ struct PrefView: View {
             } else if FileManager.default.fileExists(atPath: pkgpath.appendingPathComponent("config.plist").path) {
                 let plistPath = pkgpath.appendingPathComponent("config.plist").path
                 if let plistData = FileManager.default.contents(atPath: plistPath),
-                   let jsonDictionary = translateMisakaPrefs(plistData: plistData),
+                   let jsonDictionary = translateLegacyEncryptedPrefs(plistData: plistData),
                    let jsonData = try? JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted),
                    let jsonString = String(data: jsonData, encoding: .utf8) {
                     FullPrefView(json: jsonString, pkgpath: pkgpath.path).bgImage(appData)

@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import Zip
-import libpurekfd
 
 @available(iOS 15.0, *)
 struct TweakConverterView: View {
@@ -16,9 +15,9 @@ struct TweakConverterView: View {
     @State var pickedFilePath = ""
     @State var pickedFileFullPath = ""
     @State var true_pkgtypes = ["cowlock", "PureKFD"]
-    @State var pkgtypes = ["Cowabunga (Lock)", "PureKFD (Misaka Format)"]
+    @State var pkgtypes = ["Cowabunga (Lock)", "PureKFD (LegacyEncrypted Format)"]
     @State var true_outpkgtypes = ["PureKFD"]
-    @State var outpkgtypes = ["PureKFD (Misaka Format)"]
+    @State var outpkgtypes = ["PureKFD (LegacyEncrypted Format)"]
     @State var inpkgtype = 0
     @State var outpkgtype = 0
     @State var tweakpath: String? = nil
@@ -77,7 +76,7 @@ func convertTweak(intype: String, outtype: String, pkgpath: URL) -> String? {
             } catch {}
             try FileManager.default.copyItem(at: pkgpath, to: tempzippath)
         } catch {}
-        unzip(Data_zip: tempzippath, Extract: temppath)
+        try? unzip(Data_zip: tempzippath, Extract: temppath)
         let work = generateLock("CowabungaLock", lockfiles: temppath)
         let pkgid = "\(UUID())"
         let pkgfolderpath = FileManager.default.temporaryDirectory.appendingPathComponent("CowabungaLock")

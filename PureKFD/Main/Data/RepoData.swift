@@ -21,7 +21,7 @@ struct Repo: Codable, Identifiable {
     var featured: [Featured]?
     var packages: [Package]
     // Repo Data
-    let repotype: String // Can be "PureKFD", "misaka" or "picasso"
+    let repotype: String // Can be "PureKFD", "legacyencrypted" or "picasso"
 }
 
 struct Package: Codable, Identifiable {
@@ -53,9 +53,9 @@ struct Package: Codable, Identifiable {
     var disabled: Bool?
     var hasprefs: Bool?
     // Package Data
-    var pkgtype: String // Can be "PureKFD", "misaka" or "picasso"
+    var pkgtype: String // Can be "PureKFD", "legacyencrypted" or "picasso"
 //    let PureKFD: PureKFDPkg?
-//    let misaka: MisakaPkg?
+//    let legacyencrypted: LegacyEncryptedPkg?
 //    let picasso: PicassoPkg?
 }
 
@@ -119,10 +119,10 @@ struct PicassoRepo: Codable, Identifiable {
     var url: URL?
 }
 
-// Misaka
+// LegacyEncrypted
 
 
-struct MisakaRepo: Codable, Identifiable {
+struct LegacyEncryptedRepo: Codable, Identifiable {
     let id = UUID()
     let RepositoryName: String
     let RepositoryDescription: String
@@ -133,39 +133,39 @@ struct MisakaRepo: Codable, Identifiable {
     var RepositoryURL: URL?
     let DefaultHeaderImage: String?
     let featured: [Featured]?
-    let RepositoryContents: [MisakaPkg]
+    let RepositoryContents: [LegacyEncryptedPkg]
     let packages: [PureKFDPkg]?
 }
 
 
-struct MisakaPkg: Codable, Identifiable {
+struct LegacyEncryptedPkg: Codable, Identifiable {
     let id = UUID()
     let Name: String
     let Description: String?
     let MinIOSVersion: String?
     let MaxIOSVersion: String?
-    let Author: MisakaAuthor?
+    let Author: LegacyEncryptedAuthor?
     let Icon: String?
     let HeaderImage: String?
     let Category: String?
     let Caption: String?
     let Screenshot: [String]?
     let accent: String?
-    let Releases: [MisakaRelease]?
+    let Releases: [LegacyEncryptedRelease]?
     let PackageID: String?
 }
 
-struct MisakaAuthor: Codable {
+struct LegacyEncryptedAuthor: Codable {
     let Label: String?
-    let Links: [MisakaLink]?
+    let Links: [LegacyEncryptedLink]?
 }
 
-struct MisakaLink: Codable {
+struct LegacyEncryptedLink: Codable {
     let Label: String?
     let Link: String?
 }
 
-struct MisakaRelease: Codable {
+struct LegacyEncryptedRelease: Codable {
     let Version: String?
     let Package: String?
     let Description: String?
@@ -320,14 +320,14 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            repo: nil,
                            pkgtype: pkgType)
         }
-    case "misaka":
-        if let misakaPackage = package as? MisakaPkg {
-            if blacklisted.contains(misakaPackage.PackageID ?? "nil") {
+    case "legacyencrypted":
+        if let legacyencryptedPackage = package as? LegacyEncryptedPkg {
+            if blacklisted.contains(legacyencryptedPackage.PackageID ?? "nil") {
                 return nil
             }
             
             var versionsDictionary = [String: String]()
-            if let releases = misakaPackage.Releases {
+            if let releases = legacyencryptedPackage.Releases {
                 for release in releases {
                     if let version = release.Version, let packageName = release.Package {
                         versionsDictionary[version] = packageName
@@ -339,18 +339,18 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
             }
             let sortedVersionsDictionary = versionsDictionary.filter { sortedVersions.contains($0.key) }
             
-            return Package(name: misakaPackage.Name,
-                           bundleID: misakaPackage.PackageID ?? "",
-                           author: misakaPackage.Author?.Label ?? "Unknown Author",
+            return Package(name: legacyencryptedPackage.Name,
+                           bundleID: legacyencryptedPackage.PackageID ?? "",
+                           author: legacyencryptedPackage.Author?.Label ?? "Unknown Author",
                            version: sortedVersionsDictionary.keys.first,
-                           desc: misakaPackage.Description ?? "",
-                           longdesc: misakaPackage.Caption ?? "",
-                           icon: URL(string: misakaPackage.Icon ?? ""),
-                           accent: misakaPackage.accent,
-                           screenshots: misakaPackage.Screenshot?.compactMap { URL(string: $0) },
-                           banner: URL(string: misakaPackage.HeaderImage ?? ""), 
+                           desc: legacyencryptedPackage.Description ?? "",
+                           longdesc: legacyencryptedPackage.Caption ?? "",
+                           icon: URL(string: legacyencryptedPackage.Icon ?? ""),
+                           accent: legacyencryptedPackage.accent,
+                           screenshots: legacyencryptedPackage.Screenshot?.compactMap { URL(string: $0) },
+                           banner: URL(string: legacyencryptedPackage.HeaderImage ?? ""), 
                            previewbg: nil,
-                           category: misakaPackage.Category ?? "Misc",
+                           category: legacyencryptedPackage.Category ?? "Misc",
                            path: URL(string: sortedVersionsDictionary.values.first ?? ""),
                            installtype: "kfd",
                            versions: sortedVersionsDictionary,
@@ -559,27 +559,27 @@ func translateToRepo(repoType: String, repo: Any, repoURL: URL? = URL(string: ""
                             packages: translatedPackages,
                             repotype: repoType)
         }
-    case "misaka":
-        if let misakaRepo = repo as? MisakaRepo {
+    case "legacyencrypted":
+        if let legacyencryptedRepo = repo as? LegacyEncryptedRepo {
             var translatedPackages = [Package]()
-            for pkg in misakaRepo.RepositoryContents {
-                if let translatedPackage = translateToPackage(pkgType: "misaka", package: pkg) {
+            for pkg in legacyencryptedRepo.RepositoryContents {
+                if let translatedPackage = translateToPackage(pkgType: "legacyencrypted", package: pkg) {
                     translatedPackages.append(translatedPackage)
                 }
             }
-            if misakaRepo.packages != nil {
-                for pkg in misakaRepo.packages! {
-                    if let translatedPackage = translateToPackage(pkgType: "PureKFD", package: pkg, repourl: misakaRepo.RepositoryURL) {
+            if legacyencryptedRepo.packages != nil {
+                for pkg in legacyencryptedRepo.packages! {
+                    if let translatedPackage = translateToPackage(pkgType: "PureKFD", package: pkg, repourl: legacyencryptedRepo.RepositoryURL) {
                         translatedPackages.append(translatedPackage)
                     }
                 }
             }
-            return Repo(name: misakaRepo.RepositoryName,
-                        desc: misakaRepo.RepositoryDescription,
-                        url: misakaRepo.RepositoryURL,
-                        icon: misakaRepo.RepositoryIcon,
-                        accent: misakaRepo.RepositoryAccent,
-                        featured: misakaRepo.featured,
+            return Repo(name: legacyencryptedRepo.RepositoryName,
+                        desc: legacyencryptedRepo.RepositoryDescription,
+                        url: legacyencryptedRepo.RepositoryURL,
+                        icon: legacyencryptedRepo.RepositoryIcon,
+                        accent: legacyencryptedRepo.RepositoryAccent,
+                        featured: legacyencryptedRepo.featured,
                         packages: translatedPackages,
                         repotype: repoType)
         }
