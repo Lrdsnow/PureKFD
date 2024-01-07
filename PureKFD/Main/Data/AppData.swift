@@ -136,11 +136,11 @@ struct defaulturls {
         URL(string: "https://raw.githubusercontent.com/dora727/KaedeFriedDora/master/bridge.json")!, // MeowRepo - Main & Beta Repo's - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/circularsprojects/circles-repo/main/purekfd.json")!, // Circular's Repo - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/EPOS05/EPOSbox/main/purekfd.json")!, // EPOS Box - Main Repo - Built for PureKFD
+        URL(string: "https://raw.githubusercontent.com/34306/iPA/main/PureKFD/purekfd.json")!, // Huy's Repo - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/main/purekfd.json")!, // Aurora - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/main/file/Repo/purekfd.json")!, // YangJiii's Repo - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/Lrdsnow/misakarepo/main/purekfd.json")!, // Phuc Do's Repo - PureKFD Fork - Awaiting Merge
         URL(string: "https://raw.githubusercontent.com/Lrdsnow/romlayrepo_fork/main/purekfd.json")!, // Rom Lay's Repo - PureKFD Fork - Awaiting Merge
-        URL(string: "https://raw.githubusercontent.com/Lrdsnow/iPA/main/PureKFD/purekfd.json")!, // Huy's Repo - PureKFD Fork - Awaiting Merge
         // Picasso Repos
         URL(string: "https://raw.githubusercontent.com/sourcelocation/Picasso-test-repo/main/manifest.json")!,
         URL(string: "https://bomberfish.ca/PicassoRepos/Essentials/manifest.json")!,
