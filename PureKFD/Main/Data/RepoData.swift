@@ -119,70 +119,6 @@ struct PicassoRepo: Codable, Identifiable {
     var url: URL?
 }
 
-// LegacyEncrypted
-
-
-struct LegacyEncryptedRepo: Codable, Identifiable {
-    let id = UUID()
-    let RepositoryName: String
-    let RepositoryDescription: String
-    let RepositoryAuthor: String
-    let RepositoryIcon: String
-    let RepositoryWebsite: String?
-    let RepositoryAccent: String?
-    var RepositoryURL: URL?
-    let DefaultHeaderImage: String?
-    let featured: [Featured]?
-    let RepositoryContents: [LegacyEncryptedPkg]
-    let packages: [PureKFDPkg]?
-}
-
-
-struct LegacyEncryptedPkg: Codable, Identifiable {
-    let id = UUID()
-    let Name: String
-    let Description: String?
-    let MinIOSVersion: String?
-    let MaxIOSVersion: String?
-    let Author: LegacyEncryptedAuthor?
-    let Icon: String?
-    let HeaderImage: String?
-    let Category: String?
-    let Caption: String?
-    let Screenshot: [String]?
-    let accent: String?
-    let Releases: [LegacyEncryptedRelease]?
-    let PackageID: String?
-}
-
-struct LegacyEncryptedAuthor: Codable {
-    let Label: String?
-    let Links: [LegacyEncryptedLink]?
-}
-
-struct LegacyEncryptedLink: Codable {
-    let Label: String?
-    let Link: String?
-}
-
-struct LegacyEncryptedRelease: Codable {
-    let Version: String?
-    let Package: String?
-    let Description: String?
-}
-
-// Flux kms
-struct FluxPkg: Codable {
-    let shortDesc: String?
-    let link: String?
-    let author: String?
-    let categories: String?
-    let preview: String?
-    let longDesc: String?
-    let b64icon: String?
-    let icon: String?
-}
-
 // JB
 struct JBRepo: Codable {
     let Origin: String?
@@ -193,88 +129,6 @@ struct JBRepo: Codable {
     let Components: String?
     let Description: String?
     let MD5Sum: String?
-}
-
-// Cow
-struct CowabungaPkg: Codable {
-    let name: String
-    let identification: String?
-    let description: String
-    let url: String
-    let preview: String
-    let version: String
-}
-
-// Altstore
-struct AltstoreRepo: Codable {
-    let name: String?
-    let identifier: String?
-    let subtitle: String?
-    let iconURL: String?
-    let website: String?
-    let sourceURL: String?
-    let featuredApps: [String]?
-    let apps: [AltstoreApp]?
-}
-
-struct AltstoreApp: Codable {
-    let name: String
-    let bundleIdentifier: String
-    let developerName: String?
-    let version: String?
-    let versionDate: String?
-    let downloadURL: String?
-    let localizedDescription: String?
-    let iconURL: String?
-    let tintColor: String?
-    let size: Int?
-    let screenshotURLs: [String]?
-}
-
-// ESign
-struct ESignRepo: Codable {
-    let name: String?
-    let identifier: String?
-    let sourceURL: String?
-    let apps: [ESignApp]?
-}
-
-struct ESignApp: Codable {
-    let name: String
-    let version: String?
-    let versionDate: String?
-    let versionDescription: String?
-    let downloadURL: String?
-    let iconURL: String?
-    let size: Int?
-}
-
-// Scarlet
-struct ScarletRepo: Codable {
-    let META: ScarletMeta
-    let Tweaked: [ScarletApp]?
-    let Macdirtycow: [ScarletApp]?
-    let Sideloaded: [ScarletApp]?
-}
-
-struct ScarletMeta: Codable {
-    let repoName: String
-    let repoIcon: String?
-}
-
-struct ScarletApp: Codable {
-    let name: String?
-    let version: String?
-    let icon: String?
-    let down: String?
-    let dev: String?
-    let downloadURL: String?
-    let category: String?
-    let description: String?
-    let bundleID: String?
-    let appstore: String?
-    let enableBackup: Bool?
-    let screenshots: [String]?
 }
 
 // Translators
@@ -320,46 +174,6 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            repo: nil,
                            pkgtype: pkgType)
         }
-    case "legacyencrypted":
-        if let legacyencryptedPackage = package as? LegacyEncryptedPkg {
-            if blacklisted.contains(legacyencryptedPackage.PackageID ?? "nil") {
-                return nil
-            }
-            
-            var versionsDictionary = [String: String]()
-            if let releases = legacyencryptedPackage.Releases {
-                for release in releases {
-                    if let version = release.Version, let packageName = release.Package {
-                        versionsDictionary[version] = packageName
-                    }
-                }
-            }
-            let sortedVersions = versionsDictionary.keys.sorted { (version1, version2) -> Bool in
-                return version1.compare(version2, options: .numeric) == .orderedDescending
-            }
-            let sortedVersionsDictionary = versionsDictionary.filter { sortedVersions.contains($0.key) }
-            
-            return Package(name: legacyencryptedPackage.Name,
-                           bundleID: legacyencryptedPackage.PackageID ?? "",
-                           author: legacyencryptedPackage.Author?.Label ?? "Unknown Author",
-                           version: sortedVersionsDictionary.keys.first,
-                           desc: legacyencryptedPackage.Description ?? "",
-                           longdesc: legacyencryptedPackage.Caption ?? "",
-                           icon: URL(string: legacyencryptedPackage.Icon ?? ""),
-                           accent: legacyencryptedPackage.accent,
-                           screenshots: legacyencryptedPackage.Screenshot?.compactMap { URL(string: $0) },
-                           banner: URL(string: legacyencryptedPackage.HeaderImage ?? ""), 
-                           previewbg: nil,
-                           category: legacyencryptedPackage.Category ?? "Misc",
-                           path: URL(string: sortedVersionsDictionary.values.first ?? ""),
-                           installtype: "kfd",
-                           versions: sortedVersionsDictionary,
-                           install_actions: [],
-                           uninstall_actions: [],
-                           url: repourl,
-                           repo: nil,
-                           pkgtype: pkgType)
-        }
     case "picasso":
         if let picassoPackage = package as? PicassoPkg {
             if blacklisted.contains(picassoPackage.bundleid) {
@@ -385,35 +199,6 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            repo: nil,
                            pkgtype: pkgType)
         }
-    case "flux":
-        if let fluxPackage = package as? (String,FluxPkg) {
-            let tempDirectoryURL = FileManager.default.temporaryDirectory
-            let uniqueFilename = UUID().uuidString
-            let tempFileURL = tempDirectoryURL.appendingPathComponent(uniqueFilename)
-            do {
-                let imageData = Data(base64Encoded: fluxPackage.1.b64icon ?? fluxPackage.1.icon ?? "")
-                try imageData?.write(to: tempFileURL)
-            } catch {}
-            return Package(name: fluxPackage.0,
-                           bundleID: "\(UUID())",
-                           author: fluxPackage.1.author ?? "",
-                           version: "1.0",
-                           desc: fluxPackage.1.shortDesc ?? "",
-                           longdesc: fluxPackage.1.longDesc ?? "",
-                           icon: tempFileURL,
-                           accent: nil,
-                           screenshots: [URL(string: fluxPackage.1.preview ?? "")],
-                           banner: nil,
-                           previewbg: nil,
-                           category: "Misc",
-                           path: URL(string: fluxPackage.1.link ?? ""),
-                           installtype: "shortcut",
-                           install_actions: [],
-                           uninstall_actions: [],
-                           url: repourl,
-                           repo: nil,
-                           pkgtype: pkgType)
-        }
     case "jb":
         if let jbPkg = package as? [String:String] {
             return Package(name: jbPkg["Name"] ?? "",
@@ -430,94 +215,6 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            category: "Misc",
                            path: repourl?.appendingPathComponent(jbPkg["Filename"] ?? ""),
                            installtype: "unknown",
-                           install_actions: [],
-                           uninstall_actions: [],
-                           url: repourl,
-                           repo: nil,
-                           pkgtype: pkgType)
-        }
-    case "cowabunga":
-        if let cowabungaPackage = package as? CowabungaPkg {
-            return Package(name: cowabungaPackage.name,
-                           bundleID: "\(UUID())",
-                           author: "Unknown Author",
-                           version: cowabungaPackage.version,
-                           desc: cowabungaPackage.description ?? "",
-                           longdesc: nil,
-                           icon: URL(string: String(String(repourl?.absoluteString ?? "") + cowabungaPackage.preview)),
-                           accent: nil,
-                           screenshots: nil,
-                           banner: nil,
-                           previewbg: nil,
-                           category: "Misc",
-                           path: URL(string: String(String(repourl?.absoluteString ?? "") + cowabungaPackage.url)),
-                           installtype: installtype ?? "unknown",
-                           install_actions: [],
-                           uninstall_actions: [],
-                           url: repourl,
-                           repo: nil,
-                           pkgtype: pkgType)
-        }
-    case "altstore":
-        if let altstoreApp = package as? AltstoreApp {
-            return Package(name: altstoreApp.name,
-                           bundleID: altstoreApp.bundleIdentifier,
-                           author: altstoreApp.developerName ?? "Unknown Author",
-                           version: altstoreApp.version,
-                           desc: altstoreApp.localizedDescription ?? "",
-                           longdesc: nil,
-                           icon: URL(string: altstoreApp.iconURL ?? "none"),
-                           accent: altstoreApp.tintColor,
-                           screenshots: altstoreApp.screenshotURLs?.compactMap { URL(string: $0) },
-                           banner: nil,
-                           previewbg: nil,
-                           category: "Misc",
-                           path: URL(string: altstoreApp.downloadURL ?? "none"),
-                           installtype: "ipa",
-                           install_actions: [],
-                           uninstall_actions: [],
-                           url: repourl,
-                           repo: nil,
-                           pkgtype: pkgType)
-        }
-    case "esign":
-        if let esignApp = package as? ESignApp {
-            return Package(name: esignApp.name,
-                           bundleID: "\(UUID())",
-                           author: "Unknown Author",
-                           version: esignApp.version,
-                           desc: esignApp.versionDescription ?? "",
-                           longdesc: nil,
-                           icon: URL(string: esignApp.iconURL ?? "none"),
-                           accent: nil,
-                           screenshots: [],
-                           banner: nil,
-                           previewbg: nil,
-                           category: "Misc",
-                           path: URL(string: esignApp.downloadURL ?? "none"),
-                           installtype: "ipa",
-                           install_actions: [],
-                           uninstall_actions: [],
-                           url: repourl,
-                           repo: nil,
-                           pkgtype: pkgType)
-        }
-    case "scarlet":
-        if let scarletApp = package as? ScarletApp {
-            return Package(name: scarletApp.name ?? "",
-                           bundleID: scarletApp.bundleID ?? "\(UUID())",
-                           author: scarletApp.dev ?? "Unknown Author",
-                           version: scarletApp.version,
-                           desc: scarletApp.description ?? "",
-                           longdesc: nil,
-                           icon: URL(string: scarletApp.icon ?? "none"),
-                           accent: nil,
-                           screenshots: scarletApp.screenshots?.compactMap { URL(string: $0) },
-                           banner: nil,
-                           previewbg: nil,
-                           category: "Misc",
-                           path: URL(string: scarletApp.down ?? "none"),
-                           installtype: "ipa",
                            install_actions: [],
                            uninstall_actions: [],
                            url: repourl,
@@ -559,30 +256,6 @@ func translateToRepo(repoType: String, repo: Any, repoURL: URL? = URL(string: ""
                             packages: translatedPackages,
                             repotype: repoType)
         }
-    case "legacyencrypted":
-        if let legacyencryptedRepo = repo as? LegacyEncryptedRepo {
-            var translatedPackages = [Package]()
-            for pkg in legacyencryptedRepo.RepositoryContents {
-                if let translatedPackage = translateToPackage(pkgType: "legacyencrypted", package: pkg) {
-                    translatedPackages.append(translatedPackage)
-                }
-            }
-            if legacyencryptedRepo.packages != nil {
-                for pkg in legacyencryptedRepo.packages! {
-                    if let translatedPackage = translateToPackage(pkgType: "PureKFD", package: pkg, repourl: legacyencryptedRepo.RepositoryURL) {
-                        translatedPackages.append(translatedPackage)
-                    }
-                }
-            }
-            return Repo(name: legacyencryptedRepo.RepositoryName,
-                        desc: legacyencryptedRepo.RepositoryDescription,
-                        url: legacyencryptedRepo.RepositoryURL,
-                        icon: legacyencryptedRepo.RepositoryIcon,
-                        accent: legacyencryptedRepo.RepositoryAccent,
-                        featured: legacyencryptedRepo.featured,
-                        packages: translatedPackages,
-                        repotype: repoType)
-        }
     case "picasso":
         if let picassoRepo = repo as? PicassoRepo {
             var translatedPackages = [Package]()
@@ -597,23 +270,6 @@ func translateToRepo(repoType: String, repo: Any, repoURL: URL? = URL(string: ""
                         icon: String((picassoRepo.url?.absoluteString ?? "") + picassoRepo.icon),
                         accent: nil,
                         featured: picassoRepo.featured,
-                        packages: translatedPackages,
-                        repotype: repoType)
-        }
-    case "flux":
-        if let fluxRepo = repo as? [String:FluxPkg] {
-            var translatedPackages = [Package]()
-            for pkg in fluxRepo {
-                if let translatedPackage = translateToPackage(pkgType: "flux", package: pkg, repourl: nil) {
-                    translatedPackages.append(translatedPackage)
-                }
-            }
-            return Repo(name: "Flux Repo",
-                        desc: "Flux Repo Desc",
-                        url: repoURL,
-                        icon: "https://github.com/Broco8Dev/Flux/raw/main/icon.png?raw=true",
-                        accent: nil,
-                        featured: nil,
                         packages: translatedPackages,
                         repotype: repoType)
         }
@@ -634,97 +290,6 @@ func translateToRepo(repoType: String, repo: Any, repoURL: URL? = URL(string: ""
                         desc: jbRepo.Description ?? "JB Repo Desc",
                         url: repoURL,
                         icon: repoIcon,
-                        accent: nil,
-                        featured: nil,
-                        packages: translatedPackages,
-                        repotype: repoType)
-        }
-    case "cowabunga":
-        if let cowRepo = repo as? [CowabungaPkg] {
-            var name = "Cowabunga Repo"
-            var desc = repoURL?.absoluteString ?? "Unknown Cowabunga Repo"
-            var installtype = "unknown"
-            if repoURL != nil {
-                if repoURL!.absoluteString.contains("cc-themes.json") {
-                    name = "Cowabunga Control Center Themes"
-                    desc = "Control Center Themes from Cowabunga!"
-                } else if repoURL!.absoluteString.contains("icon-themes.json") {
-                    name = "Cowabunga Icon Themes"
-                    desc = "Icon Packs from Cowabunga!"
-                } else if repoURL!.absoluteString.contains("lock-themes.json") {
-                    name = "Cowabunga Lock Themes"
-                    desc = "Lock's from Cowabunga!"
-                    installtype = "cowlock"
-                } else if repoURL!.absoluteString.contains("passcode-themes.json") {
-                    name = "Cowabunga Passcode Themes"
-                    desc = "Passcode Themes from Cowabunga!"
-                }
-            }
-            var translatedPackages = [Package]()
-            for pkg in cowRepo {
-                if let translatedPackage = translateToPackage(pkgType: "cowabunga", package: pkg, repourl: repoURL?.deletingLastPathComponent(), installtype: installtype) {
-                    translatedPackages.append(translatedPackage)
-                }
-            }
-            return Repo(name: name,
-                        desc: desc,
-                        url: repoURL,
-                        icon: "https://github.com/leminlimez/Cowabunga/blob/main/Cowabunga/Assets.xcassets/AppIcons/AppIcon.appiconset/Cowabunga.png?raw=true",
-                        accent: nil,
-                        featured: nil,
-                        packages: translatedPackages,
-                        repotype: repoType)
-        }
-    case "altstore":
-        if let altstoreRepo = repo as? AltstoreRepo {
-            var translatedPackages = [Package]()
-            for pkg in altstoreRepo.apps ?? [] {
-                if let translatedPackage = translateToPackage(pkgType: "altstore", package: pkg) {
-                    translatedPackages.append(translatedPackage)
-                }
-            }
-            return Repo(name: altstoreRepo.name ?? "Unknown Altstore Repo",
-                        desc: altstoreRepo.subtitle ?? "Unknown Altstore Repo Desc",
-                        url: URL(string: altstoreRepo.sourceURL ?? repoURL?.absoluteString ?? ""),
-                        icon: altstoreRepo.iconURL ?? "https://user-images.githubusercontent.com/705880/65270980-1eb96f80-dad1-11e9-9367-78ccd25ceb02.png",
-                        accent: nil,
-                        featured: nil,
-                        packages: translatedPackages,
-                        repotype: repoType)
-        }
-    case "esign":
-        if let esignRepo = repo as? ESignRepo {
-            var translatedPackages = [Package]()
-            for pkg in esignRepo.apps ?? [] {
-                if let translatedPackage = translateToPackage(pkgType: "esign", package: pkg) {
-                    translatedPackages.append(translatedPackage)
-                }
-            }
-            return Repo(name: esignRepo.name ?? "Unknown Altstore Repo",
-                        desc: "Esign Repo Desc",
-                        url: URL(string: esignRepo.sourceURL ?? repoURL?.absoluteString ?? ""),
-                        icon: "https://esign.yyyue.xyz/ESignLogo200.png",
-                        accent: nil,
-                        featured: nil,
-                        packages: translatedPackages,
-                        repotype: repoType)
-        }
-    case "scarlet":
-        if let scarletRepo = repo as? ScarletRepo {
-            var translatedPackages = [Package]()
-            var apps: [ScarletApp] = []
-            apps.append(contentsOf: scarletRepo.Tweaked ?? [])
-            apps.append(contentsOf: scarletRepo.Macdirtycow ?? [])
-            apps.append(contentsOf: scarletRepo.Sideloaded ?? [])
-            for pkg in apps {
-                if let translatedPackage = translateToPackage(pkgType: "scarlet", package: pkg) {
-                    translatedPackages.append(translatedPackage)
-                }
-            }
-            return Repo(name: scarletRepo.META.repoName ?? "Unknown Scarlet Repo",
-                        desc: "Scarlet Repo Desc",
-                        url: URL(string: repoURL?.absoluteString ?? ""),
-                        icon: scarletRepo.META.repoIcon ?? "https://3414992490-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FFJiyQY8c07uhMBUxEiix%2Ficon%2FvXR6UhwzjUotIjWQQNJs%2FCydiaIcon.png?alt=media&token=60ea4c48-5812-4574-a262-a716ca698e6d",
                         accent: nil,
                         featured: nil,
                         packages: translatedPackages,

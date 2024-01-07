@@ -280,37 +280,11 @@ func getRepoInfo(_ repourl: String, appData: AppData, usedata: Data? = nil, lowe
                     repodata.url = url.deletingLastPathComponent()
                     repo = translateToRepo(repoType: "PureKFD", repo: repodata) ?? blankrepo
                 }
-            case "legacyencrypted":
-                if !appData.UserData.filters.kfd {
-                    var repodata = try decoder.decode(LegacyEncryptedRepo.self, from: data)
-                    repodata.RepositoryURL = url.deletingLastPathComponent()
-                    repo = translateToRepo(repoType: "legacyencrypted", repo: repodata) ?? blankrepo
-                }
             case "picasso":
                 if !appData.UserData.filters.kfd {
                     var repodata = try decoder.decode(PicassoRepo.self, from: data)
                     repodata.url = url.deletingLastPathComponent()
                     repo = translateToRepo(repoType: "picasso", repo: repodata) ?? blankrepo
-                }
-            case "altstore":
-                if !appData.UserData.filters.ipa {
-                    let repodata = try decoder.decode(AltstoreRepo.self, from: data)
-                    repo = translateToRepo(repoType: "altstore", repo: repodata, repoURL: url) ?? blankrepo
-                }
-            case "esign":
-                if !appData.UserData.filters.ipa {
-                    let repodata = try decoder.decode(ESignRepo.self, from: data)
-                    repo = translateToRepo(repoType: "esign", repo: repodata, repoURL: url) ?? blankrepo
-                }
-            case "scarlet":
-                if !appData.UserData.filters.ipa {
-                    let repodata = try decoder.decode(ScarletRepo.self, from: data)
-                    repo = translateToRepo(repoType: "scarlet", repo: repodata, repoURL: url) ?? blankrepo
-                }
-            case "flux":
-                if !appData.UserData.filters.shortcuts {
-                    let repodata = try decoder.decode([String:FluxPkg].self, from: data)
-                    repo = translateToRepo(repoType: "flux", repo: repodata, repoURL: url) ?? blankrepo
                 }
             case "jb":
                 if !appData.UserData.filters.jb {
@@ -318,11 +292,6 @@ func getRepoInfo(_ repourl: String, appData: AppData, usedata: Data? = nil, lowe
                         let repodata = try decoder.decode(JBRepo.self, from: jsonData)
                         repo = translateToRepo(repoType: "jb", repo: repodata, repoURL: url.deletingLastPathComponent()) ?? blankrepo
                     }
-                }
-            case "cowabunga":
-                if !appData.UserData.filters.kfd {
-                    let repodata = try decoder.decode([CowabungaPkg].self, from: data)
-                    repo = translateToRepo(repoType: "cowabunga", repo: repodata, repoURL: url) ?? blankrepo
                 }
             case "unknown":
                 repo.desc = "Unrecognized Repo (\(url)"
@@ -351,11 +320,7 @@ func getRepoInfo(_ repourl: String, appData: AppData, usedata: Data? = nil, lowe
 }
 
 func getRepoType(_ jsonString: String) -> String {
-    if jsonString.contains("longDesc"), jsonString.contains("shortDesc") {
-        return "flux"
-    } else if jsonString.contains("isLanZouCloud") {
-        return "esign"
-    } else if jsonString.contains("MD5Sum:") && jsonString.contains("Origin:") {
+    if jsonString.contains("MD5Sum:") && jsonString.contains("Origin:") {
         return "jb"
     }
     if let data = jsonString.data(using: .utf8) {
@@ -363,26 +328,13 @@ func getRepoType(_ jsonString: String) -> String {
             if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                 if json["repotype"] is String {
                     return "purekfd"
-                } else if json["RepositoryName"] is String {
-                    return "legacyencrypted"
-                } else if json["META"] is [String: String] {
-                    return "scarlet"
-                } else if json["identifier"] is String {
-                    return "altstore"
                 } else if (json["info"] as? String ?? "") == "purekfdbridge" {
                     return "bridge"
                 } else {
                     return "picasso"
                 }
-            } else if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-                if ((json.first)?["contact"] != nil) {
-                    return "cowabunga"
-                }
             }
         } catch {
-            log("\n\n\nERROR:")
-            log(error.localizedDescription)
-            log("-----\n\n\n")
             return "unknown"
         }
     }

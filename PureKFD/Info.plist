@@ -6,16 +6,6 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>Misaka Package</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>uwu.lrdsnow.misakapkg</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeName</key>
 			<string>Picasso Package</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
@@ -59,7 +49,6 @@
 				<string>purekfd</string>
 			</array>
 		</dict>
-		<dict/>
 	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
@@ -95,30 +84,6 @@
 	<true/>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-				<string>public.content</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>Misaka Package</string>
-			<key>UTTypeIconFiles</key>
-			<array/>
-			<key>UTTypeIdentifier</key>
-			<string>uwu.lrdsnow.misakapkg</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>misaka</string>
-				</array>
-				<key>public.mime-type</key>
-				<array>
-					<string>application/purekfdpackage</string>
-				</array>
-			</dict>
-		</dict>
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
