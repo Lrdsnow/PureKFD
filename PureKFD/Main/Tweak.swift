@@ -507,12 +507,11 @@ extension String {
         }
         var path = self
             .replacingOccurrences(of: "%Optional%", with: "")
-            //.replacingOccurrences(of: "%LegacyEncrypted_Binary%", with: "") // This is prob unsafe
-            .replacingOccurrences(of: "%LegacyEncrypted_Resize%", with: "")
-            .replacingOccurrences(of: "%LegacyEncrypted_Path{'SpringLang'}%", with: Locale.current.languageCode ?? "")
-            .replacingOccurrences(of: "%LegacyEncrypted_Path{'DeviceType'}%", with: (UIDevice.current.userInterfaceIdiom == .phone) ? "iphone" : "ipad")
+            .replacingOccurrences(of: "%Misaka_Resize%", with: "")
+            .replacingOccurrences(of: "%Misaka_Path{'SpringLang'}%", with: Locale.current.languageCode ?? "")
+            .replacingOccurrences(of: "%Misaka_Path{'DeviceType'}%", with: (UIDevice.current.userInterfaceIdiom == .phone) ? "iphone" : "ipad")
         for item in path.components(separatedBy: "/") {
-            if item.contains("Legacy Encrypted_Segment") {
+            if item.contains("Misaka_Segment") {
                 let fileName = parseLegacyEncryptedSegment(from: item)[0]
                 let variableName = parseLegacyEncryptedSegment(from: item)[1]
                 let variableValue = parseLegacyEncryptedSegment(from: item)[2]
@@ -529,9 +528,9 @@ extension String {
                 if "\(save[variableName] ?? 1)" == "\(variableValue)" {
                     path = path.replacingOccurrences(of: item, with: fileName)
                 }
-                path = path.replacingOccurrences(of: "%LegacyEncrypted_Binary%", with: "?pure_binary.")
+                path = path.replacingOccurrences(of: "%Misaka_Binary%", with: "?pure_binary.")
             }
-            if item.contains("Legacy Encrypted_AppUUID") {
+            if item.contains("Misaka_AppUUID") {
                 let bundleid = legacyencryptedOperationValues(from: item)[0]
                 if legacyencryptedOperationValues(from: item)[1] == "Data" {
                     do {
