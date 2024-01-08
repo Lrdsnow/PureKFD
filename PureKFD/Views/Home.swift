@@ -398,7 +398,10 @@ struct SettingsView: View {
     
     var body: some View {
         List {
-            Section(header: Text("Main Settings").foregroundColor(.accentColor)) {
+            
+            ExploitPickers()
+            
+            Section(header: Text("Extras").foregroundColor(.accentColor)) {
                 Picker("Respring Mode:", selection: $appData.UserData.respringMode) {
                     ForEach(0..<respringOptions.count, id: \.self) {
                         Text(respringOptions[$0])
@@ -413,7 +416,7 @@ struct SettingsView: View {
 //                    .foregroundColor(.accentColor)
 //                    .onChange(of: appData.UserData.override_exploit_method) {_ in appData.save()}
 //                    .listRowBackground(appData.appColors.background)
-//                
+//
 //                if appData.UserData.override_exploit_method {
 //                    if appData.UserData.exploit_method == 1 {
 //                        Text("Your device was detected as an MDC device, KFD IS NOT RECOMMENDED on these devices").listRowBackground(appData.appColors.background)
@@ -438,13 +441,20 @@ struct SettingsView: View {
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
                 .listBG()
-            }.listRowBackground(Color.clear).hideListRowSeparator()
-            
-//            if appData.UserData.exploit_method == 0 && appData.UserData.override_exploit_method {
-                KFDExploitPickers()
-//            }
-            
-            Section(header: Text("Extras").foregroundColor(.accentColor)) {
+                
+                ColorPicker("Accent Color", selection: $selectedColor)
+                    .onChange(of: selectedColor) { newValue in
+                        selectedColorString = newValue.toHex()
+                        UserDefaults.standard.set(selectedColorString, forKey: "accentColor")
+                        refreshView(appData: appData)
+                    }.listBG()
+                
+                Toggle(isOn: $appData.UserData.allowlight, label: {
+                    Text("Allow Light Mode")
+                }).onChange(of: appData.UserData.allowlight) { _ in
+                    appData.save()
+                }.listBG()
+                
                 Toggle("Translate Prefs On Install", isOn: $appData.UserData.translateoninstall)
                     .onChange(of: appData.UserData.translateoninstall) { _ in
                         appData.save()
@@ -460,10 +470,26 @@ struct SettingsView: View {
                 NavigationLink(destination: IconSelectorView(), label: {
                     Text("Change Icon")
                 }).listBG()
-                NavigationLink(destination: ExtrasView(selectedColor: $selectedColor, selectedColorString: $selectedColorString), label: {
-                    Text("Other Extras")
-                }).listBG()
-            }.listRowBackground(Color.clear).hideListRowSeparator()
+            }.listRowBackground(Color.clear)
+            
+            Section(header: Text("App Data").foregroundColor(.accentColor)) {
+                Button(action: {
+                    appData.RepoData = SavedRepoData(urls: [])
+                    appData.repoSections = [:]
+                    appData.save()
+                }, label: {Text("Clear Repo Data")}).listBG()
+                Button(action: {
+                    appData.UserData = SavedUserData()
+                    appData.save()
+                }, label: {Text("Clear User Data")}).listBG()
+                Button(action: {
+                    UserDefaults.standard.set("", forKey: "accentColor")
+                    refreshView(appData: appData)
+                }, label: {Text("Clear Accent Color")}).listBG()
+                Button(action: {
+                    BackupManager().exportBackup()
+                }, label: {Text("Backup Data")}).listBG()
+            }.listBG()
             
             CreditView()
                 .listBG()
@@ -477,7 +503,7 @@ struct SettingsView: View {
 }
 
 @available(iOS 15.0, *)
-struct KFDExploitPickers: View {
+struct ExploitPickers: View {
     @EnvironmentObject var appData: AppData
     // iPhones: 2048-3584 work well, iPads: 4096 is what you want (tho i think 3072 and 3584 would prob work)
     private let puafPagesOptions = [16, 32, 64, 128, 256, 512, 1024, 2048, 3072, 3584, 4096]
@@ -633,7 +659,7 @@ struct CreditRow: View {
 struct IconSelectorView: View {
     @State private var selectedIconName: String? = nil
     @EnvironmentObject var appData: AppData
-
+    
     let iconSections: [String: [String]] = [
         "Grade A+": ["AppIcon0", "AppIcon12", "AppIcon23", "AppIcon1", "AppIcon11", "AppIconOG", "AppIcon24"],
         "Good!": ["AppIcon15", "AppIcon9", "AppIcon10", "AppIcon19"],
@@ -641,9 +667,9 @@ struct IconSelectorView: View {
         "Others": ["AppIcon2", "AppIcon3", "AppIcon4", "AppIcon5", "AppIcon6"],
         "Winter!": ["AppIcon14", "AppIcon20", "AppIcon21", "AppIcon22"]
     ]
-
+    
     let sectionOrder = ["Grade A+", "Good!", "Decent", "Others", "Winter!"]
-
+    
     var body: some View {
         List {
             VStack(spacing: 0) {
@@ -656,7 +682,7 @@ struct IconSelectorView: View {
                             Spacer()
                         }
                         .padding(.horizontal, 24)
-
+                        
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {
                                 ForEach(iconSections[section] ?? [], id: \.self) { iconName in
@@ -689,7 +715,7 @@ struct IconSelectorView: View {
             }.listRowBackground(Color.clear)
         }.navigationTitle("Icons").bgImage(appData).listBG().listStyle(.plain).clearBG()
     }
-
+    
     private func setAppIcon(_ iconName: String) {
         UIApplication.shared.setAlternateIconName(iconName) { error in
             if let error = error {
@@ -699,57 +725,5 @@ struct IconSelectorView: View {
                 NSLog("App icon changed successfully to: %@", iconName)
             }
         }
-    }
-}
-
-struct ExtrasView: View {
-    @EnvironmentObject var appData: AppData
-    @Binding var selectedColor: Color
-    @Binding var selectedColorString: String
-    @State var clearListRow = !UserDefaults.standard.bool(forKey: "noClearRows")
-    var body: some View {
-        Form {
-            Section(header: Text("Design").foregroundColor(.accentColor)) {
-                Toggle(isOn: $appData.UserData.allowlight, label: {
-                    Text("Allow Light Mode")
-                }).onChange(of: appData.UserData.allowlight) { _ in
-                    appData.save()
-                }
-                Toggle(isOn: $clearListRow, label: {
-                    Text("Clear List Rows")
-                }).onChange(of: clearListRow) { newValue in
-                    UserDefaults.standard.set(!newValue, forKey: "noClearRows")
-                    refreshView(appData: appData)
-                }
-                ColorPicker("Accent Color", selection: $selectedColor)
-                    .onChange(of: selectedColor) { newValue in
-                        selectedColorString = newValue.toHex()
-                        UserDefaults.standard.set(selectedColorString, forKey: "accentColor")
-                        refreshView(appData: appData)
-                    }
-            }
-            .listRowBackground(appData.appColors.background)
-            Section(header: Text("App Data").foregroundColor(.accentColor)) {
-                Button(action: {
-                    appData.RepoData = SavedRepoData(urls: [])
-                    appData.repoSections = [:]
-                    appData.save()
-                }, label: {Text("Clear Repo Data")}).listRowBackground(appData.appColors.background)
-                Button(action: {
-                    appData.UserData = SavedUserData()
-                    appData.save()
-                }, label: {Text("Clear User Data")}).listRowBackground(appData.appColors.background)
-                Button(action: {
-                    UserDefaults.standard.set("", forKey: "accentColor")
-                    refreshView(appData: appData)
-                }, label: {Text("Clear Accent Color")}).listRowBackground(appData.appColors.background)
-                Spacer()
-                Button(action: {
-                    BackupManager().exportBackup()
-                }, label: {Text("Backup Data")}).listRowBackground(appData.appColors.background)
-                Spacer()
-                
-            }.listRowBackground(appData.appColors.background)
-        }.navigationBarTitle("Extras", displayMode: .large)
     }
 }

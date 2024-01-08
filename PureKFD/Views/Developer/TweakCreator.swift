@@ -79,7 +79,7 @@ struct CreatorView: View {
                         .padding(.horizontal)
                         .multilineTextAlignment(.trailing)
                 }
-            }.listRowBackground(Color.accentColor.opacity(0.2))
+            }.listBG()
             
             Section(header: Text("Operations")) {
                 ForEach(tweaks.indices, id: \.self) { index in
@@ -88,11 +88,11 @@ struct CreatorView: View {
                 Button(action: addTweak) {
                     Text("Add Operation")
                 }
-            }.listRowBackground(Color.accentColor.opacity(0.2))
+            }.listBG()
             if appData.UserData.defaultPkgCreatorType == "PureKFD" {
                 Section(header: Text("Preferences")) {
                     NavigationLink(destination: PrefCreator(), label: {Text("Create PureKFD Prefs")})
-                }.listRowBackground(Color.accentColor.opacity(0.2))
+                }.listBG()
             }
             HStack {
                 Spacer()
@@ -108,8 +108,8 @@ struct CreatorView: View {
                         .cornerRadius(8)
                 }.buttonStyle(.bordered).disabled(generatingpackage)
                 Spacer()
-            }
-        }.listStyle(.insetGrouped).navigationBarTitle("Tweak Creator", displayMode: .large)
+            }.listRowBackground(Color.clear)
+        }.listStyle(.insetGrouped).navigationBarTitle("Tweak Creator", displayMode: .large).clearBG().listBG().bgImage(appData)
     }
     
     func addTweak() {
