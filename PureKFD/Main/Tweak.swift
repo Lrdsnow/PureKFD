@@ -228,7 +228,7 @@ func verifyFile(_ fileURL1: URL, _ fileURL2: URL) -> Bool {
     }
 }
 
-func applyOverwriteTweak(_ pkg: Package, _ exploit_method: Int, _ appData: AppData) throws {
+func applyOverwriteTweak(_ pkg: Package, _ exploit_method: Int, _ appData: AppData, _ Try: Int = 0) throws {
     let pkgpath = URL.documents.appendingPathComponent("installed/\(pkg.bundleID)")
     let files = getDirFiles(pkgpath.appendingPathComponent("Overwrite").path)
     var targets: [String:String] = [:]
@@ -267,7 +267,7 @@ func applyOverwriteTweak(_ pkg: Package, _ exploit_method: Int, _ appData: AppDa
             updateApplyStatus(appData, pkg.bundleID, "Failed to overwrite \(target)!!!\(failed_files.count > 0 ? " (\(failed_files.count) failures)" : "")", percentage)
         }
     }
-    if appData.UserData.verifyApply { // this has a 90% chance of crashing 
+    if appData.UserData.verifyApply {
         for file in files {
             percentage += 10.0 / Double(files.count)
             if !(failed_files.contains(file)) {
@@ -277,7 +277,11 @@ func applyOverwriteTweak(_ pkg: Package, _ exploit_method: Int, _ appData: AppDa
                 if verifyFile(source, target) {
                     updateApplyStatus(appData, pkg.bundleID, "\(target.path) is all good!", percentage)
                 } else {
-                    try? applyOverwriteTweak(pkg, exploit_method, appData)
+                    if Try <= 5 {
+                        try? applyOverwriteTweak(pkg, exploit_method, appData, Try+1)
+                    } else {
+                        throw "Verification Failed!"
+                    }
                 }
             }
         }
@@ -289,11 +293,12 @@ func applyOverwriteTweak(_ pkg: Package, _ exploit_method: Int, _ appData: AppDa
     }
 }
 
-// update this later...
 func applyJSONTweak(_ pkg: Package, _ appData: AppData) throws {
     let pkgpath = URL.documents.appendingPathComponent("installed/\(pkg.bundleID)")
     let tweakOperations = try getTweaksData(pkgpath.appendingPathComponent("tweak.json"))
     let operations = tweakOperations["operations"] as? [[String: Any]]
+    var failed_operations: [String] = []
+    var percentage: Double = 0
     
     var save: [String: Any] = [:]
     
@@ -311,8 +316,13 @@ func applyJSONTweak(_ pkg: Package, _ appData: AppData) throws {
             let width = Int(save["width"] as? String ?? "1290") ?? 1290
             if getDeviceInfo(appData: appData).0 == 0 {
                 ResSet16(hight, width)
+                updateApplyStatus(appData, pkg.bundleID, "Set Resolution! (KFD)", percentage)
             } else if getDeviceInfo(appData: appData).0 == 1 {
                 MDC.setResolution(height: hight, width: width)
+                updateApplyStatus(appData, pkg.bundleID, "Set Resolution! (MDC)", percentage)
+            } else {
+                failed_operations.append(operationType ?? "invalid operation")
+                updateApplyStatus(appData, pkg.bundleID, "Resolution Setter Unsupported!", percentage)
             }
         case "panic":
             do_kopen(0, 0, 0, 0, 0, true)
@@ -331,23 +341,37 @@ func applyJSONTweak(_ pkg: Package, _ appData: AppData) throws {
             do {
                 if getDeviceInfo(appData: appData).0 == 0 {
                     try overwriteWithFileImpl(replacementURL: frompathurl, pathToTargetFile: operation["originPath"] as? String ?? "")
+                    updateApplyStatus(appData, pkg.bundleID, "Replaced file \(operation["originPath"] as? String ?? "")!", percentage)
                 } else if getDeviceInfo(appData: appData).0 == 1 {
                     try MDC.overwriteFile(at: operation["originPath"] as? String ?? "", with: Data(contentsOf: frompathurl))
+                    updateApplyStatus(appData, pkg.bundleID, "Replaced file \(operation["originPath"] as? String ?? "")!", percentage)
                 }
-            } catch {}
+            } catch {
+                failed_operations.append(operationType ?? "invalid operation")
+                updateApplyStatus(appData, pkg.bundleID, "Failed to replace \(operation["originPath"] as? String ?? "")!", percentage)
+            }
         case "removing":
             let originPath = operation["originPath"] as? String ?? ""
             if getDeviceInfo(appData: appData).0 == 0 {
                 funVnodeHide(strdup(originPath))
+                updateApplyStatus(appData, pkg.bundleID, "Hid file \(originPath)!", percentage)
             } else {
                 do {
                     try MDC.overwriteFile(at: originPath, with: Data())
-                } catch {}
+                    updateApplyStatus(appData, pkg.bundleID, "Erased file \(originPath)!", percentage)
+                } catch {
+                    failed_operations.append(operationType ?? "invalid operation")
+                    updateApplyStatus(appData, pkg.bundleID, "Failed to erase file \(originPath)!", percentage)
+                }
             }
         case "subtype":
             let subtype = save["subtype"] as? Int ?? 2532//2796
             if getDeviceInfo(appData: appData).0 == 0 {
                 DynamicKFD(Int32(subtype))
+                updateApplyStatus(appData, pkg.bundleID, "Set subtype!", percentage)
+            } else {
+                failed_operations.append(operationType ?? "invalid operation")
+                updateApplyStatus(appData, pkg.bundleID, "Subtype operation not supported!", percentage)
             }
         case "springboardColor":
             let springboardElement = SpringboardColorManager.convertStringToSpringboardType(operation["springboardElement"] as? String ?? "")!
@@ -360,12 +384,19 @@ func applyJSONTweak(_ pkg: Package, _ appData: AppData) throws {
                     for _ in 1...5 {
                         SpringboardColorManager.applyColor(forType: springboardElement, exploit_method: getDeviceInfo(appData: appData).0)
                     }
-                } catch {}
+                    updateApplyStatus(appData, pkg.bundleID, "Applied Colors for \(springboardElement)!", percentage)
+                } catch {
+                    failed_operations.append(operationType ?? "invalid operation")
+                    updateApplyStatus(appData, pkg.bundleID, "Failed to apply colors!", percentage)
+                }
             }
         default:
+            failed_operations.append(operationType ?? "invalid operation")
             log("Unsupported Tweak: \(operationType ?? "")")
+            updateApplyStatus(appData, pkg.bundleID, "Unsupported Tweak: \(operationType ?? "")", percentage)
         }
     }
+    updateApplyStatus(appData, pkg.bundleID, "Applied Tweak!\(failed_operations.count > 0 ? " (with \(failed_operations.count) failures)" : "")", 100)
 }
 
 func readFileAsData(atURL url: URL) throws -> Data? {
