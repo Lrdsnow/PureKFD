@@ -553,7 +553,7 @@ struct KFDExploitPickers: View {
                     .tint(.accentColor)
                     .foregroundColor(.accentColor)
                     .onChange(of: appData.UserData.kfd.use_static_headroom) {_ in appData.save()}
-                    .listRowBackground(appData.appColors.background)
+                    .listBG()
                 
                 if appData.UserData.kfd.use_static_headroom {
                     Picker("static headroom:", selection: $appData.UserData.kfd.static_headroom_sel) {
@@ -632,10 +632,11 @@ struct CreditRow: View {
 
 struct IconSelectorView: View {
     @State private var selectedIconName: String? = nil
+    @EnvironmentObject var appData: AppData
 
     let iconSections: [String: [String]] = [
-        "Grade A+": ["AppIcon1", "AppIcon11", "AppIconOG", "AppIcon12"],
-        "Good!": ["AppIcon15", "AppIcon9", "AppIcon10"],
+        "Grade A+": ["AppIcon0", "AppIcon12", "AppIcon23", "AppIcon1", "AppIcon11", "AppIconOG", "AppIcon24"],
+        "Good!": ["AppIcon15", "AppIcon9", "AppIcon10", "AppIcon19"],
         "Decent":["AppIcon13", "AppIcon8", "AppIcon7"],
         "Others": ["AppIcon2", "AppIcon3", "AppIcon4", "AppIcon5", "AppIcon6"],
         "Winter!": ["AppIcon14", "AppIcon20", "AppIcon21", "AppIcon22"]
@@ -644,7 +645,7 @@ struct IconSelectorView: View {
     let sectionOrder = ["Grade A+", "Good!", "Decent", "Others", "Winter!"]
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
+        List {
             VStack(spacing: 0) {
                 ForEach(sectionOrder, id: \.self) { section in
                     VStack(spacing: -20) {
@@ -685,8 +686,8 @@ struct IconSelectorView: View {
                         }
                     }
                 }
-            }
-        }.navigationTitle("Icons")
+            }.listRowBackground(Color.clear)
+        }.navigationTitle("Icons").bgImage(appData).listBG().listStyle(.plain).clearBG()
     }
 
     private func setAppIcon(_ iconName: String) {

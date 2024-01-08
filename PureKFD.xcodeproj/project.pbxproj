@@ -936,7 +936,7 @@
 		6596B1002AAAABBA0005EED9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconOG AppIcon2 AppIcon1 AppIcon4 AppIcon3 AppIcon5 AppIcon7 AppIcon6 AppIcon10 AppIcon9 AppIcon8 AppIcon11 AppIcon15 AppIcon14 AppIcon12 AppIcon13 AppIcon12 AppIcon17 AppIcon16 AppIcon22 AppIcon21 AppIcon20";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconOG AppIcon2 AppIcon1 AppIcon4 AppIcon3 AppIcon5 AppIcon7 AppIcon6 AppIcon10 AppIcon9 AppIcon8 AppIcon11 AppIcon15 AppIcon14 AppIcon12 AppIcon13 AppIcon12 AppIcon17 AppIcon16 AppIcon22 AppIcon21 AppIcon20 AppIcon24 AppIcon23";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -988,7 +988,7 @@
 		6596B1012AAAABBA0005EED9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconOG AppIcon2 AppIcon1 AppIcon4 AppIcon3 AppIcon5 AppIcon7 AppIcon6 AppIcon10 AppIcon9 AppIcon8 AppIcon11 AppIcon15 AppIcon14 AppIcon12 AppIcon13 AppIcon12 AppIcon17 AppIcon16 AppIcon22 AppIcon21 AppIcon20";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconOG AppIcon2 AppIcon1 AppIcon4 AppIcon3 AppIcon5 AppIcon7 AppIcon6 AppIcon10 AppIcon9 AppIcon8 AppIcon11 AppIcon15 AppIcon14 AppIcon12 AppIcon13 AppIcon12 AppIcon17 AppIcon16 AppIcon22 AppIcon21 AppIcon20 AppIcon24 AppIcon23";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
