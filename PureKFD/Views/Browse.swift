@@ -27,7 +27,15 @@ struct BrowseView: View {
                     ForEach(repoTypes, id: \.self) { repoType in
                         if let repos = appData.repoSections[repoType]?.sorted(by: { $0.name < $1.name }) {
                             Section(header: Text(repoType.capitalized.replacingOccurrences(of: "Purekfd", with: "PureKFD") + " Repos")) {
-                                ForEach(repos.sorted(by: { $0.name < $1.name })) { repo in
+                                ForEach(repos.sorted(by: { (repo1, repo2) -> Bool in
+                                    if repo1.url == URL(string: "https://raw.githubusercontent.com/PureKFD/PureKFDRepo/main/") {
+                                        return true
+                                    } else if repo2.url == URL(string: "https://raw.githubusercontent.com/PureKFD/PureKFDRepo/main/") {
+                                        return false
+                                    } else {
+                                        return repo1.name < repo2.name
+                                    }
+                                })) { repo in
                                     NavigationLink(destination: RepoView(repo: repo, appData: appData).navigationTitle(repo.name).if(repo.accent != nil) { view in
                                         view.accentColor(repo.accent!.toColor())
                                     }) {
@@ -96,8 +104,7 @@ struct BrowseView: View {
     }
     
     func fetchRepos() async {
-        let temp_repoSections = Dictionary(grouping: getCachedRepos(), by: { $0.repotype }).mapValues { $0.sorted { $0.repotype < $1.repotype } }
-        repoSections = temp_repoSections
+        repoSections = Dictionary(grouping: getCachedRepos(), by: { $0.repotype }).mapValues { $0.sorted { $0.repotype < $1.repotype } }
         appData.repoSections = repoSections
         appData.refreshedRepos = true
     }

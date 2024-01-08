@@ -147,24 +147,9 @@ struct defaulturls {
         URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/main/purekfd.json")!, // Aurora - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/main/file/Repo/purekfd.json")!, // YangJiii's Repo - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/dobabaophuc1706/misakarepo/main/purekfd.json")!, // Phuc Do's Repo - Main Repo - Built for PureKFD
-        URL(string: "https://raw.githubusercontent.com/Lrdsnow/romlayrepo_fork/main/purekfd.json")!, // Rom Lay's Repo - PureKFD Fork - Awaiting Merge
+        URL(string: "https://raw.githubusercontent.com/RomLayVN/KFD/main/purekfd.json")!, // Rom Lay's Repo - Main Repo - Built for PureKFD
         // Picasso Repos
-        URL(string: "https://raw.githubusercontent.com/sourcelocation/Picasso-test-repo/main/manifest.json")!,
-        URL(string: "https://bomberfish.ca/PicassoRepos/Essentials/manifest.json")!,
-        // Cowabunga Explore Repos:
-        //URL(string: "https://raw.githubusercontent.com/leminlimez/Cowabunga-explore-repo/main/cc-themes.json")!,
-        //URL(string: "https://raw.githubusercontent.com/leminlimez/Cowabunga-explore-repo/main/icon-themes.json")!,
-        URL(string: "https://raw.githubusercontent.com/leminlimez/Cowabunga-explore-repo/main/lock-themes.json")!,
-        //URL(string: "https://raw.githubusercontent.com/leminlimez/Cowabunga-explore-repo/main/passcode-themes.json")!,
-        // Flux Repos
-        //URL(string: "https://purekfd.pages.dev/pureflux/fluxrepo.json")!,
-        // Altstore Repos
-        //URL(string: "https://skadz.online/repo")!,
-        //URL(string: "https://quarksources.github.io/dist/quantumsource.min.json")!,
-        //URL(string: "https://cdn.altstore.io/file/altstore/apps.json")!,
-        // Scarlet Repos
-        //URL(string: "https://raw.githubusercontent.com/azu0609/repo/main/scarlet_repo.json")!,
-        // Esign Repos
-        //URL(string: "https://raw.githubusercontent.com/iwishkem/iwishkem.github.io/main/esign.json")!,
+        URL(string: "https://raw.githubusercontent.com/sourcelocation/Picasso-test-repo/main/manifest.json")!, // Beta Picasso Repo
+        URL(string: "https://bomberfish.ca/PicassoRepos/Essentials/manifest.json")! // Main Picasso Repo
     ]
 }
