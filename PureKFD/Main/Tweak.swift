@@ -127,302 +127,172 @@ func getDeviceInfo(appData: AppData?, _ ignoreOverride: Bool = false) -> (Int, S
     return (exploit_method, kfddata, ts, deviceInfo)
 }
 
+func getDirFiles(_ directoryPath: String) -> [String] {
+    var filesArray: [String] = []
+    let fileManager = FileManager.default
+    if let enumerator = fileManager.enumerator(atPath: directoryPath) {
+        for case let file as String in enumerator {
+            let fullPath = (directoryPath as NSString).appendingPathComponent(file)
+            var isDirectory: ObjCBool = false
+            if fileManager.fileExists(atPath: fullPath, isDirectory: &isDirectory) {
+                if !isDirectory.boolValue {
+                    filesArray.append(fullPath)
+                }
+            }
+        }
+    }
+
+    return filesArray
+}
+
+enum TweakType {
+    case json
+    case overwrite
+    case unknown
+}
+
+func getTweakType(_ pkgpath: URL) -> TweakType {
+    let file = FileManager.default
+    if file.fileExists(atPath: pkgpath.appendingPathComponent("Overwrite").path) {
+        return .overwrite
+    } else if file.fileExists(atPath: pkgpath.appendingPathComponent("tweak.json").path) {
+        return .json
+    } else {
+        return .unknown
+    }
+}
+
+func updateApplyStatus(_ appData: AppData, _ pkgid: String, _ message: String, _ percentage: Double) {
+    appData.applyStatus[pkgid] = ApplyStatus(message: message, percentage: percentage)
+}
+
 func applyTweaks(appData: AppData) {
     let exploit_method = smart_kopen(appData: appData)
-    
-    // Jailbreak Stuff
-    if exploit_method == 2 || exploit_method == 3 {
-        get_root()
-    }
-    
-    let true_exploit_method = exploit_method
-    Task {
-        await UIApplication.shared.alert(title: "Applying...", body: "Please wait", animated: false, withButton: false)
-        var tweakErrors: [String] = []
-        await asyncApplyTweaks(true_exploit_method, &tweakErrors, appData: appData)
-        await UIApplication.shared.dismissAlert(animated: false)
-        if appData.UserData.dev {
-            if !tweakErrors.isEmpty {
-                let errorList = tweakErrors.joined(separator: "\n")
-                await UIApplication.shared.alert(title: "Tweak Errors", body: errorList, animated: false, withButton: true)
-            }
-        }
-        if true_exploit_method == 0 {
-            log("Closing Kernel")
-            do_kclose()
-        }
-    }
-}
-
-func asyncApplyTweaks(_ exploit_method: Int, _ writeErrors: inout [String], appData: AppData) async {
-    // Apply Packages
     for pkg in getInstalledPackages() {
         if !(pkg.disabled ?? false) {
-            let pkgpath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("installed/\(pkg.bundleID)")
-            let overwriteFolderPath = pkgpath.appendingPathComponent("Overwrite")
-            if FileManager.default.fileExists(atPath: overwriteFolderPath.path) {
-                await overwriteLegacyEncrypted(sourceFolderURL: overwriteFolderPath, pkgpath: pkgpath, exploit_method: exploit_method, writeErrors: &writeErrors)
-            } else {
-                do {
-                    try await runTweakOperations(getTweaksData(pkgpath.appendingPathComponent("tweak.json")), pkgpath: pkgpath, appData: appData)
-                } catch {
-                    writeErrors.append("\(pkg.bundleID): \(error)")
-                }
-            }
-        }
-    }
-    log("All Done")
-}
-
-func overwriteLegacyEncrypted(sourceFolderURL: URL, pkgpath: URL, exploit_method: Int, writeErrors: inout [String]) async {
-    let fileManager = FileManager.default
-
-    func processItem(at itemURL: URL, relativeTo baseURL: URL) async {
-        var isDirectory: ObjCBool = false
-
-        if fileManager.fileExists(atPath: itemURL.path, isDirectory: &isDirectory) {
-            _ = itemURL.lastPathComponent
-
-            if isDirectory.boolValue {
-                do {
-                    let subContents = try fileManager.contentsOfDirectory(at: itemURL, includingPropertiesForKeys: nil, options: [])
-                    for subItemURL in subContents {
-                        await processItem(at: subItemURL, relativeTo: baseURL)
-                    }
-                } catch {
-                    writeErrors.append("\(error)")
-                }
-            } else {
-                let relativePath = replaceBeforeAndSubstring(in: itemURL.path, targetSubstring: "/Overwrite", with: "").legacyencryptedOperations(pkgpath: pkgpath, exploit_method: exploit_method)
-                do {
-                    if !URL(fileURLWithPath: relativePath).lastPathComponent.hasPrefix("?pure_binary.") {
-                        if exploit_method == 0 { // KFD
-                            _ = try await overwriteWithFileImpl(replacementURL: itemURL, pathToTargetFile: relativePath)
-                        } else if exploit_method == 1 { // MDC
-                            try await MDC.overwriteFile(at: relativePath, with: readFileAsData(atURL: itemURL)!)
-                        } else if exploit_method == 3 { // Rootless
-                            try await readFileAsData(atURL: itemURL)!.write(to: URL(fileURLWithPath: "/var/jb/"+relativePath))
-                        } else { // Rootful
-                            try await readFileAsData(atURL: itemURL)!.write(to: URL(fileURLWithPath: relativePath))
-                        }
-                    } else {
-                        log("\nPURE BINARY INIT\n")
-                        do {
-                            let path = relativePath.replacingOccurrences(of: "?pure_binary.", with: "")
-                            // Read the JSON data containing replacements
-                            let jsonData = try Data(contentsOf: itemURL)
-                            if let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-                                
-                                var save: [String: Any] = [:]
-                                if let savepath = FileManager.default.contents(atPath: pkgpath.appendingPathComponent("save.json").path),
-                                   let savedict = try? JSONSerialization.jsonObject(with: savepath, options: []) {
-                                    save = savedict as? [String: Any] ?? [:]
-                                }
-                                
-                                // Open the binary file for reading and writing
-                                var binaryData = try Data(contentsOf: URL(fileURLWithPath:path))
-                                
-                                // Apply the replacements to the binary data
-                                for (offset, replacement) in jsonDictionary["Overwrite"] as? [String:String] ?? [:] {
-                                    log("OFFSET", offset)
-                                    log("REPLACEMENT", (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") ?? "N/A")
-                                    if let offset = Int(offset), let replacementData = Data(hex: (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") as? String ?? "") {
-                                        binaryData.replaceSubrange(offset..<offset + replacementData.count, with: replacementData)
-                                    }
-                                }
-                                
-                                // Write the modified binary data back to the file
-                                try binaryData.write(to: URL.documents.appendingPathComponent("temp"))
-                                if exploit_method == 0 { // KFD
-                                    _ = try await overwriteWithFileImpl(replacementURL: URL.documents.appendingPathComponent("temp"), pathToTargetFile: path)
-                                } else if exploit_method == 1 { // MDC
-                                    try await MDC.overwriteFile(at: path, with: readFileAsData(atURL: URL.documents.appendingPathComponent("temp"))!)
-                                } else if exploit_method == 3 { // Rootless
-                                    try await readFileAsData(atURL: URL.documents.appendingPathComponent("temp"))!.write(to: URL(fileURLWithPath: "/var/jb/"+path))
-                                } else { // Rootful
-                                    try await readFileAsData(atURL: URL.documents.appendingPathComponent("temp"))!.write(to: URL(fileURLWithPath: path))
-                                }
-                                do{try fileManager.removeItem(at: URL.documents.appendingPathComponent("temp"))}catch{}
-                            }
-                        } catch {
-                            log("%@", "\(error)")
-                        }
-                        log("\nPURE BINARY FINISHED\n")
-                    }
-                } catch {
-                    if relativePath.hasPrefix("/var/mobile/Containers/Data/Application") {
-                        if exploit_method == 0 {
-                            _ = FileManager.default
-                            let path = URL.documents.appendingPathComponent("mounted")
-                            _ = URL(fileURLWithPath: relativePath).deletingLastPathComponent().path
-                            _ = path.appendingPathComponent(relativePath.components(separatedBy: "/").last ?? "")
-                            
-                            //let vdata = createFolderAndRedirect2(folderpath)
-                            
-                            do {
-                                if sandbox_escape_can_i_access_file(strdup(relativePath), 0) {
-                                    funVnodeOverwriteFileUnlimitSize(strdup(relativePath), strdup(itemURL.path))
-                                } else {
-                                    throw "Permission Denied"
-                                }
-                            } catch {
-                                log("%@", "\(error)")
-                                writeErrors.append("\(error)")
-                            }
-                            
-                            //UnRedirectAndRemoveFolder2(vdata)
-                        } else if exploit_method == 1 {
-                            do {
-                                try FileManager.default.createDirectory(at: URL(fileURLWithPath: relativePath).deletingLastPathComponent(), withIntermediateDirectories: true)
-                                do {
-                                    try FileManager.default.removeItem(atPath: relativePath)
-                                } catch {}
-                                try await readFileAsData(atURL: itemURL)!.write(to: URL(fileURLWithPath: relativePath))
-                            } catch {
-                                writeErrors.append("\(error)")
-                            }
-                        }
-                    } else if relativePath.hasPrefix("/var/mobile/Documents") {
-                        log("(rdir) relativepath %@", "\(relativePath)")
-                        if exploit_method == 0 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
-                            let fileManager = FileManager.default
-                            let pathfromdocs = URL(fileURLWithPath: relativePath).deletingLastPathComponent().path.replacingOccurrences(of: "/var/mobile/Documents/", with: "")
-                            let filename = URL(fileURLWithPath: relativePath).lastPathComponent
-                            
-                            let partsofpath = pathfromdocs.components(separatedBy: "/")
-                            var rdirparts = ""
-                            
-                            let doc_vdata = createFolderAndRedirect2("/var/mobile/Documents/")
-                            do {
-                                if let part = partsofpath.first {
-                                    try fileManager.removeItem(atPath: "/var/mobile/Documents/"+part)
-                                }
-                            } catch {}
-                            UnRedirectAndRemoveFolder2(doc_vdata)
-                            
-                            for part in partsofpath {
-                                let vdata = createFolderAndRedirect2("/var/mobile/Documents/"+rdirparts)
-                                rdirparts += part
-                                if vdata != UInt64.max {
-                                    do {
-                                        try fileManager.createDirectory(at: URL.documents.appendingPathComponent("mounted/\(part)"), withIntermediateDirectories: true)
-                                    } catch {log("%@", "\(error)")}
-                                    UnRedirectAndRemoveFolder2(vdata)
-                                } else {
-                                    log("(rdir) Failed to redirect")
-                                }
-                            }
-                            
-                            log("(rdir) writing to %@ %@", URL.documents.appendingPathComponent(filename).path, "(\(relativePath))")
-                            let vdata = createFolderAndRedirect2(URL(fileURLWithPath: relativePath).deletingLastPathComponent().path)
-                            if vdata != UInt64.max {
-                                do {
-                                    try await readFileAsData(atURL: itemURL)!.write(to: URL.documents.appendingPathComponent("mounted/\(filename)"))
-                                    log("(rdir) successfully wrote to %@ %@", URL.documents.appendingPathComponent("mounted/\(filename)").path, "(\(relativePath))")
-                                } catch {log("%@", "\(error)")}
-                                UnRedirectAndRemoveFolder2(vdata)
-                            } else {
-                                log("(rdir) Failed to redirect")
-                            }
-                            
-//                            do {
-//                                do {
-//                                    try FileManager.default.createDirectory(at: path, withIntermediateDirectories: true)
-//                                } catch {
-//                                    log(error)
-//                                    writeErrors.append("\(error)")
-//                                }
-//                                log(filepath.path)
-//                                try await readFileAsData(atURL: itemURL)!.write(to: filepath)
-//                            } catch {
-//                                log(error)
-//                                writeErrors.append("\(error)")
-//                            }
-                            
-                        } else {
-                            do {
-                                try FileManager.default.createDirectory(at: URL(fileURLWithPath: relativePath).deletingLastPathComponent(), withIntermediateDirectories: true)
-                                do {
-                                    try FileManager.default.removeItem(atPath: relativePath)
-                                } catch {}
-                                try await readFileAsData(atURL: itemURL)!.write(to: URL(fileURLWithPath: relativePath))
-                            } catch {
-                                writeErrors.append("\(error)")
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            writeErrors.append("\(itemURL) does not exist.")
-        }
-    }
-
-    await processItem(at: sourceFolderURL, relativeTo: sourceFolderURL)
-}
-
-func readFileAsData(atURL url: URL) async throws -> Data? {
-    do {
-        let fileData = try Data(contentsOf: url)
-        return fileData
-    } catch {
-        log("Error reading file: \(error)")
-        throw error
-    }
-}
-
-func replaceBeforeAndSubstring(in input: String, targetSubstring: String, with replacement: String) -> String {
-    if let range = input.range(of: targetSubstring) {
-        let contentAfter = input[range.upperBound...]
-        
-        return replacement + contentAfter
-    }
-    return input
-}
-
-func overwriteWithFileImpl(replacementURL: URL, pathToTargetFile: String) async throws -> String {
-    return try await withCheckedThrowingContinuation { continuation in
-        Task {
-            let cPathtoTargetFile = pathToTargetFile.withCString { ptr in
-                return strdup(ptr)
-            }
-
-            _ = UnsafeMutablePointer<Int8>(mutating: cPathtoTargetFile)
-
-            let cFileURL = replacementURL.path.withCString { ptr in
-                return strdup(ptr)
-            }
-            let mutablecFileURL = UnsafeMutablePointer<Int8>(mutating: cFileURL)
-
-            DispatchQueue.global().async {
-                let result = funVnodeOverwrite2(cPathtoTargetFile, mutablecFileURL)
-
-                if result == 0 {
-                    continuation.resume(returning: "Success")
+            do {
+                updateApplyStatus(appData, pkg.bundleID, "Applying...", 0)
+                let pkgpath = URL.documents.appendingPathComponent("installed/\(pkg.bundleID)")
+                let tweakType = getTweakType(pkgpath)
+                if tweakType == .overwrite {
+                    try applyOverwriteTweak(pkg, exploit_method, appData)
+                } else if tweakType == .json {
+                    try applyJSONTweak(pkg, appData)
                 } else {
-                    continuation.resume(throwing: "Failed To Overwrite File")
+                    throw "Unknown tweak type!"
+                }
+            } catch {
+                updateApplyStatus(appData, pkg.bundleID, "Error: \(error.localizedDescription)", 100)
+            }
+        }
+    }
+    if exploit_method == 0 {
+        do_kclose()
+    }
+}
+
+func processBinary(_ filePath: String, _ targetPath: String, _ pkgpath: URL) -> String {
+    do {
+        let jsonData = try Data(contentsOf: URL(fileURLWithPath: filePath))
+        if let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+            var save: [String: Any] = [:]
+            if let savepath = FileManager.default.contents(atPath: pkgpath.appendingPathComponent("save.json").path),
+               let savedict = try? JSONSerialization.jsonObject(with: savepath, options: []) {
+                save = savedict as? [String: Any] ?? [:]
+            }
+            var binaryData = try Data(contentsOf: URL(fileURLWithPath:targetPath))
+            for (offset, replacement) in jsonDictionary["Overwrite"] as? [String:String] ?? [:] {
+                log("OFFSET", offset)
+                log("REPLACEMENT", (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") ?? "N/A")
+                if let offset = Int(offset), let replacementData = Data(hex: (save[replacement] as? String)?.replacingOccurrences(of: "#", with: "") as? String ?? "") {
+                    binaryData.replaceSubrange(offset..<offset + replacementData.count, with: replacementData)
+                }
+            }
+            let tempfile = URL.documents.appendingPathComponent("temp/bin-\(UUID())")
+            try binaryData.write(to: tempfile)
+            return tempfile.path
+        }
+    } catch {
+        log("%@", "\(error)")
+    }
+    return ""
+}
+
+func verifyFile(_ fileURL1: URL, _ fileURL2: URL) -> Bool {
+    do {
+        let data1 = try Data(contentsOf: fileURL1)
+        let data2 = try Data(contentsOf: fileURL2)
+        return data1 == data2
+    } catch {
+        return false
+    }
+}
+
+func applyOverwriteTweak(_ pkg: Package, _ exploit_method: Int, _ appData: AppData) throws {
+    let pkgpath = URL.documents.appendingPathComponent("installed/\(pkg.bundleID)")
+    let files = getDirFiles(pkgpath.appendingPathComponent("Overwrite").path)
+    var targets: [String:String] = [:]
+    var sources: [String:String] = [:]
+    var failed_files: [String] = []
+    var percentage: Double = 0.0
+    for file in files {
+        var source = file
+        var target = file
+        if let range = target.range(of: "/Overwrite") {
+            target = String(target[range.upperBound...]).legacyencryptedOperations(pkgpath: pkgpath, exploit_method: 2)
+        }
+        if URL(fileURLWithPath: target).lastPathComponent.hasPrefix("?pure_binary.") {
+            source = processBinary(source, target, pkgpath)
+            target = target.replacingOccurrences(of: "?pure_binary.", with: "")
+        }
+        let sourceURL = URL(fileURLWithPath: source)
+        percentage += 90.0 / Double(files.count)
+        targets[file] = target
+        sources[file] = source
+        do {
+            if !((target.contains("/var") && hasEntitlement("com.apple.app-sandbox.read-write" as CFString)) || exploit_method == 2) {
+                if exploit_method == 0 {
+                    try overwriteWithFileImpl(replacementURL: sourceURL, pathToTargetFile: target)
+                } else if exploit_method == 1 {
+                    try MDC.overwriteFile(at: target, with: readFileAsData(atURL: sourceURL)!)
+                }
+            } else {
+                try? FileManager.default.createDirectory(at: URL(fileURLWithPath: target).deletingLastPathComponent(), withIntermediateDirectories: true)
+                try readFileAsData(atURL: sourceURL)!.write(to: URL(fileURLWithPath: target))
+            }
+            updateApplyStatus(appData, pkg.bundleID, "Overwrote \(target)!\(failed_files.count > 0 ? " (\(failed_files.count) failures)" : "")", percentage)
+        } catch {
+            log("Error writing to file \(target): \(error.localizedDescription)")
+            failed_files.append(file)
+            updateApplyStatus(appData, pkg.bundleID, "Failed to overwrite \(target)!!!\(failed_files.count > 0 ? " (\(failed_files.count) failures)" : "")", percentage)
+        }
+    }
+    if appData.UserData.verifyApply { // this has a 90% chance of crashing 
+        for file in files {
+            percentage += 10.0 / Double(files.count)
+            if !(failed_files.contains(file)) {
+                let target = URL(fileURLWithPath:targets[file] ?? "")
+                let source = URL(fileURLWithPath:sources[file] ?? "")
+                updateApplyStatus(appData, pkg.bundleID, "Verifying \(target.path)...", percentage)
+                if verifyFile(source, target) {
+                    updateApplyStatus(appData, pkg.bundleID, "\(target.path) is all good!", percentage)
+                } else {
+                    try? applyOverwriteTweak(pkg, exploit_method, appData)
                 }
             }
         }
     }
-}
-
-// Picasso/PureKFD
-
-func getTweaksData(_ fileURL: URL) throws -> [String: Any] {
-    do {
-        let jsonData = try Data(contentsOf: fileURL)
-        if let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-            return jsonDictionary
-        }
-    } catch {
-        log("Error loading JSON data: \(error)")
-        throw error
+    if failed_files.count == files.count {
+        throw "All files failed to write!"
+    } else {
+        updateApplyStatus(appData, pkg.bundleID, "Applied Tweak!\(failed_files.count > 0 ? " (with \(failed_files.count) failures)" : "")", 100)
     }
-    return [:]
 }
 
-func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData: AppData) async {
+// update this later...
+func applyJSONTweak(_ pkg: Package, _ appData: AppData) throws {
+    let pkgpath = URL.documents.appendingPathComponent("installed/\(pkg.bundleID)")
+    let tweakOperations = try getTweaksData(pkgpath.appendingPathComponent("tweak.json"))
     let operations = tweakOperations["operations"] as? [[String: Any]]
     
     var save: [String: Any] = [:]
@@ -460,7 +330,7 @@ func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData:
             }
             do {
                 if getDeviceInfo(appData: appData).0 == 0 {
-                    _ = try await overwriteWithFileImpl(replacementURL: frompathurl, pathToTargetFile: operation["originPath"] as? String ?? "")
+                    try overwriteWithFileImpl(replacementURL: frompathurl, pathToTargetFile: operation["originPath"] as? String ?? "")
                 } else if getDeviceInfo(appData: appData).0 == 1 {
                     try MDC.overwriteFile(at: operation["originPath"] as? String ?? "", with: Data(contentsOf: frompathurl))
                 }
@@ -488,7 +358,7 @@ func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData:
                 do {
                     try SpringboardColorManager.createColor(forType: springboardElement, color: CIColor(color: color), blur: blur, asTemp: false)
                     for _ in 1...5 {
-                        await SpringboardColorManager.applyColor(forType: springboardElement, exploit_method: getDeviceInfo(appData: appData).0)
+                        SpringboardColorManager.applyColor(forType: springboardElement, exploit_method: getDeviceInfo(appData: appData).0)
                     }
                 } catch {}
             }
@@ -496,6 +366,52 @@ func runTweakOperations(_ tweakOperations: [String: Any], pkgpath: URL, appData:
             log("Unsupported Tweak: \(operationType ?? "")")
         }
     }
+}
+
+func readFileAsData(atURL url: URL) throws -> Data? {
+    do {
+        let fileData = try Data(contentsOf: url)
+        return fileData
+    } catch {
+        log("Error reading file: \(error)")
+        throw error
+    }
+}
+
+func overwriteWithFileImpl(replacementURL: URL, pathToTargetFile: String) throws {
+    let cPathtoTargetFile = pathToTargetFile.withCString { ptr in
+        return strdup(ptr)
+    }
+    
+    _ = UnsafeMutablePointer<Int8>(mutating: cPathtoTargetFile)
+    
+    let cFileURL = replacementURL.path.withCString { ptr in
+        return strdup(ptr)
+    }
+    let mutablecFileURL = UnsafeMutablePointer<Int8>(mutating: cFileURL)
+    
+    let result = funVnodeOverwrite2(cPathtoTargetFile, mutablecFileURL)
+    
+    usleep(100)
+    
+    if result != 0 {
+        throw "Failed To Overwrite File"
+    }
+}
+
+// Picasso/PureKFD
+
+func getTweaksData(_ fileURL: URL) throws -> [String: Any] {
+    do {
+        let jsonData = try Data(contentsOf: fileURL)
+        if let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+            return jsonDictionary
+        }
+    } catch {
+        log("Error loading JSON data: \(error)")
+        throw error
+    }
+    return [:]
 }
 
 extension String {

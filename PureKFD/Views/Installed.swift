@@ -111,7 +111,8 @@ struct InstalledView: View {
         @State var installedView: InstalledView
         @EnvironmentObject var appData: AppData
         var body: some View {
-            PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package, installedPackageView: true)
+            VStack {
+                PkgRow(pkgname: package.name, pkgauthor: package.author, pkgiconURL: package.icon, pkg: package, installedPackageView: true)
                     .contextMenu {
                         if findPackageViaBundleID(package.bundleID, appdata: appData) != nil {
                             Button(action: {
@@ -143,7 +144,7 @@ struct InstalledView: View {
                             Image(package.disabled ?? false ? "app_icon" : "disabled_app_icon").renderingMode(.template)
                         }
                         if FileManager.default.fileExists(atPath: URL.documents.appendingPathComponent("installed/\(package.bundleID)/save.json").path) {
-                        Button() {
+                            Button() {
                                 do {
                                     try FileManager.default.removeItem(at: URL.documents.appendingPathComponent("installed/\(package.bundleID)/save.json"))
                                 } catch {}
@@ -160,7 +161,26 @@ struct InstalledView: View {
                             Image("trash_icon").renderingMode(.template)
                         }.foregroundColor(.red)
                     }
+                if let status = appData.applyStatus[package.bundleID] {
+                    LoadingBarView(status: status).padding(.top)
+                }
             }
+        }
+    }
+    
+    private struct LoadingBarView: View {
+        let status: ApplyStatus
+        
+        var body: some View {
+            VStack(alignment: .leading) {
+                Text("Apply Status: \(status.message)")
+                ProgressView(value: Double(status.percentage) / 100.0)
+                    .progressViewStyle(LinearProgressViewStyle())
+                    .frame(height: 2)
+            }
+            .foregroundColor(.secondary)
+            .padding(.vertical, 5)
+        }
     }
         
     private func updatePackages() async {

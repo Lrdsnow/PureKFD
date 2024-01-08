@@ -129,8 +129,6 @@ struct HomeView: View {
                             }
                         case 2:
                             exploitMethod = "Rootful"
-                        case 3:
-                            exploitMethod = "Rootless"
                         default:
                             exploitMethod = "None"
                             appData.UserData.filters.jb = true
@@ -488,7 +486,7 @@ struct KFDExploitPickers: View {
     private let puafMethodOptions = ["physpuppet", "smith", "landa"]
     private let kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
     private let kwriteMethodOptions = ["dup", "sem_open"]
-    @State private var exploitOptions = ["KFD", "MDC", "Rootful (JB)", "Rootless (JB)"]
+    @State private var exploitOptions = ["KFD", "MDC", "Rootful (JB)"]
     @State private var exploitMethod = 0
     @State private var kfd_allowed = true
     

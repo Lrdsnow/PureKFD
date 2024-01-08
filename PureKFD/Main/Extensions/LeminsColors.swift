@@ -327,7 +327,7 @@ class SpringboardColorManager {
         }
     }
     
-    static func applyColor(forType: SpringboardType, exploit_method: Int, asTemp: Bool = false) async {
+    static func applyColor(forType: SpringboardType, exploit_method: Int, asTemp: Bool = false) {
         let bgDir = getBackgroundDirectory()
         
         if bgDir != nil && finalFiles[forType] != nil && fileFolders[forType] != nil && fileExt[forType] != nil {
@@ -345,7 +345,7 @@ class SpringboardColorManager {
                     // overwrite file
                     let path: String = "\(fileFolders[forType]!)\(file)\(fileExt[forType]!)"
                     if exploit_method == 0 {
-                        try await overwriteFile(at: path, with: newData!)
+                        try overwriteFile(at: path, with: newData!)
                     } else {
                         try MDC.overwriteFile(at: path, with: newData!)
                     }

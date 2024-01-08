@@ -13,12 +13,12 @@ func haptic() {
     impactFeedbackgenerator.impactOccurred()
 }
 
-func overwriteFile(at filePath: String, with newData: Data) async throws {
+func overwriteFile(at filePath: String, with newData: Data) throws {
     if FileManager.default.fileExists(atPath: URL.documents.appendingPathComponent("TempOverwriteFile").path) {
         try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("TempOverwriteFile"))
     }
     try newData.write(to: URL.documents.appendingPathComponent("TempOverwriteFile"))
-    _ = try await overwriteWithFileImpl(replacementURL: URL.documents.appendingPathComponent("TempOverwriteFile"), pathToTargetFile: filePath)
+    _ = try overwriteWithFileImpl(replacementURL: URL.documents.appendingPathComponent("TempOverwriteFile"), pathToTargetFile: filePath)
 }
 
 extension String {

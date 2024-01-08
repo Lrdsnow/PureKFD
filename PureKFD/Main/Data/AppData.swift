@@ -18,6 +18,7 @@ class AppData: ObservableObject {
     @Published var reloading_browse = false // wether or not browse is being reloaded
     @Published var bg: UIImage? = nil
     @Published var appColors: AppColors = AppColors()
+    @Published var applyStatus: [String:ApplyStatus] = ["uwu.lrdsnow.test":ApplyStatus(message: "ui test...", percentage: 50)]
 
     func save() {
         do {
@@ -68,6 +69,11 @@ class AppData: ObservableObject {
     static let shared = AppData()
 }
 
+struct ApplyStatus: Codable, Equatable {
+    var message = "..."
+    var percentage: Double = 0.0
+}
+
 struct SavedRepoData: Codable {
     var urls: [URL] = defaulturls().urls
 }
@@ -90,6 +96,7 @@ struct SavedUserData: Codable {
     var savedAppColors = SavedAppColors()
     var betaRepos = false
     var ghToken: String? = nil
+    var verifyApply = false
     // Dummy values
     var refresh = false // This just gets toggled on or off to refresh the view
 }
@@ -139,7 +146,7 @@ struct defaulturls {
         URL(string: "https://raw.githubusercontent.com/34306/iPA/main/PureKFD/purekfd.json")!, // Huy's Repo - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/main/purekfd.json")!, // Aurora - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/main/file/Repo/purekfd.json")!, // YangJiii's Repo - Main Repo - Built for PureKFD
-        URL(string: "https://raw.githubusercontent.com/Lrdsnow/misakarepo/main/purekfd.json")!, // Phuc Do's Repo - PureKFD Fork - Awaiting Merge
+        URL(string: "https://raw.githubusercontent.com/dobabaophuc1706/misakarepo/main/purekfd.json")!, // Phuc Do's Repo - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/Lrdsnow/romlayrepo_fork/main/purekfd.json")!, // Rom Lay's Repo - PureKFD Fork - Awaiting Merge
         // Picasso Repos
         URL(string: "https://raw.githubusercontent.com/sourcelocation/Picasso-test-repo/main/manifest.json")!,

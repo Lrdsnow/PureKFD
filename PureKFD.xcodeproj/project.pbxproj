@@ -44,7 +44,6 @@
 		6573A47F2B428887008C3F28 /* vnode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6573A43E2B428887008C3F28 /* vnode.m */; };
 		6573A4802B428887008C3F28 /* proc.c in Sources */ = {isa = PBXBuildFile; fileRef = 6573A43F2B428887008C3F28 /* proc.c */; };
 		6573A4812B428887008C3F28 /* lrdsnow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6573A4402B428887008C3F28 /* lrdsnow.m */; };
-		6573A4822B428887008C3F28 /* jb.m in Sources */ = {isa = PBXBuildFile; fileRef = 6573A4492B428887008C3F28 /* jb.m */; };
 		6573A4832B428887008C3F28 /* lrdsnow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6573A44A2B428887008C3F28 /* lrdsnow.m */; };
 		6573A4842B428887008C3F28 /* LightVibrantStandard.json in Resources */ = {isa = PBXBuildFile; fileRef = 6573A44D2B428887008C3F28 /* LightVibrantStandard.json */; };
 		6573A4852B428887008C3F28 /* LightStandard.json in Resources */ = {isa = PBXBuildFile; fileRef = 6573A44E2B428887008C3F28 /* LightStandard.json */; };
@@ -171,7 +170,6 @@
 		6573A4462B428887008C3F28 /* IconServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconServices.h; sourceTree = "<group>"; };
 		6573A4472B428887008C3F28 /* libpurekfd_bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libpurekfd_bridge.h; sourceTree = "<group>"; };
 		6573A4482B428887008C3F28 /* libkfd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libkfd.h; sourceTree = "<group>"; };
-		6573A4492B428887008C3F28 /* jb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = jb.m; sourceTree = "<group>"; };
 		6573A44A2B428887008C3F28 /* lrdsnow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lrdsnow.m; sourceTree = "<group>"; };
 		6573A44D2B428887008C3F28 /* LightVibrantStandard.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = LightVibrantStandard.json; sourceTree = "<group>"; };
 		6573A44E2B428887008C3F28 /* LightStandard.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = LightStandard.json; sourceTree = "<group>"; };
@@ -331,7 +329,6 @@
 				6573A4452B428887008C3F28 /* others */,
 				6573A4472B428887008C3F28 /* libpurekfd_bridge.h */,
 				6573A4482B428887008C3F28 /* libkfd.h */,
-				6573A4492B428887008C3F28 /* jb.m */,
 				6573A44A2B428887008C3F28 /* lrdsnow.m */,
 				6573A44B2B428887008C3F28 /* OverwriteFiles */,
 			);
@@ -654,7 +651,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1510;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1510;
 				TargetAttributes = {
 					6596B0F02AAAABB90005EED9 = {
 						CreatedOnToolsVersion = 15.0;
@@ -753,7 +750,6 @@
 				6573A47E2B428887008C3F28 /* offsets.m in Sources */,
 				650AEEC72AC0231300B9F470 /* Developer.swift in Sources */,
 				650E82162AF7014500985508 /* LeminsColors.swift in Sources */,
-				6573A4822B428887008C3F28 /* jb.m in Sources */,
 				6573A47B2B428887008C3F28 /* thanks_opa334dev_htrowii.m in Sources */,
 				6573A4722B428887008C3F28 /* helpers.m in Sources */,
 				6573A4812B428887008C3F28 /* lrdsnow.m in Sources */,
@@ -813,6 +809,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -880,6 +877,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -974,10 +972,11 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/lib",
+					"$(PROJECT_DIR)/RootHelper/RootHide",
 				);
 				MARKETING_VERSION = 5.0;
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purity;
+				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.pure;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = PureKFD/Main/CBackend/bridge.h;
@@ -1025,10 +1024,11 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/lib",
+					"$(PROJECT_DIR)/RootHelper/RootHide",
 				);
 				MARKETING_VERSION = 5.0;
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purity;
+				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.pure;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = PureKFD/Main/CBackend/bridge.h;
@@ -1047,7 +1047,7 @@
 				6596B0FE2AAAABBA0005EED9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		6596B0FF2AAAABBA0005EED9 /* Build configuration list for PBXNativeTarget "PureKFD" */ = {
 			isa = XCConfigurationList;
@@ -1056,7 +1056,7 @@
 				6596B1012AAAABBA0005EED9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 
