@@ -199,28 +199,6 @@ func translateToPackage(pkgType: String, package: Any, repourl: URL? = URL(strin
                            repo: nil,
                            pkgtype: pkgType)
         }
-    case "jb":
-        if let jbPkg = package as? [String:String] {
-            return Package(name: jbPkg["Name"] ?? "",
-                           bundleID: jbPkg["Package"] ?? "",
-                           author: jbPkg["Author"] ?? "",
-                           version: jbPkg["Version"] ?? "",
-                           desc: jbPkg["Description"] ?? "",
-                           longdesc: nil,
-                           icon: URL(string: jbPkg["Icon"] ?? "none"),
-                           accent: nil,
-                           screenshots: nil,
-                           banner: nil,
-                           previewbg: nil,
-                           category: "Misc",
-                           path: repourl?.appendingPathComponent(jbPkg["Filename"] ?? ""),
-                           installtype: "unknown",
-                           install_actions: [],
-                           uninstall_actions: [],
-                           url: repourl,
-                           repo: nil,
-                           pkgtype: pkgType)
-        }
     default:
         return nil
     }
@@ -270,28 +248,6 @@ func translateToRepo(repoType: String, repo: Any, repoURL: URL? = URL(string: ""
                         icon: String((picassoRepo.url?.absoluteString ?? "") + picassoRepo.icon),
                         accent: nil,
                         featured: picassoRepo.featured,
-                        packages: translatedPackages,
-                        repotype: repoType)
-        }
-    case "jb":
-        if let jbRepo = repo as? JBRepo {
-            var translatedPackages = [Package]()
-            let jbPkgsURL = repoURL?.appendingPathComponent("Packages") ?? URL(fileURLWithPath: "none")
-            var jbPkgsData = Data()
-            do {try jbPkgsData = Data(contentsOf: jbPkgsURL)} catch {}
-            let jbPkgsString = String(data: jbPkgsData, encoding: .utf8) ?? ""
-            for pkg in jbPkgsString.toJSONArray() {
-                if let translatedPackage = translateToPackage(pkgType: "jb", package: pkg, repourl: jbPkgsURL) {
-                    translatedPackages.append(translatedPackage)
-                }
-            }
-            let repoIcon = repoURL?.appendingPathComponent("CydiaIcon.png").absoluteString ?? ""
-            return Repo(name: jbRepo.Origin ?? "JB Repo",
-                        desc: jbRepo.Description ?? "JB Repo Desc",
-                        url: repoURL,
-                        icon: repoIcon,
-                        accent: nil,
-                        featured: nil,
                         packages: translatedPackages,
                         repotype: repoType)
         }

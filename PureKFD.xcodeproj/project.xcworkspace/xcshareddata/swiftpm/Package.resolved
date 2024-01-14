@@ -10,24 +10,6 @@
       }
     },
     {
-      "identity" : "octokit.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nerdishbynature/octokit.swift.git",
-      "state" : {
-        "revision" : "f762f1566f7cd0e683b9329f169c28ab6ef993cc",
-        "version" : "0.12.0"
-      }
-    },
-    {
-      "identity" : "requestkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nerdishbynature/RequestKit.git",
-      "state" : {
-        "revision" : "8b0258ea2a4345cbcac90509b764faacea12efb0",
-        "version" : "3.2.1"
-      }
-    },
-    {
       "identity" : "sdwebimage",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage.git",

@@ -147,37 +147,21 @@ struct BrowseView: View {
             return
         }
         
-        let releaseURL = url.appendingPathComponent("Release")
-        
         let session = URLSession.shared
-        var request = URLRequest(url: releaseURL)
+        var request = URLRequest(url: url)
         request.httpMethod = "HEAD"
         
         do {
             let (_, response) = try await session.data(from: request.url!)
-            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            let statuscode = (response as? HTTPURLResponse)?.statusCode ?? 0
             
-            if statusCode == 200 {
-                appData.RepoData.urls.append(releaseURL)
+            if statuscode == 200 {
+                appData.RepoData.urls.append(url)
                 newRepoURL = ""
                 appData.save()
                 await fetchRepos()
             } else {
-                // Check the base URL without /Release
-                var baseRequest = URLRequest(url: url)
-                baseRequest.httpMethod = "HEAD"
-                
-                let (_, baseResponse) = try await session.data(from: baseRequest.url!)
-                let baseStatusCode = (baseResponse as? HTTPURLResponse)?.statusCode ?? 0
-                
-                if baseStatusCode == 200 {
-                    appData.RepoData.urls.append(url)
-                    newRepoURL = ""
-                    appData.save()
-                    await fetchRepos()
-                } else {
-                    UIApplication.shared.alert(title: "Error", body: "Invalid Repo?", withButton: true)
-                }
+                UIApplication.shared.alert(title: "Error", body: "Invalid Repo?", withButton: true)
             }
         } catch {
             UIApplication.shared.alert(title: "Error", body: "Invalid Repo?", withButton: true)

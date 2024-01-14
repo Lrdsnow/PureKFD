@@ -286,13 +286,6 @@ func getRepoInfo(_ repourl: String, appData: AppData, usedata: Data? = nil, lowe
                     repodata.url = url.deletingLastPathComponent()
                     repo = translateToRepo(repoType: "picasso", repo: repodata) ?? blankrepo
                 }
-            case "jb":
-                if !appData.UserData.filters.jb {
-                    if let jsonData = try? JSONSerialization.data(withJSONObject: String(data: data, encoding: .utf8)?.toJSON() as Any, options: .prettyPrinted) {
-                        let repodata = try decoder.decode(JBRepo.self, from: jsonData)
-                        repo = translateToRepo(repoType: "jb", repo: repodata, repoURL: url.deletingLastPathComponent()) ?? blankrepo
-                    }
-                }
             case "unknown":
                 repo.desc = "Unrecognized Repo (\(url)"
                 repo.url = url.deletingLastPathComponent()
