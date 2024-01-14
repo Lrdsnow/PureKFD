@@ -79,7 +79,6 @@ struct DeveloperView: View {
                     }
                 }.listBG()
                 Section("Creator") {
-                    NavigationLink(destination: RepoCreatorView(), label: {Image("gear_icon").iconImg(); Text("Repo Creator")})
                     NavigationLink(destination: TweakCreatorView(), label: {Image("gear_icon").iconImg(); Text("Tweak Creator")})
                     NavigationLink(destination: TweakConverterView(), label: {Image("gear_icon").iconImg(); Text("Tweak Converter")})
                 }.listBG()
