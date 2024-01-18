@@ -256,136 +256,6 @@ struct PlaceholderFeaturedView: View {
 }
 
 @available(iOS 15.0, *)
-struct nSettingsView: View {
-    var body: some View {
-        List {
-            HStack {
-                Button(action: {
-                    
-                }) {
-                    HStack {
-                        Spacer()
-                        HStack {
-                            Image("dev_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
-                            Text("Exploit Setup")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
-            }.listRowBackground(Color.clear).hideListRowSeparator()
-            
-            HStack {
-                Button(action: {
-                    
-                }) {
-                    HStack {
-                        Spacer()
-                        HStack {
-                            Image("edit_row").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
-                            Text("Change Row Theming")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
-            }.listRowBackground(Color.clear).hideListRowSeparator()
-            
-            HStack {
-                Button(action: {
-                    
-                }) {
-                    HStack {
-                        Spacer()
-                        HStack {
-                            Image("app_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
-                            Text("Change Icon")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
-            }.listRowBackground(Color.clear).hideListRowSeparator()
-            
-            HStack {
-                Button(action: {
-                    
-                }) {
-                    HStack {
-                        Spacer()
-                        HStack {
-                            Image("phone_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
-                            Text("Background Setup")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
-            }.listRowBackground(Color.clear).hideListRowSeparator()
-            
-            HStack {
-                Button(action: {
-                    
-                }) {
-                    HStack {
-                        Spacer()
-                        HStack {
-                            Image("dev_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
-                            Text("Advanced Setup")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
-            }.listRowBackground(Color.clear).hideListRowSeparator()
-            
-            HStack {
-                Button(action: {
-                    
-                }) {
-                    HStack {
-                        Spacer()
-                        HStack {
-                            Image("credits_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
-                            Text("Credits")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
-            }.listRowBackground(Color.clear).hideListRowSeparator()
-            
-            CustomNavigationLink {SettingsView()} label: {
-                HStack {
-                    Spacer()
-                    HStack {
-                        Image("gear_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 50)
-                        Text("v4 Settings")
-                            .font(.headline)
-                            .padding(.horizontal)
-                        Spacer()
-                        Image("arrow_icon").renderingMode(.template).resizable().aspectRatio(contentMode: .fit).frame(maxHeight: 24)
-                    }
-                    Spacer()
-                }
-            }.listRowBackground(Color.clear).hideListRowSeparator()
-        }.bgImage().navigationTitle("Settings").navigationBarTitleDisplayMode(.inline).listRowSpacing(-10)
-    }
-}
-
-@available(iOS 15.0, *)
 struct SettingsView: View {
     @EnvironmentObject var appData: AppData
     @State private var selectedColorString: String = "#E3CCF8"
@@ -411,26 +281,6 @@ struct SettingsView: View {
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
                 .listBG()
-//                Toggle("Override Exploit Method", isOn: $appData.UserData.override_exploit_method)
-//                    .tint(.accentColor)
-//                    .foregroundColor(.accentColor)
-//                    .onChange(of: appData.UserData.override_exploit_method) {_ in appData.save()}
-//                    .listRowBackground(appData.appColors.background)
-//
-//                if appData.UserData.override_exploit_method {
-//                    if appData.UserData.exploit_method == 1 {
-//                        Text("Your device was detected as an MDC device, KFD IS NOT RECOMMENDED on these devices").listRowBackground(appData.appColors.background)
-//                    }
-//                    Picker("Exploit:", selection: $appData.UserData.exploit_method) {
-//                        ForEach(0..<exploitOptions.count, id: \.self) {
-//                            Text(exploitOptions[$0])
-//                        }
-//                    }
-//                    .tint(.accentColor)
-//                    .foregroundColor(.accentColor)
-//                    .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
-//                    .listRowBackground(appData.appColors.background)
-//                }
                 
                 Picker("App Install Type:", selection: $appData.UserData.install_method) {
                     ForEach(0..<appInstallOptions.count, id: \.self) {
@@ -512,9 +362,8 @@ struct ExploitPickers: View {
     private let puafMethodOptions = ["physpuppet", "smith", "landa"]
     private let kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
     private let kwriteMethodOptions = ["dup", "sem_open"]
-    @State private var exploitOptions = ["KFD", "MDC", "Rootful (JB)"]
+    @State private var exploitOptions = ["KFD", "MDC", "None (Rootful JB)"]
     @State private var exploitMethod = 0
-    @State private var kfd_allowed = true
     
     var body: some View {
         Section(header: Text("Exploit Settings").foregroundColor(.accentColor)) {
@@ -525,14 +374,7 @@ struct ExploitPickers: View {
             }
             .tint(.accentColor)
             .foregroundColor(.accentColor)
-            .onChange(of: exploitMethod) { _ in
-                if kfd_allowed {
-                    appData.UserData.exploit_method = exploitMethod
-                } else {
-                    appData.UserData.exploit_method = exploitMethod + 1
-                }
-                appData.save()
-            }
+            .onChange(of: appData.UserData.exploit_method) { _ in appData.save() }
             .listBG()
             
             if appData.UserData.exploit_method == 0 {

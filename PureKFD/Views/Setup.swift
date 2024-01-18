@@ -159,16 +159,32 @@ struct SetupView_Exploit: View {
     @State private var exploit = 0
     let settings: Bool
     @EnvironmentObject var appData: AppData
+    @State private var exploitOptions = ["KFD", "MDC", "None (Rootful JB)"]
+    @State private var exploitMethod = 0
     
     var body: some View {
         VStack(alignment: .center) {
             List {
                 Section(content: {
-                    HStack {
-                        Text("Detected Exploit:")
-                        Spacer()
-                        Text(exploit == -1 ? "None" : exploit == 0 ? "KFD (16.2-16.6b1)" : exploit == 1 ? "MDC (14.0-16.1.2)" : "Jailbroken")
+                    if !appData.UserData.override_exploit_method {
+                        HStack {
+                            Text("Detected Exploit:")
+                            Spacer()
+                            Text(exploit == -1 ? "None" : exploit == 0 ? "KFD (16.2-16.6b1)" : exploit == 1 ? "MDC (14.0-16.1.2)" : "Jailbroken")
+                        }
+                    } else {
+                        Picker("Exploit:", selection: $appData.UserData.exploit_method) {
+                            ForEach(0..<exploitOptions.count, id: \.self) {
+                                Text(exploitOptions[$0])
+                            }
+                        }
+                        .tint(.accentColor)
+                        .foregroundColor(.accentColor)
+                        .onChange(of: appData.UserData.exploit_method) { _ in appData.save()}
                     }
+                    Toggle(isOn: $appData.UserData.override_exploit_method, label: {
+                        Text("Wrong exploit? Override Exploit Method")
+                    })
                     if exploit == 0 {
                         Toggle(isOn: $appData.UserData.kfd.use_static_headroom, label: {
                             Text("Use Static Headroom?")
@@ -269,7 +285,7 @@ struct SetupView_Finalize: View {
                         .listStyle(.plain).listRowInsets(.init(top: 0,leading: 0,bottom: 0,trailing: 0)).listRowBackground(Color.clear)
                 }, header: {Text("Theme:").font(.subheadline).foregroundColor(Color(uiColor: .secondaryLabel))}).listRowBackground(Color(uiColor: .systemFill).opacity(0.2))
                 Section(content: {
-                    Text("Exploit: KFD (16.2-16.6b1)")
+                    Text("Exploit: \(appData.UserData.exploit_method == 0 ? "KFD (16.2-16.6.1)" : appData.UserData.exploit_method == 1 ? "MDC (15.0-15.7.1 & 16.0-16.1.2)" : appData.UserData.exploit_method == 2 ? "None (Rootful JB)" : "None")")
                     if exploit == 0 {
                         HStack {
                             Text("Use Static Headroom")
