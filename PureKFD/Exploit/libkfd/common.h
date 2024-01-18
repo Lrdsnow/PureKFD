@@ -18,11 +18,6 @@
 #include <sys/syscall.h>
 #include <sys/sysctl.h>
 #include <unistd.h>
-#include <CoreFoundation/CoreFoundation.h>
-
-#ifndef __OBJC__
-void NSLog(CFStringRef, ...);
-#endif
 
 #define pages(number_of_pages) ((number_of_pages) * (ARM_PGBYTES))
 
@@ -47,7 +42,7 @@ typedef uintptr_t usize;
 
 #if CONFIG_PRINT
 
-#define print(format, ...) NSLog(CFSTR(format), ##__VA_ARGS__)
+#define print(args...) printf(args)
 
 #else /* CONFIG_PRINT */
 
@@ -55,34 +50,34 @@ typedef uintptr_t usize;
 
 #endif /* CONFIG_PRINT */
 
-#define print_bool(name) print("[%s]: %s = %s", __FUNCTION__, #name, name ? "true" : "false")
+#define print_bool(name) print("[%s]: %s = %s\n", __FUNCTION__, #name, name ? "true" : "false")
 
-#define print_i8(name) print("[%s]: %s = %hhi", __FUNCTION__, #name, name)
-#define print_u8(name) print("[%s]: %s = %hhu", __FUNCTION__, #name, name)
-#define print_x8(name) print("[%s]: %s = %02hhx", __FUNCTION__, #name, name)
+#define print_i8(name) print("[%s]: %s = %hhi\n", __FUNCTION__, #name, name)
+#define print_u8(name) print("[%s]: %s = %hhu\n", __FUNCTION__, #name, name)
+#define print_x8(name) print("[%s]: %s = %02hhx\n", __FUNCTION__, #name, name)
 
-#define print_i16(name) print("[%s]: %s = %hi", __FUNCTION__, #name, name)
-#define print_u16(name) print("[%s]: %s = %hu", __FUNCTION__, #name, name)
-#define print_x16(name) print("[%s]: %s = %04hx", __FUNCTION__, #name, name)
+#define print_i16(name) print("[%s]: %s = %hi\n", __FUNCTION__, #name, name)
+#define print_u16(name) print("[%s]: %s = %hu\n", __FUNCTION__, #name, name)
+#define print_x16(name) print("[%s]: %s = %04hx\n", __FUNCTION__, #name, name)
 
-#define print_i32(name) print("[%s]: %s = %i", __FUNCTION__, #name, name)
-#define print_u32(name) print("[%s]: %s = %u", __FUNCTION__, #name, name)
-#define print_x32(name) print("[%s]: %s = %08x", __FUNCTION__, #name, name)
+#define print_i32(name) print("[%s]: %s = %i\n", __FUNCTION__, #name, name)
+#define print_u32(name) print("[%s]: %s = %u\n", __FUNCTION__, #name, name)
+#define print_x32(name) print("[%s]: %s = %08x\n", __FUNCTION__, #name, name)
 
-#define print_i64(name) print("[%s]: %s = %lli", __FUNCTION__, #name, name)
-#define print_u64(name) print("[%s]: %s = %llu", __FUNCTION__, #name, name)
-#define print_x64(name) print("[%s]: %s = %016llx", __FUNCTION__, #name, name)
+#define print_i64(name) print("[%s]: %s = %lli\n", __FUNCTION__, #name, name)
+#define print_u64(name) print("[%s]: %s = %llu\n", __FUNCTION__, #name, name)
+#define print_x64(name) print("[%s]: %s = %016llx\n", __FUNCTION__, #name, name)
 
-#define print_isize(name) print("[%s]: %s = %li", __FUNCTION__, #name, name)
-#define print_usize(name) print("[%s]: %s = %lu", __FUNCTION__, #name, name)
-#define print_xsize(name) print("[%s]: %s = %016lx", __FUNCTION__, #name, name)
+#define print_isize(name) print("[%s]: %s = %li\n", __FUNCTION__, #name, name)
+#define print_usize(name) print("[%s]: %s = %lu\n", __FUNCTION__, #name, name)
+#define print_xsize(name) print("[%s]: %s = %016lx\n", __FUNCTION__, #name, name)
 
-#define print_string(name) print("[%s]: %s = %s", __FUNCTION__, #name, name)
+#define print_string(name) print("[%s]: %s = %s\n", __FUNCTION__, #name, name)
 
-#define print_message(format, ...) do { print("[%s]: " format, __FUNCTION__, ##__VA_ARGS__); } while (0)
-#define print_success(format, ...) do { print("[%s]: 🟢 " format, __FUNCTION__, ##__VA_ARGS__);  } while (0)
-#define print_warning(format, ...) do { print("[%s]: 🟡 " format, __FUNCTION__, ##__VA_ARGS__); } while (0)
-#define print_failure(format, ...) do { print("[%s]: 🔴 " format, __FUNCTION__, ##__VA_ARGS__); } while (0)
+#define print_message(args...) do { print("[%s]: ", __FUNCTION__); print(args); print("\n"); } while (0)
+#define print_success(args...) do { print("[%s]: 🟢 ", __FUNCTION__); print(args); print("\n"); } while (0)
+#define print_warning(args...) do { print("[%s]: 🟡 ", __FUNCTION__); print(args); print("\n"); } while (0)
+#define print_failure(args...) do { print("[%s]: 🔴 ", __FUNCTION__); print(args); print("\n"); } while (0)
 
 #define print_timer(tv)                                           \
     do {                                                          \
@@ -124,6 +119,9 @@ typedef uintptr_t usize;
         if (!(condition)) {                                             \
             print_failure("assertion failed: (%s)", #condition);        \
             print_failure("file: %s, line: %d", __FILE__, __LINE__);    \
+            print_failure("... sleep(30) before exit(1) ...");          \
+            sleep(30);                                                  \
+            exit(1);                                                    \
         }                                                               \
     } while (0)
 
@@ -133,13 +131,11 @@ typedef uintptr_t usize;
 
 #endif /* CONFIG_ASSERT */
 
-#define assert_false(message)                               \
-    do {                                                    \
-        print_failure("error: %s", message);                \
-        assert(false);                                      \
+#define assert_false(message)                   \
+    do {                                        \
+        print_failure("error: %s", message);    \
+        assert(false);                          \
     } while (0)
-
-
 
 #define assert_bsd(statement)                                                                        \
     do {                                                                                             \
@@ -204,8 +200,5 @@ typedef uintptr_t usize;
         free(pointer);               \
         pointer = NULL;              \
     } while (0)
-
-extern signed long long base_pac_mask;
-
 
 #endif /* common_h */

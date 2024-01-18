@@ -596,16 +596,6 @@ struct ExploitPickers: View {
                 }
             }
         }
-        .task() {
-//            let versions: [dynamic_info] = Array<_>.fromTuple(kern_versions) ?? []
-//            for version in versions {
-//                if let deviceID = version.device_id {
-//                    print("Device ID: \(String(cString: deviceID))")
-//                }
-//            }
-//            exploitOptions = ["MDC", "Rootful (JB)", "Rootless (JB)"]
-//            kfd_allowed = false
-        }
         .listRowSeparator(.hidden)
         .onChange(of: appData.UserData.kfd) {_ in appData.save()}
     }
