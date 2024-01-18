@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SDWebImageSwiftUI
+import Kingfisher
 import MarqueeText
 import TextFieldAlert
 import Foundation
@@ -19,7 +19,7 @@ struct PackagePreviewView: View {
             // Banner Image
             if package.banner != nil {
                 if let bannerURL = package.banner, let url = URL(string: bannerURL.absoluteString), UIApplication.shared.canOpenURL(url) {
-                    WebImage(url: url)
+                    KFImage(url)
                         .resizable()
                         .scaledToFill()
                         .frame(width: UIScreen.main.bounds.width, height: 240)
@@ -30,9 +30,9 @@ struct PackagePreviewView: View {
             // Package Info
             HStack {
                 if let iconURL = package.icon, let url = URL(string: iconURL.absoluteString), UIApplication.shared.canOpenURL(url) {
-                    WebImage(url: url)
+                    KFImage(url)
                         .resizable()
-                        .placeholder(Image("pkg_icon").renderingMode(.template).resizable())
+                        .onFailureImage(UIImage(named: "DisplayAppIcon"))
                         .scaledToFit()
                         .frame(width: 118, height: 118)
                         .cornerRadius(20)
@@ -100,7 +100,7 @@ struct PackageDetailView: View {
                 HStack() {
                     if package.banner != nil {
                         if let bannerURL = package.banner, let url = URL(string: bannerURL.absoluteString), UIApplication.shared.canOpenURL(url) {
-                            WebImage(url: url)
+                            KFImage(url)
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: UIScreen.main.bounds.width-30, height: 180)
@@ -127,9 +127,9 @@ struct PackageDetailView: View {
                 // Package Info
                 HStack {
                     if let iconURL = package.icon, let url = URL(string: iconURL.absoluteString), UIApplication.shared.canOpenURL(url) {
-                        WebImage(url: url)
+                        KFImage(url)
                             .resizable()
-                            .placeholder(Image("pkg_icon").renderingMode(.template).resizable())
+                            .onFailureImage(UIImage(named: "DisplayAppIcon"))
                             .scaledToFit()
                             .frame(width: 118, height: 118)
                             .cornerRadius(20)
@@ -257,7 +257,7 @@ struct PackageDetailView: View {
                         HStack(spacing: 10) {
                             ForEach(screenshots, id: \.self) { screenshotURL in
                                 if let url = URL(string: screenshotURL!.absoluteString), UIApplication.shared.canOpenURL(url) {
-                                    WebImage(url: url)
+                                    KFImage(url)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: 185, height: 400)

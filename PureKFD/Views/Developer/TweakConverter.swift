@@ -15,9 +15,9 @@ struct TweakConverterView: View {
     @State var pickedFilePath = ""
     @State var pickedFileFullPath = ""
     @State var true_pkgtypes = ["cowlock", "PureKFD"]
-    @State var pkgtypes = ["Cowabunga (Lock)", "PureKFD (LegacyEncrypted Format)"]
+    @State var pkgtypes = ["Cowabunga (Lock)", "PureKFD"]
     @State var true_outpkgtypes = ["PureKFD"]
-    @State var outpkgtypes = ["PureKFD (LegacyEncrypted Format)"]
+    @State var outpkgtypes = ["PureKFD"]
     @State var inpkgtype = 0
     @State var outpkgtype = 0
     @State var tweakpath: String? = nil

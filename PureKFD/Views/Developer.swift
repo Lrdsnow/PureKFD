@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 import WebKit
 import AVKit
-import SDWebImage
 
 @available(iOS 15.0, *)
 struct DeveloperView: View {
@@ -86,7 +85,6 @@ struct DeveloperView: View {
                     if appData.UserData.exploit_method == 0 {
                         NavigationLink(destination: AppManagerView(), label: {Image("dev_icon").iconImg(); Text("App Manager (KFD)")})
                     }
-                    NavigationLink(destination: devPipView(), label: {Image("dev_icon").iconImg(); Text("pip test")})
                     if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
                         Button(action: {
                             userspaceReboot()

@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import SDWebImageSwiftUI
+import Kingfisher
 
 @available(iOS 15.0, *)
 struct PrefView: View {
@@ -161,9 +161,9 @@ struct FullPrefView: View {
     
     func generateImageView(value: String) -> AnyView {
         if value.starts(with: "http"), let imageURL = URL(string: value) {
-            return AnyView(WebImage(url: imageURL).resizable().scaledToFit().cornerRadius(10))
+            return AnyView(KFImage(imageURL).resizable().scaledToFit().cornerRadius(10))
         }
-        return AnyView(WebImage(url: URL(fileURLWithPath: "\(pkgpath)/\(value)")).resizable().scaledToFit().cornerRadius(10))
+        return AnyView(KFImage(URL(fileURLWithPath: "\(pkgpath)/\(value)")).resizable().scaledToFit().cornerRadius(10))
     }
     
     func generateHiderToggle(key: String, label: String, array: [Any]) -> [AnyView] {

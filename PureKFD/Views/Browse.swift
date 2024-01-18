@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SDWebImageSwiftUI
+import Kingfisher
 import MarqueeText
 import TextFieldAlert
 
@@ -308,11 +308,9 @@ struct RepoRow: View {
     
     var body: some View {
         HStack {
-            WebImage(url: URL(string: repoicon ?? ""))
+            KFImage(URL(string: repoicon ?? ""))
                 .resizable()
-                .placeholder(Image("folder_icon").resizable().renderingMode(.template))
-                .indicator(.progress)
-                .transition(.fade)
+                .onFailureImage(UIImage(named: "DisplayAppIcon"))
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 43, height: 43)
                 .cornerRadius(8)
@@ -376,11 +374,9 @@ struct PkgRow: View {
     
     var body: some View {
         HStack {
-            WebImage(url: pkgiconURL)
+            KFImage(pkgiconURL)
                 .resizable()
-                .placeholder(Image("pkg_icon").resizable().renderingMode(.template))
-                .indicator(.progress)
-                .transition(.fade)
+                .onFailureImage(UIImage(named: "DisplayAppIcon"))
                 .frame(width: 50, height: 50)
                 .cornerRadius(8)
                 .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.5 : 1.0)

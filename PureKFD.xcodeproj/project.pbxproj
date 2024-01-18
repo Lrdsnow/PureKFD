@@ -63,7 +63,6 @@
 		6596B0F72AAAABB90005EED9 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6596B0F62AAAABB90005EED9 /* Main.swift */; };
 		6596B0F92AAAABBA0005EED9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6596B0F82AAAABBA0005EED9 /* Assets.xcassets */; };
 		65A38F182AB13F0C00C23058 /* Tweak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A38F172AB13F0C00C23058 /* Tweak.swift */; };
-		65A69CDE2AFCC05A000DB0AE /* pipHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65A69CDD2AFCC05A000DB0AE /* pipHandler.swift */; };
 		65AA20B72B59180800C178A8 /* helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 65AA20912B59180800C178A8 /* helpers.m */; };
 		65AA20B82B59180800C178A8 /* fun.m in Sources */ = {isa = PBXBuildFile; fileRef = 65AA209B2B59180800C178A8 /* fun.m */; };
 		65AA20B92B59180800C178A8 /* GPU_CoreSight.m in Sources */ = {isa = PBXBuildFile; fileRef = 65AA209D2B59180800C178A8 /* GPU_CoreSight.m */; };
@@ -79,10 +78,10 @@
 		65AA20C52B59180800C178A8 /* vnode.m in Sources */ = {isa = PBXBuildFile; fileRef = 65AA20AF2B59180800C178A8 /* vnode.m */; };
 		65AA20C62B59180800C178A8 /* proc.c in Sources */ = {isa = PBXBuildFile; fileRef = 65AA20B02B59180800C178A8 /* proc.c */; };
 		65AA20C72B59180800C178A8 /* lrdsnow.m in Sources */ = {isa = PBXBuildFile; fileRef = 65AA20B12B59180800C178A8 /* lrdsnow.m */; };
+		65AA20CA2B59253700C178A8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 65AA20C92B59253700C178A8 /* Kingfisher */; };
 		65AB44DE2AD28E3B0073BF45 /* TweakConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AB44DD2AD28E3B0073BF45 /* TweakConverter.swift */; };
 		65B475972AACD64800172BD3 /* RepoHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B475962AACD64800172BD3 /* RepoHandler.swift */; };
 		65B475992AACDAD100172BD3 /* RepoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B475982AACDAD100172BD3 /* RepoData.swift */; };
-		65B4759C2AAD098E00172BD3 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 65B4759B2AAD098E00172BD3 /* SDWebImageSwiftUI */; };
 		65B4759E2AAD0A4900172BD3 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B4759D2AAD0A4900172BD3 /* Extensions.swift */; };
 		65B475A12AAD586500172BD3 /* MarqueeText in Frameworks */ = {isa = PBXBuildFile; productRef = 65B475A02AAD586500172BD3 /* MarqueeText */; };
 		65DDC7A22ABAA51700F627FA /* FileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DDC7A12ABAA51700F627FA /* FileBrowser.swift */; };
@@ -179,7 +178,6 @@
 		6596B0F62AAAABB90005EED9 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		6596B0F82AAAABBA0005EED9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		65A38F172AB13F0C00C23058 /* Tweak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweak.swift; sourceTree = "<group>"; };
-		65A69CDD2AFCC05A000DB0AE /* pipHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pipHandler.swift; sourceTree = "<group>"; };
 		65AA208D2B59180800C178A8 /* cs_blobs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cs_blobs.h; sourceTree = "<group>"; };
 		65AA20912B59180800C178A8 /* helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = helpers.m; sourceTree = "<group>"; };
 		65AA20932B59180800C178A8 /* helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = helpers.h; sourceTree = "<group>"; };
@@ -231,9 +229,9 @@
 			files = (
 				654DED032B383CA200DACD2E /* IOKit.framework in Frameworks */,
 				65B475A12AAD586500172BD3 /* MarqueeText in Frameworks */,
-				65B4759C2AAD098E00172BD3 /* SDWebImageSwiftUI in Frameworks */,
 				658D6BB22AAED5000023A755 /* Zip in Frameworks */,
 				651FFEC42AAE2E81005D6223 /* TextFieldAlert in Frameworks */,
+				65AA20CA2B59253700C178A8 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,7 +279,6 @@
 				65B475962AACD64800172BD3 /* RepoHandler.swift */,
 				65B4759D2AAD0A4900172BD3 /* Extensions.swift */,
 				65A38F172AB13F0C00C23058 /* Tweak.swift */,
-				65A69CDD2AFCC05A000DB0AE /* pipHandler.swift */,
 				019D57052B280EAA007F2D00 /* spawnRoot.swift */,
 			);
 			path = Main;
@@ -671,10 +668,10 @@
 			);
 			name = PureKFD;
 			packageProductDependencies = (
-				65B4759B2AAD098E00172BD3 /* SDWebImageSwiftUI */,
 				65B475A02AAD586500172BD3 /* MarqueeText */,
 				651FFEC32AAE2E81005D6223 /* TextFieldAlert */,
 				658D6BB12AAED5000023A755 /* Zip */,
+				65AA20C92B59253700C178A8 /* Kingfisher */,
 			);
 			productName = PureKFD;
 			productReference = 6596B0F12AAAABB90005EED9 /* PureKFD.app */;
@@ -706,10 +703,10 @@
 			);
 			mainGroup = 6596B0E82AAAABB90005EED9;
 			packageReferences = (
-				65B4759A2AAD098E00172BD3 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				65B4759F2AAD586500172BD3 /* XCRemoteSwiftPackageReference "MarqueeText" */,
 				651FFEC22AAE2E81005D6223 /* XCRemoteSwiftPackageReference "TextFieldAlert" */,
 				658D6BB02AAED5000023A755 /* XCRemoteSwiftPackageReference "Zip" */,
+				65AA20C82B59253700C178A8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 6596B0F22AAAABB90005EED9 /* Products */;
 			projectDirPath = "";
@@ -816,7 +813,6 @@
 				651895912B302BF400B4C118 /* Setup.swift in Sources */,
 				650E27562B38041B00C32088 /* prefTranslate.swift in Sources */,
 				65FCEBCF2AAC928E00E4DAF8 /* Installed.swift in Sources */,
-				65A69CDE2AFCC05A000DB0AE /* pipHandler.swift in Sources */,
 				650E821A2AF7018D00985508 /* ColorHandling.swift in Sources */,
 				65B4759E2AAD0A4900172BD3 /* Extensions.swift in Sources */,
 				65AA20BB2B59180800C178A8 /* dir.m in Sources */,
@@ -1117,12 +1113,12 @@
 				minimumVersion = 2.1.2;
 			};
 		};
-		65B4759A2AAD098E00172BD3 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+		65AA20C82B59253700C178A8 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.2.3;
+				minimumVersion = 7.10.2;
 			};
 		};
 		65B4759F2AAD586500172BD3 /* XCRemoteSwiftPackageReference "MarqueeText" */ = {
@@ -1146,10 +1142,10 @@
 			package = 658D6BB02AAED5000023A755 /* XCRemoteSwiftPackageReference "Zip" */;
 			productName = Zip;
 		};
-		65B4759B2AAD098E00172BD3 /* SDWebImageSwiftUI */ = {
+		65AA20C92B59253700C178A8 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 65B4759A2AAD098E00172BD3 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
-			productName = SDWebImageSwiftUI;
+			package = 65AA20C82B59253700C178A8 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		65B475A02AAD586500172BD3 /* MarqueeText */ = {
 			isa = XCSwiftPackageProductDependency;

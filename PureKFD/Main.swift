@@ -232,11 +232,11 @@ struct MainView: View {
                 if appData.UserData.dev {
                     DeveloperView()
                         .tabItem {
-                            Image("tabbar_dev_icon")
+                            Image("plus_icon")
                                 .renderingMode(.template)
                                 .resizable()
                                 .scaledToFit()
-                            Text("Developer")
+                            Text("More")
                         }.tag(4)
                 }
             }

@@ -1,16 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icons8-copy-30.png",
+      "filename" : "copy0.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icons8-copy-60.png",
+      "filename" : "copy1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "copy2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

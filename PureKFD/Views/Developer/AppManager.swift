@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import SDWebImageSwiftUI
+import Kingfisher
 
 @available(iOS 15.0, *)
 struct AppManagerView: View {
@@ -20,7 +20,7 @@ struct AppManagerView: View {
                     ForEach(apps.sorted(by: { $0.0 < $1.0 }), id: \.0) { key, value in
                         HStack {
                             if let appIconPath = (value["extras"] ?? [:])["icon"] as? String {
-                                WebImage(url: URL(fileURLWithPath: appIconPath)).resizable().frame(width: 40, height: 40).cornerRadius(10).scaledToFit().onAppear()
+                                KFImage(URL(fileURLWithPath: appIconPath)).resizable().frame(width: 40, height: 40).cornerRadius(10).scaledToFit().onAppear()
                             }
                             if let infoDict = value["info"] {
                                 Text("\(infoDict["CFBundleDisplayName"] as? String ?? (value["imDict"] ?? [:])["itemName"] as? String ?? "Unknown App") (\(key))")
