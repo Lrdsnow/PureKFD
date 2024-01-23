@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 import Kingfisher
+import SwiftKFD
+import SwiftKFD_objc
 
 @available(iOS 15.0, *)
 struct AppManagerView: View {

@@ -11,10 +11,6 @@ import SwiftUI
 import CoreGraphics
 import CoreImage
 
-extension String: LocalizedError {
-    public var errorDescription: String? { return self }
-}
-
 struct CustomNavigationLink<D: View, L: View>: View {
   @ViewBuilder var destination: () -> D
   @ViewBuilder var label: () -> L

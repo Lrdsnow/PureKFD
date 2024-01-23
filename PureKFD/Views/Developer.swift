@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 import WebKit
 import AVKit
+import SwiftKFD
+import SwiftKFD_objc
 
 @available(iOS 15.0, *)
 struct DeveloperView: View {

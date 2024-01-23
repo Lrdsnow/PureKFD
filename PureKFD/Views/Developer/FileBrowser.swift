@@ -10,6 +10,8 @@ import UIKit
 import MobileCoreServices
 import TextFieldAlert
 import Zip
+import SwiftKFD
+import SwiftKFD_objc
 
 @available(iOS 15.0, *)
 struct FileBrowserView: View {
@@ -51,7 +53,7 @@ struct ToggleButtonView: View {
                 if kopened {
                     do_kclose()
                 } else {
-                    let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(256), false)
+                    let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(256))
                     if exploit_result == 0 {
                         return
                     }

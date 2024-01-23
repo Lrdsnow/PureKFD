@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "swiftkfd",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Lrdsnow/SwiftKFD",
+      "state" : {
+        "branch" : "main",
+        "revision" : "1090558d80b8d36b9e0f3e0431c9526370ab02ac"
+      }
+    },
+    {
       "identity" : "textfieldalert",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sochalewski/TextFieldAlert.git",

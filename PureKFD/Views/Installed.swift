@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftKFD_objc
 
 extension Package {
     func saveAsJSON() {
@@ -59,14 +60,14 @@ struct InstalledView: View {
                     if appData.queued.isEmpty {
                         Button(action: {
                             if(appData.UserData.respringMode == 0)
-                                {respring()}
-                            else if (appData.UserData.respringMode == 1) {backboard_respring()}
+                                {restartFrontboard()}
+                            else if (appData.UserData.respringMode == 1) {restartBackboard()}
                             else if (appData.UserData.respringMode == 2) {userspaceReboot()}
                         }, label: {HStack { Image("reload_icon").renderingMode(.template); Text("Respring")}})
                             .padding(.horizontal).padding(.vertical, 5)
                             .contextMenu(menuItems: {
-                                Button(action: {respring()}, label: {Text("Frontboard Respring"); Image("reload_icon").renderingMode(.template)})
-                                Button(action: {backboard_respring()}, label: {Text("Backboard Respring"); Image("reload_icon").renderingMode(.template)})
+                                Button(action: {restartFrontboard()}, label: {Text("Frontboard Respring"); Image("reload_icon").renderingMode(.template)})
+                                Button(action: {restartBackboard()}, label: {Text("Backboard Respring"); Image("reload_icon").renderingMode(.template)})
                             })
                     } else {
                         Button(action: {appData.queued = []; packages = [:]; Task { await updatePackages()}}, label: {HStack { Image("cancel_icon").renderingMode(.template); Text("Cancel")}})

@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftUI
+import SwiftKFD
+import SwiftKFD_objc
 
 func smart_kopen(appData: AppData) -> Int {
     // Get Exploit
@@ -15,7 +17,7 @@ func smart_kopen(appData: AppData) -> Int {
     
     // KFD Stuff
     if exploit_method == 0 && !appData.kopened {
-        let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), size_t(kfddata.static_headroom), appData.UserData.kfd.use_static_headroom)
+        let exploit_result = do_kopen(UInt64(kfddata.puaf_pages), UInt64(kfddata.puaf_method), UInt64(kfddata.kread_method), UInt64(kfddata.kwrite_method), appData.UserData.kfd.use_static_headroom ? -1 : size_t(kfddata.static_headroom))
         if exploit_result == 0 {
             return -1
         }
@@ -325,7 +327,7 @@ func applyJSONTweak(_ pkg: Package, _ appData: AppData) throws {
                 updateApplyStatus(appData, pkg.bundleID, "Resolution Setter Unsupported!", percentage)
             }
         case "panic":
-            do_kopen(0, 0, 0, 0, 0, true)
+            do_kopen(0, 0, 0, 0, 0)
         case "remove3app":
             if getDeviceInfo(appData: appData).0 == 1 {
                 //patch_installd()

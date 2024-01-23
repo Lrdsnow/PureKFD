@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 // Alert++
 // credit: sourcelocation & TrollTools

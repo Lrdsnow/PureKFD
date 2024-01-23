@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftKFD_objc
 
 extension NSLock {
     func synchronized<T>(_ closure: () throws -> T) rethrows -> T {
