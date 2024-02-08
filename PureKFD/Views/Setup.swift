@@ -8,6 +8,51 @@
 import Foundation
 import SwiftUI
 
+struct IssueView: View {
+    // Setup:
+    @Binding var lock: Bool
+    
+    var body: some View {
+        VStack(alignment: .center) {
+            Spacer()
+            VStack(alignment: .center, spacing: 8) {
+                Image(systemName: "slash.circle")
+                    .resizable()
+                    .foregroundColor(Color.red)
+                    .frame(width: 80, height: 80)
+                    .shadow(color: Color.red.opacity(0.5), radius: 3, x: 1, y: 2)
+                    .cornerRadius(20)
+                    .padding()
+
+                Text("Something Went Wrong")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.red)
+                    .shadow(color: Color.red.opacity(0.5), radius: 3, x: 1, y: 2)
+                
+                Text("Things to try:\n- Manually setting your offsets\n- Try disabling some tweaks\n- Report the issue to the developer")
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.red)
+                    .shadow(color: Color.red.opacity(0.5), radius: 3, x: 1, y: 2)
+                
+            }.padding(.bottom).padding(.horizontal)
+            Spacer()
+            VStack {
+                Button(action: {
+                    lock = false
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Close").padding(.vertical, 10)
+                        Spacer()
+                    }
+                }).buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 13)).tint(.red).shadow(color: Color.red.opacity(0.5), radius: 3, x: 1, y: 2)
+            }.padding()
+        }.foregroundStyle(Color(uiColor: .label))
+    }
+}
+
 struct SetupView: View {
     // Setup:
     @Binding var showSetup: Bool

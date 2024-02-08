@@ -169,6 +169,7 @@ func updateApplyStatus(_ appData: AppData, _ pkgid: String, _ message: String, _
 }
 
 func applyTweaks(appData: AppData) {
+    try? Data().write(to: URL.documents.appendingPathComponent("apply.lock"))
     let exploit_method = smart_kopen(appData: appData)
     for pkg in getInstalledPackages() {
         if !(pkg.disabled ?? false) {
@@ -191,6 +192,7 @@ func applyTweaks(appData: AppData) {
     if exploit_method == 0 {
         do_kclose()
     }
+    try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("apply.lock"))
 }
 
 func processBinary(_ filePath: String, _ targetPath: String, _ pkgpath: URL) -> String {

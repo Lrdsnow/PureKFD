@@ -31,51 +31,54 @@ struct InstalledView: View {
     var body: some View {
         NavigationView {
             VStack {
-                HStack(alignment: .center) {
-                    Spacer()
-                    if appData.queued.isEmpty {
-                        Button(action: {applyTweaks(appData: appData)}, label: {HStack { Image("apply_icon").renderingMode(.template); Text("Apply")}})
-                            .padding(.horizontal).padding(.vertical, 5)
-                    } else {
-                        Button(action: {
-                            Task {
-                                Task {
-                                    for qpkg in appData.queued {
-                                        let pkgd = PackageDetailView(package: qpkg, appData: appData)
-                                        pkgd.downloadPackage(pkg: qpkg)
-                                    }
-                                }
-                                Task {
-                                    appData.queued = []
-                                    packages = [:]
-                                    Task {
-                                        await updatePackages()
-                                    }
-                                }
-                            }
-                        }, label: {HStack { Image("download_icon").renderingMode(.template); Text("Install Queued")}})
-                        .padding(.horizontal).padding(.vertical, 5)
-                    }
-                    Spacer()
-                    if appData.queued.isEmpty {
-                        Button(action: {
-                            if(appData.UserData.respringMode == 0)
-                                {restartFrontboard()}
-                            else if (appData.UserData.respringMode == 1) {restartBackboard()}
-                            else if (appData.UserData.respringMode == 2) {userspaceReboot()}
-                        }, label: {HStack { Image("reload_icon").renderingMode(.template); Text("Respring")}})
-                            .padding(.horizontal).padding(.vertical, 5)
-                            .contextMenu(menuItems: {
-                                Button(action: {restartFrontboard()}, label: {Text("Frontboard Respring"); Image("reload_icon").renderingMode(.template)})
-                                Button(action: {restartBackboard()}, label: {Text("Backboard Respring"); Image("reload_icon").renderingMode(.template)})
-                            })
-                    } else {
-                        Button(action: {appData.queued = []; packages = [:]; Task { await updatePackages()}}, label: {HStack { Image("cancel_icon").renderingMode(.template); Text("Cancel")}})
-                            .padding(.horizontal).padding(.vertical, 5)
-                    }
-                    Spacer()
-                }
                 List {
+                    VStack {
+                        HStack(alignment: .center) {
+                            if appData.queued.isEmpty {
+                                Button(action: {applyTweaks(appData: appData)}, label: {HStack { Spacer(); Image("apply_icon").renderingMode(.template); Text("Apply"); Spacer(); }})
+                                    .padding(.vertical, 5).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.2))
+                            } else {
+                                Button(action: {
+                                    Task {
+                                        Task {
+                                            for qpkg in appData.queued {
+                                                let pkgd = PackageDetailView(package: qpkg, appData: appData)
+                                                pkgd.downloadPackage(pkg: qpkg)
+                                            }
+                                        }
+                                        Task {
+                                            appData.queued = []
+                                            packages = [:]
+                                            Task {
+                                                await updatePackages()
+                                            }
+                                        }
+                                    }
+                                }, label: {HStack { Spacer(); Image("download_icon").renderingMode(.template); Text("Install Queued"); Spacer()}})
+                                .padding(.vertical, 5).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.2))
+                            }
+                            if appData.queued.isEmpty {
+                                Button(action: {
+                                    if(appData.UserData.respringMode == 0)
+                                    {restartFrontboard()}
+                                    else if (appData.UserData.respringMode == 1) {restartBackboard()}
+                                    else if (appData.UserData.respringMode == 2) {userspaceReboot()}
+                                }, label: {HStack { Spacer(); Image("reload_icon").renderingMode(.template); Text("Respring"); Spacer()}})
+                                .padding(.vertical, 5)
+                                .contextMenu(menuItems: {
+                                    Button(action: {restartFrontboard()}, label: {Text("Frontboard Respring"); Image("reload_icon").renderingMode(.template)})
+                                    Button(action: {restartBackboard()}, label: {Text("Backboard Respring"); Image("reload_icon").renderingMode(.template)})
+                                }).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.2))
+                            } else {
+                                Button(action: {appData.queued = []; packages = [:]; Task { await updatePackages()}}, label: {HStack { Spacer(); Image("cancel_icon").renderingMode(.template); Text("Cancel"); Spacer()}})
+                                    .padding(.vertical, 5).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.2))
+                            }
+                        }
+                        if appData.UserData.dev {
+                            CustomNavigationLink(destination: {DeveloperView()}, label: {HStack { Spacer(); Image("plus_icon").renderingMode(.template); Text("Extras"); Spacer() }})
+                        }
+                    }.padding(.horizontal).listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
+                    
                     let package_keys = Array(packages.keys)
                     ForEach(package_keys, id: \.self) { sub_packageKey in
                         Section(header: Text(sub_packageKey)) {
@@ -88,12 +91,8 @@ struct InstalledView: View {
                                     InstalledPkgRow(package: package, installedView: self)
                                 }
                             }
-                        }
+                        }.listRowBackground(Color.clear)
                     }
-                    .listRowBackground(Color.clear)
-                }
-                .onAppear() {
-                    Task { await updatePackages() }
                 }
                 // isActive triggers
                 if #available(iOS 15.0, *) {
@@ -101,7 +100,10 @@ struct InstalledView: View {
                 }
                 //
             }
-            .onAppear {haptic()}
+            .onAppear() {
+                haptic()
+                Task { await updatePackages() }
+            }
             .navigationTitle("Installed")
             .bgImage(appData)
         }.navigationViewStyle(.stack)

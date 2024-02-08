@@ -186,6 +186,8 @@ struct MainView: View {
     @State private var downloadingRepos_Status = (0, 0)
     // Updated Check
     @State private var updated = false
+    // Lock Check
+    @State private var lock = false
     
     var body: some View {
         
@@ -229,18 +231,11 @@ struct MainView: View {
                             .onTapGesture {haptic()}
                         Text("Search")
                     }.tag(3)
-                if appData.UserData.dev {
-                    DeveloperView()
-                        .tabItem {
-                            Image("plus_icon")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                            Text("More")
-                        }.tag(4)
-                }
             }
         }.onAppear() {
+            if FileManager.default.fileExists(atPath: URL.documents.appendingPathComponent("apply.lock").path) {
+                lock = true
+            }
             if appData.reloading_browse {
                 selectedTab = 1
             }
@@ -265,7 +260,11 @@ struct MainView: View {
             NavigationView {
                 SetupView_Finalize(showSetup_Finalize: $showSetup_Finalize, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status, appColors: $appData.appColors, mainView: self, appData: _appData).blurredBG()
             }.interactiveDismissDisabled().blurredBG()
-        }
+        }.sheet(isPresented: $lock, content: {
+            NavigationView {
+                IssueView(lock: $lock)
+            }.blurredBG()
+        }).onChange(of: lock, perform: { newValue in if !newValue { try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("apply.lock")) }})
     }
     
     func updateRepos() {

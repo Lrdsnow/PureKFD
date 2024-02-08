@@ -25,10 +25,8 @@ struct CustomNavigationLink<D: View, L: View>: View {
     } label: {
       label()
     }
-    .buttonStyle(.bordered)
-    .tint(.accentColor)
-    .controlSize(.large)
-    .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+    .buttonStyle(.borderedProminent)
+    .tint(.accentColor.opacity(0.2))
     .onAppear {
       isActive = false
     }
