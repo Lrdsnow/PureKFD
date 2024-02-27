@@ -204,7 +204,7 @@ struct SetupView_Exploit: View {
     @State private var exploit = 0
     let settings: Bool
     @EnvironmentObject var appData: AppData
-    @State private var exploitOptions = ["KFD", "MDC", "None (Rootful JB)"]
+    @State private var exploitOptions = ["KFD", "MDC", "None (Rootful JB)", "libKRW (JB)"]
     @State private var exploitMethod = 0
     
     var body: some View {

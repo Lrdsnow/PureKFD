@@ -11,6 +11,7 @@
 #include "userspaceReboot.h"
 #include "waitpid_decode.h"
 #include "roothelper_bridge.h"
+#include "jb.h"
 #include "../../Exploit/libpurekfd_bridge.h"
 
 #endif /* bridge_h */

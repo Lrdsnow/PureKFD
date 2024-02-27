@@ -38,6 +38,9 @@ struct DeviceInfo {
     var lowend: Bool = false
 }
 
+var tested_jb = false
+var jailbroken = false
+
 func getDeviceInfo(appData: AppData?, _ ignoreOverride: Bool = false) -> (Int, SavedKFDData, Bool, DeviceInfo) {
     var exploit_method = -1
     var kfddata = SavedKFDData(puaf_pages: 3072, puaf_method: 2, kread_method: 1, kwrite_method: 1)
@@ -100,16 +103,24 @@ func getDeviceInfo(appData: AppData?, _ ignoreOverride: Bool = false) -> (Int, S
                                 lowend: lowend)
         
         if !(appData?.UserData.override_exploit_method ?? false) || ignoreOverride {
-            if (major == 14) ||
-                (major == 15 && (sub <= 6 || (sub <= 7 && minor <= 1))) ||
-                (major == 16 && sub <= 1) {
-                exploit_method = 1
-            } else if (major == 16 && sub >= 2) && !lowend {
-                exploit_method = 0
-            } else if ((try? FileManager.default.contentsOfDirectory(atPath: "/var/jb")) != nil) {
+            if !tested_jb {
+                if jbclient_process_checkin(nil, nil, nil) != -1 {
+                    jailbroken = true
+                }
+                tested_jb = true
+            }
+            if jailbroken {
                 exploit_method = 3
-            } else if ((try? FileManager.default.contentsOfDirectory(atPath: "/usr/bin")) != nil) {
-                exploit_method = 2
+            } else {
+                if (major == 14) ||
+                    (major == 15 && (sub <= 6 || (sub <= 7 && minor <= 1))) ||
+                    (major == 16 && sub <= 1) {
+                    exploit_method = 1
+                } else if (major == 16 && sub >= 2) && !lowend {
+                    exploit_method = 0
+                } else if ((try? FileManager.default.contentsOfDirectory(atPath: "/usr/bin")) != nil) {
+                    exploit_method = 2
+                }
             }
         } else {
             exploit_method = appData?.UserData.exploit_method ?? exploit_method
@@ -255,7 +266,7 @@ func applyOverwriteTweak(_ pkg: Package, _ exploit_method: Int, _ appData: AppDa
         sources[file] = source
         do {
             if !((target.contains("/var") && hasEntitlement("com.apple.app-sandbox.read-write" as CFString)) || exploit_method == 2) {
-                if exploit_method == 0 {
+                if (exploit_method == 0 || exploit_method == 3) {
                     try overwriteWithFileImpl(replacementURL: sourceURL, pathToTargetFile: target)
                 } else if exploit_method == 1 {
                     try MDC.overwriteFile(at: target, with: readFileAsData(atURL: sourceURL)!)
@@ -514,7 +525,7 @@ func getBundleID(path: String, uuid: String, exploit_method: Int) throws -> Stri
         }
     }
     
-    if exploit_method == 0 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
+    if (exploit_method == 0 || exploit_method == 3) && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
         let mmpath = mounted + "/.com.apple.mobile_container_manager.metadata.plist"
         log("%@", mmpath)
         let vdata = createFolderAndRedirectTemp(path+"/"+uuid)
@@ -573,7 +584,7 @@ func getDataDir(bundleID: String, exploit_method: Int) throws -> URL {
     var dirlist = [""]
     var savedAppDataPaths = UserDefaults.standard.dictionary(forKey: "appdatapaths") as? [String: String] ?? [:]
     
-    if exploit_method == 0 && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
+    if (exploit_method == 0 || exploit_method == 3) && ((try? (FileManager.default.contentsOfDirectory(atPath: "/var"))) == nil) {
         if let path = savedAppDataPaths[bundleID] {
             returnedurl = URL(fileURLWithPath: path)
             return URL(fileURLWithPath: path)

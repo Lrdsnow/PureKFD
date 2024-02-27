@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,7 +24,9 @@
 		651FFEC42AAE2E81005D6223 /* TextFieldAlert in Frameworks */ = {isa = PBXBuildFile; productRef = 651FFEC32AAE2E81005D6223 /* TextFieldAlert */; };
 		651FFEC82AAE7518005D6223 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651FFEC72AAE7518005D6223 /* Package.swift */; };
 		6528C2AC2B5F533D004FA793 /* SwiftKFD in Frameworks */ = {isa = PBXBuildFile; productRef = 6528C2AB2B5F533D004FA793 /* SwiftKFD */; };
-		6528C2B02B5F74F6004FA793 /* SwiftKFD in Frameworks */ = {isa = PBXBuildFile; productRef = 6528C2AF2B5F74F6004FA793 /* SwiftKFD */; };
+		653FC27B2B8E1399002187FA /* jb.c in Sources */ = {isa = PBXBuildFile; fileRef = 653FC27A2B8E1399002187FA /* jb.c */; };
+		653FC2992B8E14F9002187FA /* XPC.apinotes in Resources */ = {isa = PBXBuildFile; fileRef = 653FC2952B8E14F9002187FA /* XPC.apinotes */; };
+		6543CCDC2B8E123D009B290E /* SwiftKFD in Frameworks */ = {isa = PBXBuildFile; productRef = 6543CCDB2B8E123D009B290E /* SwiftKFD */; };
 		654DED032B383CA200DACD2E /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 654DED022B383CA200DACD2E /* IOKit.framework */; };
 		6558AB222B381BAB002DA52B /* waitpid_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = 6558AB1C2B381BAB002DA52B /* waitpid_decode.c */; };
 		6558AB232B381BAB002DA52B /* userspaceReboot.c in Sources */ = {isa = PBXBuildFile; fileRef = 6558AB1F2B381BAB002DA52B /* userspaceReboot.c */; };
@@ -96,6 +98,20 @@
 		650E821D2AF701F600985508 /* Others.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Others.swift; sourceTree = "<group>"; };
 		651895902B302BF400B4C118 /* Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setup.swift; sourceTree = "<group>"; };
 		651FFEC72AAE7518005D6223 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		653FC2792B8E1399002187FA /* jb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = jb.h; sourceTree = "<group>"; };
+		653FC27A2B8E1399002187FA /* jb.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = jb.c; sourceTree = "<group>"; };
+		653FC28D2B8E14F9002187FA /* connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = connection.h; sourceTree = "<group>"; };
+		653FC28E2B8E14F9002187FA /* endpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = endpoint.h; sourceTree = "<group>"; };
+		653FC28F2B8E14F9002187FA /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debug.h; sourceTree = "<group>"; };
+		653FC2902B8E14F9002187FA /* availability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = availability.h; sourceTree = "<group>"; };
+		653FC2912B8E14F9002187FA /* rich_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rich_error.h; sourceTree = "<group>"; };
+		653FC2922B8E14F9002187FA /* private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = private.h; sourceTree = "<group>"; };
+		653FC2932B8E14F9002187FA /* xpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xpc.h; sourceTree = "<group>"; };
+		653FC2942B8E14F9002187FA /* session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = session.h; sourceTree = "<group>"; };
+		653FC2952B8E14F9002187FA /* XPC.apinotes */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.apinotes; path = XPC.apinotes; sourceTree = "<group>"; };
+		653FC2962B8E14F9002187FA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		653FC2972B8E14F9002187FA /* activity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = activity.h; sourceTree = "<group>"; };
+		653FC2982B8E14F9002187FA /* base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base.h; sourceTree = "<group>"; };
 		654DED022B383CA200DACD2E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = DEVELOPER_DIR; };
 		6558AB1C2B381BAB002DA52B /* waitpid_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = waitpid_decode.c; sourceTree = "<group>"; };
 		6558AB1D2B381BAB002DA52B /* waitpid_decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = waitpid_decode.h; sourceTree = "<group>"; };
@@ -155,6 +171,8 @@
 		65FCEBD02AAC929700E4DAF8 /* Browse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Browse.swift; sourceTree = "<group>"; };
 		65FCEBD42AACA85300E4DAF8 /* AppData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppData.swift; sourceTree = "<group>"; };
 		65FD0E6F2AFBFB040069577A /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
+		65FDC5712B8E16CA00128BC8 /* launch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = launch.h; sourceTree = "<group>"; };
+		65FDC5722B8E1A1700128BC8 /* libkrw.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = libkrw.tbd; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,7 +183,7 @@
 				6528C2AC2B5F533D004FA793 /* SwiftKFD in Frameworks */,
 				654DED032B383CA200DACD2E /* IOKit.framework in Frameworks */,
 				65B475A12AAD586500172BD3 /* MarqueeText in Frameworks */,
-				6528C2B02B5F74F6004FA793 /* SwiftKFD in Frameworks */,
+				6543CCDC2B8E123D009B290E /* SwiftKFD in Frameworks */,
 				658D6BB22AAED5000023A755 /* Zip in Frameworks */,
 				651FFEC42AAE2E81005D6223 /* TextFieldAlert in Frameworks */,
 				65AA20CA2B59253700C178A8 /* Kingfisher in Frameworks */,
@@ -242,6 +260,35 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		653FC28B2B8E14F9002187FA /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				65FDC5712B8E16CA00128BC8 /* launch.h */,
+				65FDC5722B8E1A1700128BC8 /* libkrw.tbd */,
+				653FC28C2B8E14F9002187FA /* xpc */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		653FC28C2B8E14F9002187FA /* xpc */ = {
+			isa = PBXGroup;
+			children = (
+				653FC28D2B8E14F9002187FA /* connection.h */,
+				653FC28E2B8E14F9002187FA /* endpoint.h */,
+				653FC28F2B8E14F9002187FA /* debug.h */,
+				653FC2902B8E14F9002187FA /* availability.h */,
+				653FC2912B8E14F9002187FA /* rich_error.h */,
+				653FC2922B8E14F9002187FA /* private.h */,
+				653FC2932B8E14F9002187FA /* xpc.h */,
+				653FC2942B8E14F9002187FA /* session.h */,
+				653FC2952B8E14F9002187FA /* XPC.apinotes */,
+				653FC2962B8E14F9002187FA /* module.modulemap */,
+				653FC2972B8E14F9002187FA /* activity.h */,
+				653FC2982B8E14F9002187FA /* base.h */,
+			);
+			path = xpc;
+			sourceTree = "<group>";
+		};
 		6558AB1B2B381B6D002DA52B /* CBackend */ = {
 			isa = PBXGroup;
 			children = (
@@ -250,6 +297,8 @@
 				6558AB1C2B381BAB002DA52B /* waitpid_decode.c */,
 				6558AB1D2B381BAB002DA52B /* waitpid_decode.h */,
 				6558AB252B381BC1002DA52B /* bridge.h */,
+				653FC2792B8E1399002187FA /* jb.h */,
+				653FC27A2B8E1399002187FA /* jb.c */,
 			);
 			path = CBackend;
 			sourceTree = "<group>";
@@ -405,6 +454,7 @@
 		6596B0E82AAAABB90005EED9 = {
 			isa = PBXGroup;
 			children = (
+				653FC28B2B8E14F9002187FA /* lib */,
 				019D57022B280DC9007F2D00 /* RootHelper */,
 				6596B0F32AAAABB90005EED9 /* PureKFD */,
 				6596B0F22AAAABB90005EED9 /* Products */,
@@ -480,7 +530,7 @@
 				658D6BB12AAED5000023A755 /* Zip */,
 				65AA20C92B59253700C178A8 /* Kingfisher */,
 				6528C2AB2B5F533D004FA793 /* SwiftKFD */,
-				6528C2AF2B5F74F6004FA793 /* SwiftKFD */,
+				6543CCDB2B8E123D009B290E /* SwiftKFD */,
 			);
 			productName = PureKFD;
 			productReference = 6596B0F12AAAABB90005EED9 /* PureKFD.app */;
@@ -516,7 +566,7 @@
 				651FFEC22AAE2E81005D6223 /* XCRemoteSwiftPackageReference "TextFieldAlert" */,
 				658D6BB02AAED5000023A755 /* XCRemoteSwiftPackageReference "Zip" */,
 				65AA20C82B59253700C178A8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
-				6528C2AE2B5F74F6004FA793 /* XCRemoteSwiftPackageReference "SwiftKFD" */,
+				6543CCDA2B8E123D009B290E /* XCLocalSwiftPackageReference "../SwiftKFD" */,
 			);
 			productRefGroup = 6596B0F22AAAABB90005EED9 /* Products */;
 			projectDirPath = "";
@@ -537,6 +587,7 @@
 				6573A49B2B428887008C3F28 /* dockLight.materialrecipe in Resources */,
 				6573A48F2B428887008C3F28 /* modules.materialrecipe in Resources */,
 				6573A4962B428887008C3F28 /* homeScreenBackdrop-application.materialrecipe in Resources */,
+				653FC2992B8E14F9002187FA /* XPC.apinotes in Resources */,
 				6573A49C2B428887008C3F28 /* lock.caml in Resources */,
 				6573A48C2B428887008C3F28 /* plattersDark.materialrecipe in Resources */,
 				6573A4862B428887008C3F28 /* DarkStandard.json in Resources */,
@@ -598,6 +649,7 @@
 				65FD0E702AFBFB040069577A /* AppManager.swift in Sources */,
 				650AEEC52AC0226600B9F470 /* TweakCreator.swift in Sources */,
 				65B475992AACDAD100172BD3 /* RepoData.swift in Sources */,
+				653FC27B2B8E1399002187FA /* jb.c in Sources */,
 				6573A4712B428887008C3F28 /* grant_full_disk_access.m in Sources */,
 				0116639E2B2B0BFB00E8725D /* mount_check.m in Sources */,
 				6558AB222B381BAB002DA52B /* waitpid_decode.c in Sources */,
@@ -782,6 +834,7 @@
 					"$(PROJECT_DIR)/lib",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/lib";
 				INFOPLIST_FILE = PureKFD/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PureKFD;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -804,7 +857,11 @@
 					"$(PROJECT_DIR)/RootHelper/RootHide",
 				);
 				MARKETING_VERSION = 5.0;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-I.",
+					"-lkrw",
+					"-L.",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.pure;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -838,6 +895,7 @@
 					"$(PROJECT_DIR)/lib",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/lib";
 				INFOPLIST_FILE = PureKFD/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PureKFD;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -860,7 +918,11 @@
 					"$(PROJECT_DIR)/RootHelper/RootHide",
 				);
 				MARKETING_VERSION = 5.0;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-I.",
+					"-lkrw",
+					"-L.",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.pure;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -895,6 +957,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		6543CCDA2B8E123D009B290E /* XCLocalSwiftPackageReference "../SwiftKFD" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../SwiftKFD;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		651FFEC22AAE2E81005D6223 /* XCRemoteSwiftPackageReference "TextFieldAlert" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -902,14 +971,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.4.0;
-			};
-		};
-		6528C2AE2B5F74F6004FA793 /* XCRemoteSwiftPackageReference "SwiftKFD" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Lrdsnow/SwiftKFD";
-			requirement = {
-				branch = main;
-				kind = branch;
 			};
 		};
 		658D6BB02AAED5000023A755 /* XCRemoteSwiftPackageReference "Zip" */ = {
@@ -948,9 +1009,8 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = SwiftKFD;
 		};
-		6528C2AF2B5F74F6004FA793 /* SwiftKFD */ = {
+		6543CCDB2B8E123D009B290E /* SwiftKFD */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 6528C2AE2B5F74F6004FA793 /* XCRemoteSwiftPackageReference "SwiftKFD" */;
 			productName = SwiftKFD;
 		};
 		658D6BB12AAED5000023A755 /* Zip */ = {

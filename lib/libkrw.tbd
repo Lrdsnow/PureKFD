@@ -1,0 +1,11 @@
+--- !tapi-tbd-v2
+archs:           [ arm64, arm64e ]
+platform:        ios
+flags:           [ not_app_extension_safe ]
+install-name:    '/var/jb/usr/lib/libkrw.0.dylib'
+current-version: 1.1
+exports:
+  - archs:           [ arm64, arm64e ]
+    symbols:         [ _kbase, _kcall, _kdealloc, _kmalloc, _kread, _kwrite, _physread, 
+                       _physwrite ]
+...

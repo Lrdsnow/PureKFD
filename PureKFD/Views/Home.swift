@@ -130,6 +130,8 @@ struct HomeView: View {
                             }
                         case 2:
                             exploitMethod = "Rootful"
+                        case 3:
+                            exploitMethod = "libKRW"
                         default:
                             exploitMethod = "None"
                             appData.UserData.filters.jb = true
@@ -363,7 +365,7 @@ struct ExploitPickers: View {
     private let puafMethodOptions = ["physpuppet", "smith", "landa"]
     private let kreadMethodOptions = ["kqueue_workloop_ctl", "sem_open"]
     private let kwriteMethodOptions = ["dup", "sem_open"]
-    @State private var exploitOptions = ["KFD", "MDC", "None (Rootful JB)"]
+    @State private var exploitOptions = ["KFD", "MDC", "None (Rootful JB)", "libKRW (JB)"]
     @State private var exploitMethod = 0
     
     var body: some View {
