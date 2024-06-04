@@ -147,7 +147,6 @@ struct defaulturls {
         URL(string: "https://raw.githubusercontent.com/HackZy01/aurora/main/purekfd.json")!, // Aurora - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/YangJiiii/YangJiiii.github.io/main/file/Repo/purekfd.json")!, // YangJiii's Repo - Main Repo - Built for PureKFD
         URL(string: "https://raw.githubusercontent.com/dobabaophuc1706/misakarepo/main/purekfd.json")!, // Phuc Do's Repo - Main Repo - Built for PureKFD
-        URL(string: "https://raw.githubusercontent.com/RomLayVN/KFD/0e3952d0641d19e553be78e7e03364b11f557caf/purekfd.json")!, // Rom Lay's Repo - Main Repo - Built for PureKFD - Downgraded
         // Picasso Repos
         URL(string: "https://raw.githubusercontent.com/sourcelocation/Picasso-test-repo/main/manifest.json")!, // Beta Picasso Repo
         URL(string: "https://bomberfish.ca/PicassoRepos/Essentials/manifest.json")! // Main Picasso Repo

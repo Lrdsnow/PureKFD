@@ -6,9 +6,7 @@
 //
 
 import SwiftUI
-import Kingfisher
-import MarqueeText
-import TextFieldAlert
+import NukeUI
 import Foundation
 import Zip
 
@@ -19,21 +17,40 @@ struct PackagePreviewView: View {
             // Banner Image
             if package.banner != nil {
                 if let bannerURL = package.banner, let url = URL(string: bannerURL.absoluteString), UIApplication.shared.canOpenURL(url) {
-                    KFImage(url)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: UIScreen.main.bounds.width, height: 240)
-                        .clipped()
+                    LazyImage(url: url) { state in
+                        if let image = state.image {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } else if state.error != nil {
+                            Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            ProgressView()
+                                .scaledToFit()
+                        } }
+                    .frame(width: UIScreen.main.bounds.width, height: 240)
+                    .clipped()
                 }
             }
             Rectangle().frame(width: 318, height: 118).blur(radius: 100).cornerRadius(20).foregroundColor(.gray).padding(.leading, 10)
             // Package Info
             HStack {
                 if let iconURL = package.icon, let url = URL(string: iconURL.absoluteString), UIApplication.shared.canOpenURL(url) {
-                    KFImage(url)
-                        .resizable()
-                        .onFailureImage(UIImage(named: "DisplayAppIcon"))
-                        .scaledToFit()
+                    LazyImage(url: url) { state in
+                        if let image = state.image {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } else if state.error != nil {
+                            Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            ProgressView()
+                                .scaledToFit()
+                        } }
                         .frame(width: 118, height: 118)
                         .cornerRadius(20)
                         .padding(.leading)
@@ -59,19 +76,19 @@ struct PackagePreviewView: View {
                     Text(package.name)
                         .font(.title2)
                         .fontWeight(.bold)
+                        .minimumScaleFactor(0.6)
                     
                     Text("By \(package.author) v\(String(package.version ?? ""))" + (package.path?.isFileURL ?? false ? " (local)" : ""))
                         .font(.subheadline)
                         .foregroundColor(Color.accentColor.opacity(0.7))
                         .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                     
-                    MarqueeText(
-                        text: package.desc,
-                        font: UIFont.preferredFont(forTextStyle: .body),
-                        leftFade: 16,
-                        rightFade: 16,
-                        startDelay: 3
-                    )
+                    Text(package.desc)
+                        .font(.footnote)
+                        .foregroundColor(Color.accentColor.opacity(0.7))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                 }
             }.padding(.leading, 10)
         }
@@ -100,9 +117,19 @@ struct PackageDetailView: View {
                 HStack() {
                     if package.banner != nil {
                         if let bannerURL = package.banner, let url = URL(string: bannerURL.absoluteString), UIApplication.shared.canOpenURL(url) {
-                            KFImage(url)
-                                .resizable()
-                                .scaledToFill()
+                            LazyImage(url: url) { state in
+                                if let image = state.image {
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                } else if state.error != nil {
+                                    Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                                        .resizable()
+                                        .scaledToFill()
+                                } else {
+                                    ProgressView()
+                                        .scaledToFit()
+                                } }
                                 .frame(width: UIScreen.main.bounds.width-30, height: 180)
                                 .shadow(color: Color.black.opacity(0.7), radius: 5, x: 3, y: 5)
                             //.clipped()
@@ -127,10 +154,19 @@ struct PackageDetailView: View {
                 // Package Info
                 HStack {
                     if let iconURL = package.icon, let url = URL(string: iconURL.absoluteString), UIApplication.shared.canOpenURL(url) {
-                        KFImage(url)
-                            .resizable()
-                            .onFailureImage(UIImage(named: "DisplayAppIcon"))
-                            .scaledToFit()
+                        LazyImage(url: url) { state in
+                            if let image = state.image {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            } else if state.error != nil {
+                                Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                                    .resizable()
+                                    .scaledToFill()
+                            } else {
+                                ProgressView()
+                                    .scaledToFit()
+                            } }
                             .frame(width: 118, height: 118)
                             .cornerRadius(20)
                             .padding(.leading)
@@ -160,20 +196,21 @@ struct PackageDetailView: View {
                             .font(.title2)
                             .fontWeight(.bold)
                             .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                            .minimumScaleFactor(0.6)
                         
                         Text("By \(package.author) v\(String(package.version ?? ""))" + (package.path?.isFileURL ?? false ? " (local)" : ""))
                             .font(.subheadline)
                             .foregroundColor(Color.accentColor.opacity(0.7))
                             .lineLimit(1)
                             .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                            .minimumScaleFactor(0.6)
                         
-                        MarqueeText(
-                            text: package.desc,
-                            font: UIFont.preferredFont(forTextStyle: .body),
-                            leftFade: 16,
-                            rightFade: 16,
-                            startDelay: 3
-                        ).shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                        Text(package.desc)
+                            .font(.footnote)
+                            .foregroundColor(Color.accentColor.opacity(0.7))
+                            .lineLimit(1)
+                            .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                            .minimumScaleFactor(0.6)
                         
                         Spacer()
                         
@@ -257,9 +294,19 @@ struct PackageDetailView: View {
                         HStack(spacing: 10) {
                             ForEach(screenshots, id: \.self) { screenshotURL in
                                 if let url = URL(string: screenshotURL!.absoluteString), UIApplication.shared.canOpenURL(url) {
-                                    KFImage(url)
-                                        .resizable()
-                                        .scaledToFill()
+                                    LazyImage(url: url) { state in
+                                        if let image = state.image {
+                                            image
+                                                .resizable()
+                                                .scaledToFill()
+                                        } else if state.error != nil {
+                                            Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                                                .resizable()
+                                                .scaledToFill()
+                                        } else {
+                                            ProgressView()
+                                                .scaledToFit()
+                                        } }
                                         .frame(width: 185, height: 400)
                                         .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
                                         .cornerRadius(10)

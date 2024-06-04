@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import Kingfisher
+import NukeUI
 
 @available(iOS 15.0, *)
 struct PrefView: View {
@@ -161,9 +161,33 @@ struct FullPrefView: View {
     
     func generateImageView(value: String) -> AnyView {
         if value.starts(with: "http"), let imageURL = URL(string: value) {
-            return AnyView(KFImage(imageURL).resizable().scaledToFit().cornerRadius(10))
+            return AnyView(LazyImage(url: imageURL) { state in
+                if let image = state.image {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                } else if state.error != nil {
+                    Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    ProgressView()
+                        .scaledToFit()
+                } }.cornerRadius(10))
         }
-        return AnyView(KFImage(URL(fileURLWithPath: "\(pkgpath)/\(value)")).resizable().scaledToFit().cornerRadius(10))
+        return AnyView(LazyImage(url: URL(fileURLWithPath: "\(pkgpath)/\(value)")) { state in
+            if let image = state.image {
+                image
+                    .resizable()
+                    .scaledToFill()
+            } else if state.error != nil {
+                Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                ProgressView()
+                    .scaledToFit()
+            } }.cornerRadius(10))
     }
     
     func generateHiderToggle(key: String, label: String, array: [Any]) -> [AnyView] {

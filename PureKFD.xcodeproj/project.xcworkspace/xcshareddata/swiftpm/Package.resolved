@@ -1,21 +1,13 @@
 {
+  "originHash" : "e9058787614dda44e13ccfe0b11c94c7117915cf3bda50ef8a6cf0a7800084ee",
   "pins" : [
     {
-      "identity" : "kingfisher",
+      "identity" : "nuke",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/onevcat/Kingfisher",
+      "location" : "https://github.com/kean/Nuke.git",
       "state" : {
-        "revision" : "3ec0ab0bca4feb56e8b33e289c9496e89059dd08",
-        "version" : "7.10.2"
-      }
-    },
-    {
-      "identity" : "marqueetext",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/joekndy/MarqueeText.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "e18d514455563ad00581e0d825146c6f15b1c6c4"
+        "revision" : "2efd206503e99dd3a88a4dc433a76f98ce8cc198",
+        "version" : "12.7.1"
       }
     },
     {
@@ -28,15 +20,6 @@
       }
     },
     {
-      "identity" : "textfieldalert",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/sochalewski/TextFieldAlert.git",
-      "state" : {
-        "revision" : "f10c8a27cde60e1714f85041501344b916bf557e",
-        "version" : "1.4.0"
-      }
-    },
-    {
       "identity" : "zip",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/Zip.git",
@@ -46,5 +29,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

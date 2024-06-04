@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import Kingfisher
+import NukeUI
 import SwiftKFD
 import SwiftKFD_objc
 
@@ -22,7 +22,19 @@ struct AppManagerView: View {
                     ForEach(apps.sorted(by: { $0.0 < $1.0 }), id: \.0) { key, value in
                         HStack {
                             if let appIconPath = (value["extras"] ?? [:])["icon"] as? String {
-                                KFImage(URL(fileURLWithPath: appIconPath)).resizable().frame(width: 40, height: 40).cornerRadius(10).scaledToFit().onAppear()
+                                LazyImage(url: URL(fileURLWithPath: appIconPath)){ state in
+                                    if let image = state.image {
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    } else if state.error != nil {
+                                        Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                                            .resizable()
+                                            .scaledToFill()
+                                    } else {
+                                        ProgressView()
+                                            .scaledToFit()
+                                    } }.frame(width: 40, height: 40).cornerRadius(10).onAppear()
                             }
                             if let infoDict = value["info"] {
                                 Text("\(infoDict["CFBundleDisplayName"] as? String ?? (value["imDict"] ?? [:])["itemName"] as? String ?? "Unknown App") (\(key))")

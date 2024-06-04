@@ -8,7 +8,6 @@
 import SwiftUI
 import UIKit
 import MobileCoreServices
-import TextFieldAlert
 import Zip
 import SwiftKFD
 import SwiftKFD_objc
@@ -76,10 +75,6 @@ struct FileBrowser: View {
     @State private var folder_vdata: UInt64 = 0
     @State private var isFolderRdird = false
     @State private var shouldRefresh = false
-    @State private var newFileFolderName = ""
-    @State private var newFileFolderType = "folder" // can also be "file"
-    @State private var isNewFileFolderAlertPresented = false
-    @State private var isNewFileFolderAlertPresented15 = false
     
     @State var currentPath = ""
     @State var currentFullPath = ""
@@ -147,23 +142,13 @@ struct FileBrowser: View {
                 }
             }
             Button(action: {
-                newFileFolderType = "folder"
-                if #available(iOS 16, *) {
-                    isNewFileFolderAlertPresented = true
-                } else {
-                    isNewFileFolderAlertPresented15 = true
-                }
+                newFile(createFolder: true)
             }) {
                 Text("Create Folder")
                 Image("folder_icon").renderingMode(.template)
             }
             Button(action: {
-                newFileFolderType = "file"
-                if #available(iOS 16, *) {
-                    isNewFileFolderAlertPresented = true
-                } else {
-                    isNewFileFolderAlertPresented15 = true
-                }
+                newFile()
             }) {
                 Text("Create Empty File")
                 Image("file_icon").renderingMode(.template)
@@ -183,54 +168,13 @@ struct FileBrowser: View {
                 loadContentsInDirectory(path: currentFullPath)
             }
         })
-        .alert("New File/Folder", isPresented: $isNewFileFolderAlertPresented, actions: {
-            TextField("New File/Folder Name", text: $newFileFolderName).autocorrectionDisabled()
-            Button("Save", action: {
-                if newFileFolderType == "file" {
-                    let filePath = currentFullPath + "/" + newFileFolderName
-                    let data = Data()
-                            
-                    do {
-                        try data.write(to: URL(fileURLWithPath: filePath))
-                        shouldRefresh.toggle()
-                    } catch {
-                        NSLog("%@", "Error creating empty file: \(error)")
-                    }
-                } else {
-                    let folderPath = currentFullPath + "/" + newFileFolderName
-                    do {
-                        try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: true, attributes: nil)
-                        shouldRefresh.toggle()
-                    } catch {
-                        NSLog("%@", "Error creating empty folder: \(error)")
-                    }
-                }
-            })
-            Button("Cancel", role: .cancel, action: {
-                isNewFileFolderAlertPresented = false
-            })
-        })
-        .textFieldAlert(
-            title: "New File/Folder",
-            message: "Hit Done to rename or cancel",
-            textFields: [
-                .init(text: $newFileFolderName)
-            ],
-            actions: [
-                .init(title: "Done")
-            ],
-            isPresented: $isNewFileFolderAlertPresented15
-        )
-        .onChange(of: isNewFileFolderAlertPresented15) { newValue in
-            if !newValue {
-                if newFileFolderType == "file" {
-                    var fullpath = ""
-                    if isFolderRdird {
-                        fullpath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("mounted").path
-                    } else {
-                        fullpath = currentFullPath
-                    }
-                    let filePath = fullpath + "/" + newFileFolderName
+    }
+    
+    func newFile(createFolder: Bool = false) {
+        showTextInputPopup("New File/Folder Name", "...", .default, completion: { name in
+            if let name = name {
+                if !createFolder {
+                    let filePath = currentFullPath + "/" + name
                     let data = Data()
                     
                     do {
@@ -240,13 +184,7 @@ struct FileBrowser: View {
                         NSLog("%@", "Error creating empty file: \(error)")
                     }
                 } else {
-                    var fullpath = ""
-                    if isFolderRdird {
-                        fullpath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("mounted").path
-                    } else {
-                        fullpath = currentFullPath
-                    }
-                    let folderPath = fullpath + "/" + newFileFolderName
+                    let folderPath = currentFullPath + "/" + name
                     do {
                         try FileManager.default.createDirectory(atPath: folderPath, withIntermediateDirectories: true, attributes: nil)
                         shouldRefresh.toggle()
@@ -255,7 +193,7 @@ struct FileBrowser: View {
                     }
                 }
             }
-        }
+        })
     }
     
     private func loadContentsInDirectory(path: String) {
@@ -456,9 +394,6 @@ struct FileListFileItemView: View {
     let path: String
     @State var item: String
     @Binding var shouldRefresh: Bool
-    @State private var isRenameAlertPresented = false
-    @State private var isRenameAlertPresented15 = false
-    @State private var newFileName = ""
     @State private var isDeleteAlertPresented = false
     @State private var isInfoPresented = false
     @State private var isPlistEditPresented = false
@@ -518,11 +453,9 @@ struct FileListFileItemView: View {
                     }
                     
                     Button(action: {
-                        if #available(iOS 16, *) {
-                            isRenameAlertPresented = true
-                        } else {
-                            isRenameAlertPresented15 = true
-                        }
+                        showTextInputPopup("Rename File", item, .default, completion: { name in
+                            renameFile(name ?? "")
+                        })
                     }) {
                         Text("Rename File")
                         Image("edit_icon").renderingMode(.template)
@@ -534,8 +467,6 @@ struct FileListFileItemView: View {
                         Text("Delete File")
                         Image("trash_icon").renderingMode(.template)
                     }
-                }.task() {
-                    newFileName = item
                 }
         }
         .sheet(isPresented: $isInfoPresented) {
@@ -548,15 +479,6 @@ struct FileListFileItemView: View {
         .sheet(isPresented: $isPlistEditPresented) {
             PlistEditorView(isPresented: $isPlistEditPresented, fileURL: URL(fileURLWithPath: path + "/" + item))
         }
-        .alert("Rename File", isPresented: $isRenameAlertPresented, actions: {
-            TextField("New File Name", text: $newFileName).autocorrectionDisabled()
-            Button("Save", action: {
-                renameFile()
-            })
-            Button("Cancel", role: .cancel, action: {
-                isRenameAlertPresented = false
-            })
-        })
         .alert("Delete File", isPresented: $isDeleteAlertPresented, actions: {
             Text("Are you sure you want to delete this file?")
             Button("Delete", role: .destructive, action: {
@@ -566,32 +488,14 @@ struct FileListFileItemView: View {
                 isDeleteAlertPresented = false
             })
         })
-        .textFieldAlert(
-            title: "Rename File",
-            message: "Hit Done to rename or cancel",
-            textFields: [
-                .init(text: $newFileName)
-            ],
-            actions: [
-                .init(title: "Done")
-            ],
-            isPresented: $isRenameAlertPresented15
-        )
-        .onChange(of: isRenameAlertPresented15) { newValue in
-            if !newValue {
-                renameFile()
-            }
-        }
     }
 
-    func renameFile() {
-        if !newFileName.isEmpty {
+    func renameFile(_ name: String) {
+        if !name.isEmpty {
             do {
                 let sourceURL = URL(fileURLWithPath: path + "/" + item)
-                let destinationURL = URL(fileURLWithPath: path + "/" + newFileName)
+                let destinationURL = URL(fileURLWithPath: path + "/" + name)
                 try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
-                item = newFileName
-                isRenameAlertPresented = false
             } catch {
                 NSLog("Error renaming file: \(error)")
             }

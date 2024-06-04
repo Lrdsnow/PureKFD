@@ -64,32 +64,6 @@ extension View {
         }
     }
     @ViewBuilder
-    func addRepoAlert(browseview: BrowseView, adding16: Binding<Bool>, adding: Binding<Bool>, newRepoURL: Binding<String>) -> some View {
-        if #available(iOS 16.0, *) {
-            self.alert("Add Repo", isPresented: adding16, actions: {
-                TextField("URL", text: newRepoURL)
-                Button("Save", action: {
-                    Task {
-                        await browseview.addRepo()
-                    }
-                })
-                Button("Cancel", role: .cancel, action: {})
-            })
-        } else {
-            self.textFieldAlert(
-                title: "Add Repo",
-                message: "Hit Done to add repo or cancel",
-                textFields: [
-                    .init(text: newRepoURL)
-                ],
-                actions: [
-                    .init(title: "Done")
-                ],
-                isPresented: adding
-            )
-        }
-    }
-    @ViewBuilder
     func refreshableBrowseView(browseview: BrowseView, appData: AppData) -> some View {
         if #available(iOS 15.0, *) {
             self.refreshable {
@@ -132,21 +106,22 @@ extension View {
 //                        )
 //            )
 //        } else {
-            self.background(
-                VStack {
-                    Image("Default_BG")
-                        .resizable()
-                        .scaledToFill()
-                        .edgesIgnoringSafeArea(.top)
-                        .edgesIgnoringSafeArea(.bottom)
-                        .overlay(
-                            VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial)).ignoresSafeArea()
-                        )
-                }.edgesIgnoringSafeArea(.top)
-                    .edgesIgnoringSafeArea(.bottom)
-                    .frame(width: UIScreen.main.bounds.width)
-            )
+//            self.background(
+//                VStack {
+//                    Image("Default_BG")
+//                        .resizable()
+//                        .scaledToFill()
+//                        .edgesIgnoringSafeArea(.top)
+//                        .edgesIgnoringSafeArea(.bottom)
+//                        .overlay(
+//                            VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial)).ignoresSafeArea()
+//                        )
+//                }.edgesIgnoringSafeArea(.top)
+//                    .edgesIgnoringSafeArea(.bottom)
+//                    .frame(width: UIScreen.main.bounds.width)
+//            )
 //        }
+        self
     }
     @ViewBuilder
     func mainViewTweaks() -> some View {

@@ -6,9 +6,7 @@
 //
 
 import SwiftUI
-import Kingfisher
-import MarqueeText
-import TextFieldAlert
+import NukeUI
 
 struct BrowseView: View {
     @State private var isAddingRepoURLAlertPresented = false
@@ -58,11 +56,12 @@ struct BrowseView: View {
                             .renderingMode(.template)
                     })
                     Button(action: {
-                        if #available(iOS 16, *) {
-                            isAddingRepoURLAlert16Presented = true
-                        } else {
-                            isAddingRepoURLAlertPresented = true
-                        }
+                        showTextInputPopup("Add Repo", "Enter URL", .URL, completion: { url in
+                            newRepoURL = url ?? ""
+                            Task {
+                                await addRepo()
+                            }
+                        })
                     }) {
                         Image("plus_icon")
                             .renderingMode(.template)
@@ -70,14 +69,7 @@ struct BrowseView: View {
                 }
                 )
                 .refreshableBrowseView(browseview: self, appData: appData)
-                .addRepoAlert(browseview: self, adding16: $isAddingRepoURLAlert16Presented, adding: $isAddingRepoURLAlertPresented, newRepoURL: $newRepoURL)
-                    .onChange(of: isAddingRepoURLAlertPresented) { newValue in
-                        if !newValue {
-                            Task {
-                                await addRepo()
-                            }
-                        }
-                }.bgImage(appData)
+                .bgImage(appData)
             }.navigationViewStyle(.stack)
         } else {
             ZStack {
@@ -308,10 +300,19 @@ struct RepoRow: View {
     
     var body: some View {
         HStack {
-            KFImage(URL(string: repoicon ?? ""))
-                .resizable()
-                .onFailureImage(UIImage(named: "DisplayAppIcon"))
-                .aspectRatio(contentMode: .fit)
+            LazyImage(url: URL(string: repoicon ?? "")) { state in
+            if let image = state.image {
+                image
+                    .resizable()
+                    .scaledToFill()
+            } else if state.error != nil {
+                Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                ProgressView()
+                    .scaledToFit()
+            } }
                 .frame(width: 43, height: 43)
                 .cornerRadius(8)
                 .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
@@ -374,9 +375,19 @@ struct PkgRow: View {
     
     var body: some View {
         HStack {
-            KFImage(pkgiconURL)
-                .resizable()
-                .onFailureImage(UIImage(named: "DisplayAppIcon"))
+            LazyImage(url: pkgiconURL) { state in
+            if let image = state.image {
+                image
+                    .resizable()
+                    .scaledToFill()
+            } else if state.error != nil {
+                Image(uiImage: UIImage(named: "DisplayAppIcon")!)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                ProgressView()
+                    .scaledToFit()
+            } }
                 .frame(width: 50, height: 50)
                 .cornerRadius(8)
                 .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.5 : 1.0)
@@ -389,6 +400,7 @@ struct PkgRow: View {
                     .foregroundColor(Color.accentColor)
                     .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.5 : 1.0)
                     .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                    .minimumScaleFactor(0.6)
                 
                 Text(String(pkgauthor ?? "Unknown Package Author") + " v" + String(pkg?.version ?? "0") + "\((pkg?.beta ?? false) ? " (Beta)" : "")")
                     .font(.footnote)
@@ -396,19 +408,17 @@ struct PkgRow: View {
                     .foregroundColor(Color.accentColor)
                     .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.3 : 0.5)
                     .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                    .minimumScaleFactor(0.6)
                 
-                MarqueeText(
-                    text: pkg?.desc ?? "",
-                    font: UIFont.preferredFont(forTextStyle: .footnote),
-                    leftFade: 16,
-                    rightFade: 16,
-                    startDelay: 3
-                )
-                .foregroundColor(Color.accentColor)
-                .padding(.top, -10)
-                .frame(height: 8)
-                .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.4 : 0.7)
-                .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                Text(pkg?.desc ?? "")
+                    .font(.footnote)
+                    .lineLimit(1)
+                    .foregroundColor(Color.accentColor)
+                    .padding(.top, -10)
+                    .frame(height: 8)
+                    .opacity(pkg?.disabled ?? false && installedPackageView == true ? 0.4 : 0.7)
+                    .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2)
+                    .minimumScaleFactor(0.6)
             }
             
             HStack() {
