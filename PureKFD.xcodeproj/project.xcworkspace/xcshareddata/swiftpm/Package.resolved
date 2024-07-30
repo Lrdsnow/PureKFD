@@ -1,5 +1,5 @@
 {
-  "originHash" : "e9058787614dda44e13ccfe0b11c94c7117915cf3bda50ef8a6cf0a7800084ee",
+  "originHash" : "80a9a55e2fcd0392acb7afcb5135245176bfbe1634e0a64d8f4aa959c510aa7f",
   "pins" : [
     {
       "identity" : "nuke",
@@ -16,7 +16,7 @@
       "location" : "https://github.com/Lrdsnow/SwiftKFD",
       "state" : {
         "branch" : "main",
-        "revision" : "1090558d80b8d36b9e0f3e0431c9526370ab02ac"
+        "revision" : "9d9e79c04dc1fc1a312827a38bcff0b37c14c3cd"
       }
     },
     {

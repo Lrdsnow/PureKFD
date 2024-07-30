@@ -35,7 +35,7 @@ struct HomeView: View {
         NavigationView {
             ZStack {
                 List {
-                    if updated {
+                    if updated, #available(iOS 15.0, *) {
                         Button(action: {
                             updated = false
                             try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("config/setup_done"))
@@ -45,7 +45,7 @@ struct HomeView: View {
                             Text("Looks like you've updated! Would you like to rerun Setup?")
                                 .font(.headline)
                                 .padding(.horizontal)
-                        }.tint(.accentColor).buttonStyle(.bordered).controlSize(.large).hideListRowSeparator()
+                        }.tintC(.accentColor).buttonStyle(.bordered).controlSize(.large).hideListRowSeparator()
                             .shadow(color: Color.black.opacity(0.5), radius: 3, x: 1, y: 2).listRowBackground(appData.appColors.background)
                     }
                     
@@ -278,7 +278,7 @@ struct SettingsView: View {
                         Text(respringOptions[$0])
                     }
                 }
-                .tint(.accentColor)
+                .tintC(.accentColor)
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
                 .listBG()
@@ -288,7 +288,7 @@ struct SettingsView: View {
                         Text(appInstallOptions[$0])
                     }
                 }
-                .tint(.accentColor)
+                .tintC(.accentColor)
                 .foregroundColor(.accentColor)
                 .onChange(of: appData.UserData.exploit_method) {_ in appData.save()}
                 .listBG()
@@ -373,7 +373,7 @@ struct ExploitPickers: View {
                     Text(exploitOptions[$0])
                 }
             }
-            .tint(.accentColor)
+            .tintC(.accentColor)
             .foregroundColor(.accentColor)
             .onChange(of: appData.UserData.exploit_method) { _ in appData.save() }
             .listBG()
@@ -384,7 +384,7 @@ struct ExploitPickers: View {
                         Text(String(puafPagesOptions[$0]))
                     }
                 }
-                .tint(.accentColor)
+                .tintC(.accentColor)
                 .foregroundColor(.accentColor)
                 .listBG()
                 .onChange(of: appData.UserData.kfd.puaf_pages_index) {sel in
@@ -396,7 +396,7 @@ struct ExploitPickers: View {
                         Text(puafMethodOptions[$0])
                     }
                 }
-                .tint(.accentColor)
+                .tintC(.accentColor)
                 .foregroundColor(.accentColor)
                 .listBG()
                 
@@ -405,7 +405,7 @@ struct ExploitPickers: View {
                         Text(kreadMethodOptions[$0])
                     }
                 }
-                .tint(.accentColor)
+                .tintC(.accentColor)
                 .foregroundColor(.accentColor)
                 .listBG()
                 
@@ -414,12 +414,12 @@ struct ExploitPickers: View {
                         Text(kwriteMethodOptions[$0])
                     }
                 }
-                .tint(.accentColor)
+                .tintC(.accentColor)
                 .foregroundColor(.accentColor)
                 .listBG()
                 
                 Toggle("Use Static Headroom", isOn: $appData.UserData.kfd.use_static_headroom)
-                    .tint(.accentColor)
+                    .tintC(.accentColor)
                     .foregroundColor(.accentColor)
                     .onChange(of: appData.UserData.kfd.use_static_headroom) {_ in appData.save()}
                     .listBG()
@@ -430,7 +430,7 @@ struct ExploitPickers: View {
                             Text(String(staticHeadroomOptions[$0]))
                         }
                     }
-                    .tint(.accentColor)
+                    .tintC(.accentColor)
                     .foregroundColor(.accentColor)
                     .listBG()
                     .onChange(of: appData.UserData.kfd.static_headroom_sel) {sel in

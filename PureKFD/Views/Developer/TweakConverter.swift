@@ -30,7 +30,7 @@ struct TweakConverterView: View {
                         Text(pkgtypes[$0])
                     }
                 }
-                .tint(.accentColor)
+                .tintC(.accentColor)
                 .foregroundColor(.accentColor)
                 .listRowBackground(appData.appColors.background)
             }.listRowBackground(Color.clear)
@@ -40,7 +40,7 @@ struct TweakConverterView: View {
                         Text(outpkgtypes[$0])
                     }
                 }
-                .tint(.accentColor)
+                .tintC(.accentColor)
                 .foregroundColor(.accentColor)
                 .listRowBackground(appData.appColors.background)
                 Button(action: {

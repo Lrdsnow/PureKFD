@@ -36,7 +36,7 @@ struct InstalledView: View {
                         HStack(alignment: .center) {
                             if appData.queued.isEmpty {
                                 Button(action: {applyTweaks(appData: appData)}, label: {HStack { Spacer(); Image("apply_icon").renderingMode(.template); Text("Apply"); Spacer(); }})
-                                    .padding(.vertical, 5).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.2))
+                                    .padding(.vertical, 5).borderedprombuttonc().tintC(.accentColor.opacity(0.2))
                             } else {
                                 Button(action: {
                                     Task {
@@ -55,7 +55,7 @@ struct InstalledView: View {
                                         }
                                     }
                                 }, label: {HStack { Spacer(); Image("download_icon").renderingMode(.template); Text("Install Queued"); Spacer()}})
-                                .padding(.vertical, 5).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.2))
+                                .padding(.vertical, 5).borderedprombuttonc().tintC(.accentColor.opacity(0.2))
                             }
                             if appData.queued.isEmpty {
                                 Button(action: {
@@ -68,10 +68,10 @@ struct InstalledView: View {
                                 .contextMenu(menuItems: {
                                     Button(action: {restartFrontboard()}, label: {Text("Frontboard Respring"); Image("reload_icon").renderingMode(.template)})
                                     Button(action: {restartBackboard()}, label: {Text("Backboard Respring"); Image("reload_icon").renderingMode(.template)})
-                                }).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.2))
+                                }).borderedprombuttonc().tintC(.accentColor.opacity(0.2))
                             } else {
                                 Button(action: {appData.queued = []; packages = [:]; Task { await updatePackages()}}, label: {HStack { Spacer(); Image("cancel_icon").renderingMode(.template); Text("Cancel"); Spacer()}})
-                                    .padding(.vertical, 5).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.2))
+                                    .padding(.vertical, 5).borderedprombuttonc().tintC(.accentColor.opacity(0.2))
                             }
                         }
                         if appData.UserData.dev {

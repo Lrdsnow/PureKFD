@@ -18,26 +18,32 @@ struct CustomNavigationLink<D: View, L: View>: View {
   @State private var isActive = false
   
   var body: some View {
-    Button {
-      withAnimation {
-        isActive = true
+      if #available(iOS 15.0, *) {
+          Button {
+              withAnimation {
+                  isActive = true
+              }
+          } label: {
+              label()
+          }
+          .borderedprombuttonc()
+          .tintC(.accentColor.opacity(0.2))
+          .onAppear {
+              isActive = false
+          }
+          .overlay {
+              NavigationLink(isActive: $isActive) {
+                  destination()
+              } label: {
+                  EmptyView()
+              }
+              .opacity(0)
+          }
+      } else {
+          NavigationLink(destination: destination()) {
+              label()
+          }
       }
-    } label: {
-      label()
-    }
-    .buttonStyle(.borderedProminent)
-    .tint(.accentColor.opacity(0.2))
-    .onAppear {
-      isActive = false
-    }
-    .overlay {
-      NavigationLink(isActive: $isActive) {
-        destination()
-      } label: {
-        EmptyView()
-      }
-      .opacity(0)
-    }
   }
 }
 

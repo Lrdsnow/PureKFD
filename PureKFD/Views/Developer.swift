@@ -12,13 +12,12 @@ import AVKit
 import SwiftKFD
 import SwiftKFD_objc
 
-@available(iOS 15.0, *)
 struct DeveloperView: View {
     @State private var popup = false
     @EnvironmentObject var appData: AppData
     var body: some View {
         List {
-            Section("TS") {
+            Section() {
                 if appData.UserData.exploit_method == 0 {
                     Text("""
                         Installation Instructions:
@@ -52,91 +51,93 @@ struct DeveloperView: View {
                 }).disabled(appData.UserData.exploit_method != 0).opacity(appData.UserData.exploit_method != 0 ? 0.7 : 1)
             }.listBG()
             
-            Section("Files") {
-                NavigationLink(destination: FileBrowserView(root: true), label: {Image("folder_icon").iconImg(); Text("File Browser")})
-                NavigationLink(destination: FileBrowserView(root: false), label: {Image("folder_icon").iconImg(); Text("File Browser (Sandboxed)")})
-                if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
-                    Button(action: {
-                        let (status, out, error) = spawnRootHelper(args: [ "remount-preboot" ])
-                        if (status != 0) {
-                            if (status == -1) {
-                                UIApplication.shared.alert(title: "Failed", body: "\(out) \(error)", withButton: true)
+            if #available(iOS 15.0, *) {
+                Section("Files") {
+                    NavigationLink(destination: FileBrowserView(root: true), label: {Image("folder_icon").iconImg(); Text("File Browser")})
+                    NavigationLink(destination: FileBrowserView(root: false), label: {Image("folder_icon").iconImg(); Text("File Browser (Sandboxed)")})
+                    if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
+                        Button(action: {
+                            let (status, out, error) = spawnRootHelper(args: [ "remount-preboot" ])
+                            if (status != 0) {
+                                if (status == -1) {
+                                    UIApplication.shared.alert(title: "Failed", body: "\(out) \(error)", withButton: true)
+                                } else {
+                                    let desc_cstring: UnsafeMutablePointer<CChar> = waitpid_decode(Int32(status));
+                                    let desc = String(cString: desc_cstring);
+                                    free(desc_cstring);
+                                    UIApplication.shared.alert(title: "Failed", body: "RootHelper \(desc)", withButton: true)
+                                }
                             } else {
-                                let desc_cstring: UnsafeMutablePointer<CChar> = waitpid_decode(Int32(status));
-                                let desc = String(cString: desc_cstring);
-                                free(desc_cstring);
-                                UIApplication.shared.alert(title: "Failed", body: "RootHelper \(desc)", withButton: true)
+                                UIApplication.shared.alert(title: "Complete", body: "/private/preboot is now writable", withButton: true)
                             }
-                        } else {
-                            UIApplication.shared.alert(title: "Complete", body: "/private/preboot is now writable", withButton: true)
-                        }
-                    }, label: {
-                        HStack {
-                            Image("disk_icon").resizable().renderingMode(.template).frame(maxWidth: 32, maxHeight: 32);
-                            Text("Remount /private/preboot");
-                        }
-                    })
-                }
-            }.listBG()
-            Section("Creator") {
-                NavigationLink(destination: TweakCreatorView(), label: {Image("gear_icon").iconImg(); Text("Tweak Creator")})
-                NavigationLink(destination: TweakConverterView(), label: {Image("gear_icon").iconImg(); Text("Tweak Converter")})
-            }.listBG()
-            Section("Tests") {
-                if appData.UserData.exploit_method == 0 {
-                    NavigationLink(destination: AppManagerView(), label: {Image("dev_icon").iconImg(); Text("App Manager (KFD)")})
-                }
-                if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
-                    Button(action: {
-                        userspaceReboot()
-                        UIApplication.shared.alert(title: "Complete", body: "Device should userspace reboot in a moment", withButton: true)
-                    }, label: {
-                        HStack {
-                            Image("dev_icon").iconImg()
-                            Text("Userspace Reboot")
-                        }
-                    })
-                }
-                Button(action: {
-                    clearIconCache()
-                    UIApplication.shared.alert(title: "Complete", body: "Cleared Icon Cache", withButton: true)
-                }, label: {
-                    HStack {
-                        Image("dev_icon").iconImg()
-                        Text("Clear Icon Cache")
+                        }, label: {
+                            HStack {
+                                Image("disk_icon").resizable().renderingMode(.template).frame(maxWidth: 32, maxHeight: 32);
+                                Text("Remount /private/preboot");
+                            }
+                        })
                     }
-                })
-                if appData.UserData.exploit_method == 0 {
-                    Button(action: {
-                        rebuildIconCache(appData: appData)
-                        UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
-                    }, label: {
-                        HStack {
-                            Image("dev_icon").iconImg()
-                            Text("Rebuild Icon Cache (KFD)")
-                        }
-                    })
-                    Button(action: {
-                        rebuildIconCache2(appData: appData)
-                        UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
-                    }, label: {
-                        HStack {
-                            Image("dev_icon").iconImg()
-                            Text("Rebuild Icon Cache 2 (KFD)")
-                        }
-                    })
-                }
-                Button(action: {
-                    cleanTemp()
-                    UIApplication.shared.alert(title: "Complete", body: "Cleared PureKFD's temp files", withButton: true)
-                }, label: {
-                    HStack {
-                        Image("dev_icon").iconImg()
-                        Text("Clear PureKFD temp")
+                }.listBG()
+                Section("Creator") {
+                    NavigationLink(destination: TweakCreatorView(), label: {Image("gear_icon").iconImg(); Text("Tweak Creator")})
+                    NavigationLink(destination: TweakConverterView(), label: {Image("gear_icon").iconImg(); Text("Tweak Converter")})
+                }.listBG()
+                Section("Tests") {
+                    if appData.UserData.exploit_method == 0 {
+                        NavigationLink(destination: AppManagerView(), label: {Image("dev_icon").iconImg(); Text("App Manager (KFD)")})
                     }
-                })
-            }.listBG()
-        }.navigationBarTitle("Developer", displayMode: .large).task {haptic()}.bgImage(appData).listStyle(.insetGrouped).clearBG()
+                    if (hasEntitlement("com.apple.private.security.no-sandbox" as CFString)) {
+                        Button(action: {
+                            userspaceReboot()
+                            UIApplication.shared.alert(title: "Complete", body: "Device should userspace reboot in a moment", withButton: true)
+                        }, label: {
+                            HStack {
+                                Image("dev_icon").iconImg()
+                                Text("Userspace Reboot")
+                            }
+                        })
+                    }
+                    Button(action: {
+                        clearIconCache()
+                        UIApplication.shared.alert(title: "Complete", body: "Cleared Icon Cache", withButton: true)
+                    }, label: {
+                        HStack {
+                            Image("dev_icon").iconImg()
+                            Text("Clear Icon Cache")
+                        }
+                    })
+                    if appData.UserData.exploit_method == 0 {
+                        Button(action: {
+                            rebuildIconCache(appData: appData)
+                            UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
+                        }, label: {
+                            HStack {
+                                Image("dev_icon").iconImg()
+                                Text("Rebuild Icon Cache (KFD)")
+                            }
+                        })
+                        Button(action: {
+                            rebuildIconCache2(appData: appData)
+                            UIApplication.shared.alert(title: "Complete", body: "Rebuilt Icon Cache", withButton: true)
+                        }, label: {
+                            HStack {
+                                Image("dev_icon").iconImg()
+                                Text("Rebuild Icon Cache 2 (KFD)")
+                            }
+                        })
+                    }
+                    Button(action: {
+                        cleanTemp()
+                        UIApplication.shared.alert(title: "Complete", body: "Cleared PureKFD's temp files", withButton: true)
+                    }, label: {
+                        HStack {
+                            Image("dev_icon").iconImg()
+                            Text("Clear PureKFD temp")
+                        }
+                    })
+                }.listBG()
+            }
+        }.navigationBarTitle("Developer", displayMode: .large).bgImage(appData).listStyle(.insetGrouped).clearBG()
     }
 }
 

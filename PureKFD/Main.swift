@@ -239,31 +239,44 @@ struct MainView: View {
             if appData.reloading_browse {
                 selectedTab = 1
             }
-            if !FileManager.default.fileExists(atPath: URL.documents.appendingPathComponent("config/setup_done").path) {
-                showSetup = true
-                updateRepos()
+            if #available(iOS 15.0, *) {
+                if !FileManager.default.fileExists(atPath: URL.documents.appendingPathComponent("config/setup_done").path) {
+                    showSetup = true
+                    updateRepos()
+                }
             }
             updated = pkfdUpdated()
-        }.sheet(isPresented: $showSetup) {
-            NavigationView {
-                SetupView(showSetup: $showSetup, showSetup_Design: $showSetup_Design, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status).blurredBG()
-            }.interactiveDismissDisabled().blurredBG()
+        }
+        .sheet(isPresented: $showSetup) {
+            if #available(iOS 15.0, *) {
+                NavigationView {
+                    SetupView(showSetup: $showSetup, showSetup_Design: $showSetup_Design, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status).blurredBG()
+                }.interactiveDismissDisabledC().blurredBG()
+            }
         }.sheet(isPresented: $showSetup_Design) {
-            NavigationView {
-                SetupView_Design(showSetup_Design: $showSetup_Design, showSetup_Exploit: $showSetup_Exploit, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status, showDownloadingRepos: .constant(true), appColors: $appData.appColors).blurredBG()
-            }.interactiveDismissDisabled().blurredBG()
+            if #available(iOS 15.0, *) {
+                NavigationView {
+                    SetupView_Design(showSetup_Design: $showSetup_Design, showSetup_Exploit: $showSetup_Exploit, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status, showDownloadingRepos: .constant(true), appColors: $appData.appColors).blurredBG()
+                }.interactiveDismissDisabledC().blurredBG()
+            }
         }.sheet(isPresented: $showSetup_Exploit) {
-            NavigationView {
-                SetupView_Exploit(showSetup_Exploit: $showSetup_Exploit, showSetup_Finalize: $showSetup_Finalize, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status, showDownloadingRepos: .constant(true), settings: false, appData: _appData).blurredBG()
-            }.interactiveDismissDisabled().blurredBG()
+            if #available(iOS 15.0, *) {
+                NavigationView {
+                    SetupView_Exploit(showSetup_Exploit: $showSetup_Exploit, showSetup_Finalize: $showSetup_Finalize, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status, showDownloadingRepos: .constant(true), settings: false, appData: _appData).blurredBG()
+                }.interactiveDismissDisabledC().blurredBG()
+            }
         }.sheet(isPresented: $showSetup_Finalize) {
-            NavigationView {
-                SetupView_Finalize(showSetup_Finalize: $showSetup_Finalize, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status, appColors: $appData.appColors, mainView: self, appData: _appData).blurredBG()
-            }.interactiveDismissDisabled().blurredBG()
+            if #available(iOS 15.0, *) {
+                NavigationView {
+                    SetupView_Finalize(showSetup_Finalize: $showSetup_Finalize, downloadingRepos: $downloadingRepos, downloadingRepos_Status: $downloadingRepos_Status, appColors: $appData.appColors, mainView: self, appData: _appData).blurredBG()
+                }.interactiveDismissDisabledC().blurredBG()
+            }
         }.sheet(isPresented: $lock, content: {
-            NavigationView {
-                IssueView(lock: $lock)
-            }.blurredBG()
+            if #available(iOS 15.0, *) {
+                NavigationView {
+                    IssueView(lock: $lock)
+                }.blurredBG()
+            }
         }).onChange(of: lock, perform: { newValue in if !newValue { try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("apply.lock")) }})
     }
     

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@available(iOS 15.0, *)
 struct IssueView: View {
     // Setup:
     @Binding var lock: Bool
@@ -47,12 +48,13 @@ struct IssueView: View {
                         Text("Close").padding(.vertical, 10)
                         Spacer()
                     }
-                }).buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 13)).tint(.red).shadow(color: Color.red.opacity(0.5), radius: 3, x: 1, y: 2)
+                }).borderedprombuttonc().buttonBorderShape(.roundedRectangle(radius: 13)).tintC(.red).shadow(color: Color.red.opacity(0.5), radius: 3, x: 1, y: 2)
             }.padding()
         }.foregroundStyle(Color(uiColor: .label))
     }
 }
 
+@available(iOS 15.0, *)
 struct SetupView: View {
     // Setup:
     @Binding var showSetup: Bool
@@ -95,12 +97,12 @@ struct SetupView: View {
                         Text("Continue").padding(.vertical, 10)
                         Spacer()
                     }
-                }).buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 13))
+                }).borderedprombuttonc().buttonBorderShape(.roundedRectangle(radius: 13))
                 HStack {
                     if downloadingRepos {
                         Text("Downloading Repos... (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))")
                         Spacer()
-                        ProgressView().tint(Color(uiColor: .secondaryLabel))
+                        ProgressView().tintC(Color(uiColor: .secondaryLabel))
                     } else {
                         Text("Downloaded Repos! (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))")
                         Spacer()
@@ -112,6 +114,7 @@ struct SetupView: View {
     }
 }
 
+@available(iOS 15.0, *)
 struct SetupView_Design: View {
     // Setup:
     @Binding var showSetup_Design: Bool
@@ -174,13 +177,13 @@ struct SetupView_Design: View {
                         Text("Continue").padding(.vertical, 10)
                         Spacer()
                     }
-                }).buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 13))
+                }).borderedprombuttonc().buttonBorderShape(.roundedRectangle(radius: 13))
                 if showDownloadingRepos {
                     HStack {
                         if downloadingRepos {
                             Text("Downloading Repos... (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))")
                             Spacer()
-                            ProgressView().tint(Color(uiColor: .secondaryLabel))
+                            ProgressView().tintC(Color(uiColor: .secondaryLabel))
                         } else {
                             Text("Downloaded Repos! (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))")
                             Spacer()
@@ -193,6 +196,7 @@ struct SetupView_Design: View {
     }
 }
 
+@available(iOS 15.0, *)
 struct SetupView_Exploit: View {
     // Setup:
     @Binding var showSetup_Exploit: Bool
@@ -223,7 +227,7 @@ struct SetupView_Exploit: View {
                                 Text(exploitOptions[$0])
                             }
                         }
-                        .tint(.accentColor)
+                        .tintC(.accentColor)
                         .foregroundColor(.accentColor)
                         .onChange(of: appData.UserData.exploit_method) { _ in appData.save()}
                     }
@@ -270,13 +274,13 @@ struct SetupView_Exploit: View {
                         Text("Continue").padding(.vertical, 10)
                         Spacer()
                     }
-                }).buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 13))
+                }).borderedprombuttonc().buttonBorderShape(.roundedRectangle(radius: 13))
                 if showDownloadingRepos {
                     HStack {
                         if downloadingRepos {
                             Text("Downloading Repos... (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))")
                             Spacer()
-                            ProgressView().tint(Color(uiColor: .secondaryLabel))
+                            ProgressView().tintC(Color(uiColor: .secondaryLabel))
                         } else {
                             Text("Downloaded Repos! (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))")
                             Spacer()
@@ -289,6 +293,7 @@ struct SetupView_Exploit: View {
     }
 }
 
+@available(iOS 15.0, *)
 struct SetupView_Finalize: View {
     // Setup:
     @Binding var showSetup_Finalize: Bool
@@ -360,7 +365,7 @@ struct SetupView_Finalize: View {
                         if downloadingRepos {
                             Text("Downloading \(appData.UserData.betaRepos ? "Beta " : "")Repos... (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))")
                             Spacer()
-                            ProgressView().tint(Color(uiColor: .secondaryLabel))
+                            ProgressView().tintC(Color(uiColor: .secondaryLabel))
                         } else {
                             Text("Downloaded \(appData.UserData.betaRepos ? "Beta " : "")Repos! (\(downloadingRepos_Status.0)/\(downloadingRepos_Status.1))")
                             Spacer()
@@ -388,7 +393,7 @@ struct SetupView_Finalize: View {
                         Text(downloadingRepos ? "Please wait..." : "Finish").padding(.vertical, 10)
                         Spacer()
                     }
-                }).buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 13)).disabled(downloadingRepos)
+                }).borderedprombuttonc().buttonBorderShape(.roundedRectangle(radius: 13)).disabled(downloadingRepos)
                 HStack {
                     Text(" ‍ ")
                 }

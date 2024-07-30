@@ -10,6 +10,30 @@ import SwiftUI
 
 extension View {
     @ViewBuilder
+    func tintC(_ color: Color) -> some View {
+        if #available(iOS 15.0, *) {
+            self.tint(color)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
+    func borderedprombuttonc() -> some View {
+        if #available(iOS 15.0, *) {
+            self.buttonStyle(.borderedProminent)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
+    func interactiveDismissDisabledC() -> some View {
+        if #available(iOS 15.0, *) {
+            self.interactiveDismissDisabled()
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
     func `if`<Content: View>(_ condition: Bool, content: (Self) -> Content) -> some View {
         if condition {
             content(self)
@@ -27,9 +51,13 @@ extension View {
     }
     @ViewBuilder
     func listBG() -> some View {
-        self.listRowBackground(
-            VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).ignoresSafeArea().opacity(0.2).tint(Color(uiColor: .systemFill))
-        )
+        if #available(iOS 15.0, *) {
+            self.listRowBackground(
+                VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).ignoresSafeArea().opacity(0.2).tintC(Color(uiColor: .systemFill))
+            )
+        } else {
+            self
+        }
     }
     @ViewBuilder
     func plainList() -> some View {
@@ -57,7 +85,8 @@ extension View {
     }
     @ViewBuilder
     func hideListRowSeparator() -> some View {
-        if !UserDefaults.standard.bool(forKey: "noClearRows") {
+        if !UserDefaults.standard.bool(forKey: "noClearRows"),
+           #available(iOS 15.0, *) {
             self.listRowSeparator(.hidden)
         } else {
             self
@@ -126,7 +155,7 @@ extension View {
     @ViewBuilder
     func mainViewTweaks() -> some View {
         if #available(iOS 15.0, *) {
-            self.foregroundStyle(Color.accentColor).tint(Color.accentColor)
+            self.foregroundStyle(Color.accentColor).tintC(Color.accentColor)
         } else {
             self.foregroundColor(Color.accentColor)
         }
