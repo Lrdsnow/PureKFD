@@ -57,3 +57,6 @@ PureKFD is a KFD Focused Package Manager, supporting iOS versions 14.0 through 1
 <a href="https://discord.com/users/822833988997218314"><img src="https://img.shields.io/static/v1?style=social&message=Icon Creator&logo=discord&logoColor=454FBF&label=mildpeppercat" /></a>
 
 <a href="https://discord.com/users/672886506859266051"><img src="https://img.shields.io/static/v1?style=social&message=Icon Creator&logo=discord&logoColor=454FBF&label=modmenus" /></a>
+
+### Disclaimer
+This project is intended for educational purposes only. The code provided in this repository is designed to demonstrate concepts related to software exploitation and system vulnerabilities within a controlled, legal, and ethical environment. It should never be used for malicious purposes under any circumstances.
