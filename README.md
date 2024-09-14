@@ -19,7 +19,7 @@ PureKFD is a KFD Focused Package Manager, supporting iOS versions 14.0 through 1
 ## Getting Started
 
 1. **Compatibility:** Ensure your iOS device is running an iOS version 14.0 through 16.6.1.
-2. **Installation:** Download PureKFD from the [github releases](https://github.com/PureKFD/PureKFD/releases/latest) for the latest release or [our discord](https://discord.gg/Mve4nWJMrz) for the latest betas OR get it on [FlekSt0re](https://flekstore.com/PureKFD).
+2. **Installation:** Download PureKFD from the [github releases](https://github.com/PureKFD/PureKFD/releases/latest) for the latest release or [our discord](https://discord.gg/cCSwxqdvzx) for the latest betas OR get it on [FlekSt0re](https://flekstore.com/PureKFD).
 3. **Customize:** Explore the vast array of tweaks, personalize your iOS experience, and make your device truly yours.
 
 ## Credits
