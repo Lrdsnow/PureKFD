@@ -1,0 +1,40 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: PureKFD
+Upstream-Contact: Lrdsnow <lrdsnow101@gmail.com>
+Source: https://github.com/Lrdsnow/PureKFD
+
+Files: *
+Copyright: Copyright 2024 Lrdsnow
+License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+License-Reference: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Files: Shared/SparseBox/*
+Copyright: Duy Tran Khanh
+License: GNU Affero General Public License 3.0 (AGPL-3.0)
+License-Reference: https://www.gnu.org/licenses/agpl-3.0.html
+
+Files: Shared/SparseBox/include/em_proxy*
+Files: Shared/SparseBox/include/minimuxer*
+Copyright: SideStore
+License: GNU Affero General Public License 3.0 (AGPL-3.0)
+License-Reference: https://www.gnu.org/licenses/agpl-3.0.html
+
+Files: Shared/SparseBox/Sources/SparseRestore
+Copyright: Copyright 2024 James Gill (JJTech0130) 
+           Modified work Copyright 2024 Duy Tran Khanh
+License: MIT License
+License-Reference: https://opensource.org/licenses/MIT
+
+Files: Shared/SparseBox/include/libimobiledevice/*
+Files: Shared/SparseBox/include/libimobiledevice-glue/*
+Copyright: libimobiledevice project
+License: GNU Lesser General Public License 2.1 (LGPL-2.1)
+License: GNU General Public License 2.0 (GPL-2.0)
+License-Reference: https://www.gnu.org/licenses/lgpl-2.1.html
+License-Reference: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Comment: SparseBox contains components from various contributors.
+  - @SideStore: em_proxy and minimuxer are under AGPL-3.0.
+  - @JJTech0130: SparseRestore is licensed under the MIT License.
+  - @libimobiledevice: licensed under LGPL-2.1 and GPL-2.0.
+  - @PoomSmart: MobileGestalt dump

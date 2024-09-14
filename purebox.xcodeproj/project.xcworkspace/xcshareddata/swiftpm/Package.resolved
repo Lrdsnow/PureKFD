@@ -1,0 +1,60 @@
+{
+  "originHash" : "a2c53c5ec2a2142ff1b11ee7e9f584d5d16255caa569cafa2e92172925816691",
+  "pins" : [
+    {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "revision" : "f455c2975872ccd2d9c81594c658af65716e9b9a",
+        "version" : "5.9.1"
+      }
+    },
+    {
+      "identity" : "down",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/johnxnguyen/Down.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "e754ab1c80920dd51a8e08290c912ac1c2ac8b58"
+      }
+    },
+    {
+      "identity" : "jason",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/delba/JASON.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "47d06b3f650867afd0a1fa8379d5b590855246db"
+      }
+    },
+    {
+      "identity" : "nuke",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Nuke.git",
+      "state" : {
+        "revision" : "311016d972aa751ae8ab0cd5897422ebe7db0501",
+        "version" : "12.7.3"
+      }
+    },
+    {
+      "identity" : "swiftkfd",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Lrdsnow/SwiftKFD.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4f5debb079c63bc6b19dc30c11efd66c174e4366"
+      }
+    },
+    {
+      "identity" : "zip",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/marmelroy/Zip.git",
+      "state" : {
+        "revision" : "67fa55813b9e7b3b9acee9c0ae501def28746d76",
+        "version" : "2.1.2"
+      }
+    }
+  ],
+  "version" : 3
+}
