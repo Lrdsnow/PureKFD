@@ -83,6 +83,12 @@ class TweakPath {
         
         let pathComponents = url.pathComponents
         
+        var save: [String:Any] = [:]
+        if let save_data = try? Data(contentsOf: pkgpath.appendingPathComponent("save.json")),
+           let _save = try? JSONSerialization.jsonObject(with: save_data) as? [String:Any] {
+            save = _save
+        }
+        
         for component in pathComponents {
             if component.contains("Segment"),
                let components = parseSegment(component) {
@@ -90,7 +96,12 @@ class TweakPath {
                 if FileManager.default.fileExists(atPath: from!.path) {
                     path = path.replacingOccurrences(of: component, with: components.name)
                 } else {
-                    return nil
+                    if let variable = save[components.identifiers.first ?? ""],
+                       variable as? String == components.values.first {
+                        path = path.replacingOccurrences(of: component, with: components.name)
+                    } else {
+                        return nil
+                    }
                 }
             } else if component.contains("?pure_binary.") {
                 // eta s0n
