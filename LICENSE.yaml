@@ -5,8 +5,10 @@ Source: https://github.com/Lrdsnow/PureKFD
 
 Files: *
 Copyright: Copyright 2024 Lrdsnow
-License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
-License-Reference: https://creativecommons.org/licenses/by-nc-sa/4.0/
+License: GNU Affero General Public License 3.0 (AGPL-3.0)
+License-Reference: https://www.gnu.org/licenses/agpl-3.0.html
+
+Comment: The rest of the files here are not included directly in this repository
 
 Files: Shared/SparseBox/*
 Copyright: Duy Tran Khanh
