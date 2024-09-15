@@ -22,7 +22,7 @@ public class TweakHandler {
             } else {
                 let relativePath = item.path.replacingOccurrences(of: ogDir.path, with: "")
                 let rootPath = URL(fileURLWithPath: "/").appendingPathComponent(relativePath)
-                let processedPath = TweakPath.processPath(rootPath, ogDir.deletingLastPathComponent())
+                let processedPath = TweakPath.processPath(rootPath, ogDir.deletingLastPathComponent(), exploit)
                 if let processedPath = processedPath {
                     ExploitHandler.overwriteFile(processedPath.from ?? item, URL(fileURLWithPath: processedPath.toPath), exploit)
                 }

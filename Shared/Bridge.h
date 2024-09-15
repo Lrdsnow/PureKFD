@@ -9,5 +9,6 @@
 #define Bridge_h
 
 #import "SparseBox/include/minimuxer-Bridging-Header.h"
+#import "SparseBox/include/DeviceManager.h"
 
 #endif /* Bridge_h */

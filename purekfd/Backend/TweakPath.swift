@@ -51,33 +51,38 @@ class TweakPath {
     }
     
     public static func parseAppUUID(_ input: String) -> (appIdentifier: String, data: String)? {
+        // Trim the input
         let cleanedInput = input.trimmingCharacters(in: CharacterSet(charactersIn: "%"))
-        guard let appUUIDRange = cleanedInput.range(of: "AppUUID{") else {
-            print("AppUUID not found")
+        
+        // Ensure the "AppUUID{" exists
+        guard let appUUIDRange = cleanedInput.range(of: "AppUUID{'") else {
+            log("AppUUID not found")
             return nil
         }
         
+        // Extract everything after "AppUUID{'"
         let appUUIDString = String(cleanedInput[appUUIDRange.upperBound...])
         
-        guard let appIdentifierRange = appUUIDString.range(of: "'")?.upperBound,
-              let endAppIdentifierRange = appUUIDString.range(of: "'", range: appIdentifierRange..<appUUIDString.endIndex)?.lowerBound else {
-            print("App Identifier not found")
+        // Find the closing quote of the first string (the app identifier)
+        guard let endAppIdentifierRange = appUUIDString.range(of: "'")?.lowerBound else {
+            log("App Identifier not found")
             return nil
         }
-        let appIdentifier = String(appUUIDString[appIdentifierRange..<endAppIdentifierRange])
         
-        guard let dataRange = appUUIDString.range(of: "'", range: endAppIdentifierRange..<appUUIDString.endIndex)?.upperBound,
-              let endDataRange = appUUIDString.range(of: "'", range: dataRange..<appUUIDString.endIndex)?.lowerBound else {
-            print("Data not found")
-            return nil
-        }
-        let data = String(appUUIDString[dataRange..<endDataRange])
+        // Extract the app identifier
+        let appIdentifier = String(appUUIDString[..<endAppIdentifierRange])
         
-        print(appIdentifier, data)
+        // Move past the first string to find the second string (data)
+        let remainingString = appUUIDString[endAppIdentifierRange...].dropFirst(3) // Skip "', '"
+        
+        // Extract the data
+        let data = remainingString.replacingOccurrences(of: "'", with: "").replacingOccurrences(of: "}", with: "")
+        
+        log("\(appIdentifier) \(data)")
         return (appIdentifier, data)
     }
     
-    public static func processPath(_ url: URL, _ pkgpath: URL) -> (from: URL?, toPath: String)? {
+    public static func processPath(_ url: URL, _ pkgpath: URL, _ exploit: Int = 0) -> (from: URL?, toPath: String)? {
         var path = url.path
         var from: URL? = nil
         
@@ -107,8 +112,12 @@ class TweakPath {
                 // eta s0n
                 return nil
             } else if component.contains("AppUUID") {
-                // eta s0n
-                return nil
+                if let components = parseAppUUID(component),
+                   let _path = ExploitHandler.getAppPath(components.appIdentifier, components.data, exploit) {
+                    return (nil, _path+(path.components(separatedBy: ".app").last ?? ""))
+                } else {
+                    return nil
+                }
             } else if component.hasPrefix("%"), component.hasSuffix("%") {
                 return nil
             }

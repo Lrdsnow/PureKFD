@@ -6,40 +6,15 @@ else
     
     /bin/sh get_libraries.sh
     
-    echo """
-ARCHS := arm64
-PACKAGE_FORMAT := ipa
-TARGET := iphone:clang:latest:16.0
+    cp ../SparseRestore/Makefile Makefile
+    cp ../SparseRestore/include/minimuxer-Bridging-Header.h include/minimuxer-Bridging-Header.h
+    cp ../SparseRestore/include/list_installed.h include/list_installed.h
+    cp ../SparseRestore/list_installed.c list_installed.c
+    cp ../SparseRestore/DeviceManager.m DeviceManager.m
+    cp ../SparseRestore/include/DeviceManager.h include/DeviceManager.h
+    cp ../SparseRestore/AppInfo.h AppInfo.h
+    cp ../SparseRestore/AppInfo.m AppInfo.m
 
-include $THEOS/makefiles/common.mk
-
-LIBRARY_NAME = libEMProxy libimobiledevice
-
-libEMProxy_FILES = lib/empty.swift
-libEMProxy_LDFLAGS = -force_load lib/libem_proxy-ios.a -install_name @rpath/libEMProxy.dylib
-libEMProxy_FRAMEWORKS = Security
-libEMProxy_INSTALL_PATH = /Applications/SparseBox.app/Frameworks
-
-libimobiledevice_FILES = idevicebackup2.c
-libimobiledevice_CFLAGS = -Iinclude
-libimobiledevice_LDFLAGS = \
--force_load lib/libimobiledevice-1.0.a \
--force_load lib/libimobiledevice-glue-1.0.a \
--force_load lib/libplist-2.0.a \
--force_load lib/libusbmuxd-2.0.a \
--force_load lib/libcrypto.a \
--force_load lib/libssl.a \
--force_load lib/libminimuxer-ios.a \
--Wl \
--install_name @rpath/libimobiledevice.dylib
-libimobiledevice_FRAMEWORKS = Foundation Security SystemConfiguration
-libimobiledevice_INSTALL_PATH = /Applications/SparseBox.app/Frameworks
-
-include $THEOS/makefiles/library.mk
-
-SparseBox_TARGET = 
-    """ > Makefile
-    
     make
     
     mkdir -p $BUILD_DIR/Libraries
