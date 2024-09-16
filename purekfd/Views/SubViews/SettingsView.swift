@@ -279,6 +279,7 @@ struct FilePickerButton: View {
                     let importedFolderURL = URL.documents.appendingPathComponent("imported")
                     try FileManager.default.createDirectory(at: importedFolderURL, withIntermediateDirectories: true, attributes: nil)
                     let destinationURL = importedFolderURL.appendingPathComponent(key)
+                    try? FileManager.default.removeItem(at: destinationURL)
                     try FileManager.default.copyItem(at: url, to: destinationURL)
                 } catch {
                     print("Failed to move or process file: \(error)")

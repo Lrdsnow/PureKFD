@@ -95,7 +95,11 @@ public struct Package: Codable {
             url = nil
         }
         if let depictionString = json["depiction"] as? String {
-            depiction = URL(string: depictionString)
+            if depictionString.contains("http") {
+                depiction = URL(string: depictionString)
+            } else {
+                depiction = _repo?.url?.appendingPathComponent(depictionString)
+            }
         } else {
             depiction = nil
         }
@@ -116,6 +120,11 @@ public struct Package: Codable {
             }
         }
         feature = _featured?.first(where: { $0.bundleid == json["bundleid"] as? String ?? "" })
+    }
+    public func save() {
+        if let jsonData = try? JSONEncoder().encode(self) {
+            try? jsonData.write(to: self.pkgpath.appendingPathComponent("_info.json"))
+        }
     }
 
     var accentRowColor: Color? {

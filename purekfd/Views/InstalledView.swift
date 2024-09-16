@@ -110,7 +110,7 @@ struct InstalledView: View {
                         if !appData.installed_pkgs.isEmpty {
                             Section(content: {
                                 ForEach(appData.installed_pkgs, id:\.bundleid) { tweak in
-                                    TweakListRowView(tweak: tweak, navlink: false).contextMenu(menuItems: {
+                                    TweakListRowView(tweak: tweak, navlink: false).opacity(tweak.disabled == true ? 0.7 : 1).contextMenu(menuItems: {
                                         Button(action: {
                                             selectedPkg = tweak
                                             showErrorSheet = true
@@ -143,6 +143,24 @@ struct InstalledView: View {
                                                 }
                                             })
                                         }
+                                        
+                                        Button(action: {
+                                            if let index = appData.installed_pkgs.firstIndex(where: { $0.bundleid == tweak.bundleid }) {
+                                                if tweak.disabled == true {
+                                                    appData.installed_pkgs[index].disabled = false
+                                                } else {
+                                                    appData.installed_pkgs[index].disabled = true
+                                                }
+                                                appData.installed_pkgs[index].save()
+                                            }
+                                        }, label: {
+                                            HStack {
+                                                Text("\(tweak.disabled == true ? "Enable" : "Disable") Tweak")
+                                                Spacer()
+                                                Image(systemName: tweak.disabled == true ? "checkmark.circle" : "circle.slash")
+                                            }
+                                        })
+                                        
                                         Button(role: .destructive, action: {
                                             showConfirmPopup("Confirm", "Are you sure you'd like to uninstall this tweak") { confirm in
                                                 if confirm {
@@ -386,57 +404,69 @@ struct ErrorInfoPageView: View {
         var fixes: [Solution] = []
         let error = pkg.error?.lowercased() ?? ""
         let _tweak = appData.pkgs.first(where: { $0.bundleid == pkg.bundleid })
+        let pkg_dir = pkg.pkgpath
         
         if error.contains("error decoding") || error == "" {
-            if let _tweak = _tweak {
-                fixes.append(
-                    Solution(text:"Attempt Repair", function: {
-                        do {
-                            var temp_tweak = _tweak
+            fixes.append(
+                Solution(text:"Attempt Repair", function: {
+                    do {
+                        var temp_tweak = pkg
+                        if let _tweak = _tweak {
+                            temp_tweak = _tweak
                             temp_tweak.repo = nil
                             let jsonData = try JSONEncoder().encode(temp_tweak)
                             let pkg_dir = temp_tweak.pkgpath
                             try jsonData.write(to: pkg_dir.appendingPathComponent("_info.json"))
-                            let configJsonPath = pkg_dir.appendingPathComponent(config_filename).path
-                            quickConvertLegacyEncrypted(pkg_dir: temp_tweak.pkgpath, configJsonPath: configJsonPath)
-                            quickConvertPicasso(pkg_dir: temp_tweak.pkgpath, configJsonPath: configJsonPath)
-                            quickConvertLegacyPKFD(pkg_dir: temp_tweak.pkgpath, configJsonPath: configJsonPath)
-                            if FileManager.default.fileExists(atPath: pkg_dir.appendingPathComponent("tweak.json").path),
-                               !FileManager.default.fileExists(atPath: pkg_dir.appendingPathComponent("Overwrite").path) {
-                                quickConvertLegacyTweak(pkg: temp_tweak)
+                        } else {
+                            if let jsonDict = try JSONSerialization.jsonObject(with: try Data(contentsOf: pkg_dir.appendingPathComponent("_info.json"))) as? [String:Any] {
+                                temp_tweak = Package(jsonDict, nil, nil)
+                                let jsonData = try JSONEncoder().encode(temp_tweak)
+                                try jsonData.write(to: pkg_dir.appendingPathComponent("_info.json"))
+                            } else {
+                                throw "Error Decoding Tweak"
                             }
-                            subView = AnyView(
-                                VStack {
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text("Repair Result:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
-                                        }
-                                        Spacer()
-                                    }.padding(.leading, 1).padding(.bottom, -3)
-                                    HStack {
-                                        Text("No errors occured on repair, please restart PureKFD").foregroundColor(.accentColor)
-                                        Spacer()
-                                    }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
-                                }
-                            )
-                        } catch {
-                            subView = AnyView(
-                                VStack {
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text("Repair Result:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
-                                        }
-                                        Spacer()
-                                    }.padding(.leading, 1).padding(.bottom, -3)
-                                    HStack {
-                                        Text("An unknown error occured while attempting tweak repair").foregroundColor(.accentColor)
-                                        Spacer()
-                                    }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
-                                }
-                            )
                         }
-                    }, button: true)
-                )
+                        let configJsonPath = pkg_dir.appendingPathComponent(config_filename).path
+                        quickConvertLegacyEncrypted(pkg_dir: pkg_dir, configJsonPath: configJsonPath)
+                        quickConvertPicasso(pkg_dir: pkg_dir, configJsonPath: configJsonPath)
+                        quickConvertLegacyPKFD(pkg_dir: pkg_dir, configJsonPath: configJsonPath)
+                        if FileManager.default.fileExists(atPath: pkg_dir.appendingPathComponent("tweak.json").path),
+                           !FileManager.default.fileExists(atPath: pkg_dir.appendingPathComponent("Overwrite").path) {
+                            quickConvertLegacyTweak(pkg: temp_tweak)
+                        }
+                        subView = AnyView(
+                            VStack {
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text("Repair Result:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
+                                    }
+                                    Spacer()
+                                }.padding(.leading, 1).padding(.bottom, -3)
+                                HStack {
+                                    Text("No errors occured on repair, please restart PureKFD").foregroundColor(.accentColor)
+                                    Spacer()
+                                }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
+                            }
+                        )
+                    } catch {
+                        subView = AnyView(
+                            VStack {
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text("Repair Result:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
+                                    }
+                                    Spacer()
+                                }.padding(.leading, 1).padding(.bottom, -3)
+                                HStack {
+                                    Text("An unknown error occured while attempting tweak repair").foregroundColor(.accentColor)
+                                    Spacer()
+                                }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
+                            }
+                        )
+                    }
+                }, button: true)
+            )
+            if let _tweak = _tweak {
                 fixes.append(
                     Solution(text:"Reinstall Tweak", function: {
                         showConfirmPopup("Confirm", "Are you sure you'd like to reinstall this tweak") { confirm in
@@ -462,10 +492,6 @@ struct ErrorInfoPageView: View {
                             }
                         }
                     }, button: true)
-                )
-            } else {
-                fixes.append(
-                    Solution(text:"The tweak appears to be corrupt and does not appear to be available on any of the current repos", function: {}, button: false)
                 )
             }
         } else if error.contains("zip.ziperror error 1") {

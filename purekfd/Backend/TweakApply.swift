@@ -45,13 +45,34 @@ public class TweakHandler {
     
     public static func applyTweaks(pkgs: [Package], _ exploit: Int) {
         try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("temp"))
-        if ExploitHandler.startExploit(exploit) {
-            for pkg in pkgs {
-                if !(pkg.disabled ?? false) {
-                    self.applyTweak(pkg: pkg, exploit)
+        let loadingPopup = showLoadingPopup()
+        Task.detached {
+            if let start_result = ExploitHandler.startExploit(exploit) {
+                DispatchQueue.main.async {
+                    loadingPopup.dismiss(animated: true) {
+                        showPopup("Error", start_result)
+                    }
+                }
+            } else {
+                for pkg in pkgs {
+                    if !(pkg.disabled ?? false) {
+                        self.applyTweak(pkg: pkg, exploit)
+                    }
+                }
+                if let end_result = ExploitHandler.endExploit(exploit) {
+                    DispatchQueue.main.async {
+                        loadingPopup.dismiss(animated: true) {
+                            showPopup("Error", end_result)
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        loadingPopup.dismiss(animated: true) {
+                            showPopup("Success", "Successfully applied")
+                        }
+                    }
                 }
             }
-            ExploitHandler.endExploit(exploit)
         }
     }
     

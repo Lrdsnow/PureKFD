@@ -121,7 +121,7 @@ struct TweakView: View {
     
     func genDepictionJSON() -> [String:Any] {
         var json_array: [[String:Any]] = []
-        if let description = tweak.description {
+        if let description = tweak.long_description {
             json_array.append(
                 [
                     "class": "DepictionSubheaderView",

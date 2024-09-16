@@ -60,7 +60,24 @@ struct ContentView: View {
             }
         }.onAppear() {
             log("Running on an \(DeviceInfo.modelName) (\(DeviceInfo.cpu)) running \(DeviceInfo.osString) \(DeviceInfo.version) (\(DeviceInfo.build))")
-        }
+        }.onOpenURL(perform: { url in
+            if url.pathExtension == "mobiledevicepairing" {
+                let loading = showLoadingPopup()
+                url.startAccessingSecurityScopedResource()
+                defer { url.stopAccessingSecurityScopedResource() }
+                let fm = FileManager.default
+                let importedURL = URL.documents.appendingPathComponent("imported")
+                let pairingFileURL = importedURL.appendingPathComponent("PairingFile")
+                try? fm.createDirectory(at: importedURL, withIntermediateDirectories: true)
+                try? fm.removeItem(at: pairingFileURL)
+                try? fm.copyItem(at: url, to: pairingFileURL)
+                DispatchQueue.main.async {
+                    loading.dismiss(animated: true) {
+                        showPopup("Success", "Imported Pairing File Successfully")
+                    }
+                }
+            }
+        })
     }
 }
 

@@ -169,6 +169,30 @@ func showDoubleTextInputPopup(_ title: String, _ placeholderText1: String, _ pla
     }
 }
 
+func showLoadingPopup() -> UIAlertController {
+    let alert = UIAlertController(title: "", message: nil, preferredStyle: .alert)
+    
+    let activityIndicator = UIActivityIndicatorView(style: .medium)
+    activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+    activityIndicator.isUserInteractionEnabled = false
+    activityIndicator.startAnimating()
+    
+    alert.view.addSubview(activityIndicator)
+    
+    NSLayoutConstraint.activate([
+        alert.view.heightAnchor.constraint(equalToConstant: 70),
+        alert.view.widthAnchor.constraint(equalToConstant: 70),
+        activityIndicator.centerXAnchor.constraint(equalTo: alert.view.centerXAnchor),
+        activityIndicator.centerYAnchor.constraint(equalTo: alert.view.centerYAnchor)
+    ])
+    
+    if let topViewController = UIApplication.shared.windows.first?.rootViewController {
+        topViewController.present(alert, animated: true, completion: nil)
+    }
+    
+    return alert
+}
+
 #if os(iOS)
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
