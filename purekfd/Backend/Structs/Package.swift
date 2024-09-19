@@ -104,7 +104,7 @@ public struct Package: Codable {
             depiction = nil
         }
         disabled = json["disabled"] as? Bool
-        varonly = json["varonly"] as? Bool
+        varonly = json["varonly"] as? Bool ?? json["varOnly"] as? Bool
         let temp_pkgpath = URL.documents.appendingPathComponent("pkgs/\(bundleid)")
         installed = FileManager.default.fileExists(atPath: temp_pkgpath.path)
         hasprefs = json["hasprefs"] as? Bool ?? false

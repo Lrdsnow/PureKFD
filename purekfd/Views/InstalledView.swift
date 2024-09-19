@@ -19,6 +19,8 @@ struct InstalledView: View {
     @State private var selectedTweak: Package? = nil
     @State private var prefJSON: String = ""
     @State private var selectedPkg: Package? = nil
+    @AppStorage("savedExploitSettings") var savedSettings: [String: String] = [:]
+    @AppStorage("accentColor") private var accentColor: Color = Color(hex: "#D4A7FC")!
     
     var body: some View {
         NavigationView {
@@ -43,7 +45,7 @@ struct InstalledView: View {
                                 .overlay(
                                     HStack {
                                         Image(systemName: "magnifyingglass")
-                                            .foregroundColor(.accent.opacity(0.7))
+                                            .foregroundColor(.accentColor.opacity(0.7))
                                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                                             .padding(.leading, 15)
                                         
@@ -52,16 +54,16 @@ struct InstalledView: View {
                                                 self.searchText = ""
                                             }) {
                                                 Image(systemName: "multiply.circle.fill")
-                                                    .foregroundColor(.accent.opacity(0.7))
+                                                    .foregroundColor(.accentColor.opacity(0.7))
                                                     .padding(.trailing, 15)
                                             }
                                         }
                                     }
                                 )
-                        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accent.opacity(0.1))).padding(.bottom, 2)
+                        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1))).padding(.bottom, 2)
                         HStack {
                             Button(action: {
-                                TweakHandler.applyTweaks(pkgs: appData.installed_pkgs, appData.selectedExploit)
+                                TweakHandler.applyTweaks(pkgs: appData.installed_pkgs, appData.selectedExploit, savedSettings)
                             }, label: {
                                 HStack {
                                     Spacer()
@@ -209,7 +211,7 @@ struct InstalledView: View {
             }.onAppear() {
                 updateInstalledTweaks(appData)
             }.sheet(isPresented: $showErrorSheet) {
-                ErrorInfoPageView(pkg: $selectedPkg, repo: .constant(nil))
+                ErrorInfoPageView(pkg: $selectedPkg, repo: .constant(nil)).accentColor(accentColor)
             }
         }
     }
@@ -302,6 +304,9 @@ struct InstalledView: View {
                                             temp_tweak.error = error
                                         }
                                     }
+                                    if let error = quickConvertLegacyOverwriteTweak(pkg: temp_tweak) {
+                                        temp_tweak.error = error
+                                    }
                                     let jsonData = try JSONEncoder().encode(temp_tweak)
                                     try jsonData.write(to: pkg_dir.appendingPathComponent("_info.json"))
                                     appData.installed_pkgs.append(temp_tweak)
@@ -350,7 +355,7 @@ struct ErrorInfoPageView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            Color.accent
+            Color.accentColor
                 .ignoresSafeArea(.all)
                 .opacity(0.07)
                 .background(Color.black)
@@ -409,6 +414,7 @@ struct ErrorInfoPageView: View {
         if error.contains("error decoding") || error == "" {
             fixes.append(
                 Solution(text:"Attempt Repair", function: {
+                    var overrideDebug = false
                     do {
                         var temp_tweak = pkg
                         if let _tweak = _tweak {
@@ -427,27 +433,107 @@ struct ErrorInfoPageView: View {
                             }
                         }
                         let configJsonPath = pkg_dir.appendingPathComponent(config_filename).path
-                        quickConvertLegacyEncrypted(pkg_dir: pkg_dir, configJsonPath: configJsonPath)
-                        quickConvertPicasso(pkg_dir: pkg_dir, configJsonPath: configJsonPath)
-                        quickConvertLegacyPKFD(pkg_dir: pkg_dir, configJsonPath: configJsonPath)
+                        do {
+                            if let error = quickConvertLegacyEncrypted(pkg_dir: pkg_dir, configJsonPath: configJsonPath) {
+                                if !error.contains("exist") {
+                                    throw error
+                                }
+                            }
+                            if let error = quickConvertPicasso(pkg_dir: pkg_dir, configJsonPath: configJsonPath) {
+                                if !error.contains("exist") {
+                                    throw error
+                                }
+                            }
+                            if let error = quickConvertLegacyPKFD(pkg_dir: pkg_dir, configJsonPath: configJsonPath) {
+                                if !error.contains("exist") {
+                                    throw error
+                                }
+                            }
+                        } catch {
+                            var jsonURL: URL? = nil
+                            if error.localizedDescription.contains("config.json") {
+                                jsonURL = pkg_dir.appendingPathComponent("config.json")
+                            } else if error.localizedDescription.contains("prefs.json") {
+                                jsonURL = pkg_dir.appendingPathComponent("prefs.json")
+                            }
+                            if let jsonURL = jsonURL {
+                                let data = try Data(contentsOf: jsonURL)
+                                let _error = lintJSON(jsonData: data)
+                                let json = (String(data: data, encoding: .utf8) ?? "").components(separatedBy: "\n")
+                                overrideDebug = true
+                                subView = AnyView (
+                                    VStack {
+                                        HStack {
+                                            VStack(alignment: .leading) {
+                                                Text("Repair Result:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
+                                            }
+                                            Spacer()
+                                        }.padding(.leading, 1).padding(.bottom, -3)
+                                        HStack {
+                                            Text("Failed to translate preferences: \(error.localizedDescription)").foregroundColor(.accentColor)
+                                            Spacer()
+                                        }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
+                                        
+                                        HStack {
+                                            VStack(alignment: .leading) {
+                                                Text("Debug:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
+                                            }
+                                            Spacer()
+                                        }.padding(.leading, 1).padding(.bottom, -3)
+                                        HStack {
+                                            Text(_error.0).foregroundColor(.accentColor)
+                                            Spacer()
+                                        }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
+                                        if let line = _error.1 {
+                                            HStack {
+                                                VStack(alignment: .leading) {
+                                                    Text("Debug Preview:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
+                                                }
+                                                Spacer()
+                                            }.padding(.leading, 1).padding(.bottom, -3)
+                                            HStack {
+                                                VStack(alignment: .leading) {
+                                                    if json.count >= line {
+                                                        Text("\(line-2) \(json[line-2])").foregroundColor(.accentColor)
+                                                        Text("\(line-1) \(json[line-1])").foregroundColor(.accentColor)
+                                                        Text("\(line) \(json[line])").foregroundColor(.accentColor).background(Color.accentColor.opacity(0.1))
+                                                        if json.count >= line+1 {
+                                                            Text("\(line+1) \(json[line+1])").foregroundColor(.accentColor)
+                                                            if json.count >= line+2 {
+                                                                Text("\(line+2) \(json[line+2])").foregroundColor(.accentColor)
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                Spacer()
+                                            }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
+                                        }
+                                    }
+                                )
+                            } else {
+                                throw "Error processing tweak preferences"
+                            }
+                        }
                         if FileManager.default.fileExists(atPath: pkg_dir.appendingPathComponent("tweak.json").path),
                            !FileManager.default.fileExists(atPath: pkg_dir.appendingPathComponent("Overwrite").path) {
                             quickConvertLegacyTweak(pkg: temp_tweak)
                         }
-                        subView = AnyView(
-                            VStack {
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        Text("Repair Result:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
-                                    }
-                                    Spacer()
-                                }.padding(.leading, 1).padding(.bottom, -3)
-                                HStack {
-                                    Text("No errors occured on repair, please restart PureKFD").foregroundColor(.accentColor)
-                                    Spacer()
-                                }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
-                            }
-                        )
+                        if !overrideDebug {
+                            subView = AnyView(
+                                VStack {
+                                    HStack {
+                                        VStack(alignment: .leading) {
+                                            Text("Repair Result:").font(.system(size: 25, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
+                                        }
+                                        Spacer()
+                                    }.padding(.leading, 1).padding(.bottom, -3)
+                                    HStack {
+                                        Text("No errors occured on repair, please restart PureKFD").foregroundColor(.accentColor)
+                                        Spacer()
+                                    }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
+                                }
+                            )
+                        }
                     } catch {
                         subView = AnyView(
                             VStack {
@@ -458,7 +544,7 @@ struct ErrorInfoPageView: View {
                                     Spacer()
                                 }.padding(.leading, 1).padding(.bottom, -3)
                                 HStack {
-                                    Text("An unknown error occured while attempting tweak repair").foregroundColor(.accentColor)
+                                    Text(error.localizedDescription ?? "An unknown error occured while attempting tweak repair").foregroundColor(.accentColor)
                                     Spacer()
                                 }.padding().background(RoundedRectangle(cornerRadius: 20).foregroundColor(Color.accentColor.opacity(0.1)))
                             }
@@ -572,7 +658,7 @@ struct ErrorInfoPageView: View {
                                                         if json.count >= line {
                                                             Text("\(line-2) \(json[line-2])").foregroundColor(.accentColor)
                                                             Text("\(line-1) \(json[line-1])").foregroundColor(.accentColor)
-                                                            Text("\(line) \(json[line])").foregroundColor(.accentColor).background(Color.accent.opacity(0.1))
+                                                            Text("\(line) \(json[line])").foregroundColor(.accentColor).background(Color.accentColor.opacity(0.1))
                                                             if json.count >= line+1 {
                                                                 Text("\(line+1) \(json[line+1])").foregroundColor(.accentColor)
                                                                 if json.count >= line+2 {

@@ -7,11 +7,15 @@
 
 import SwiftUI
 import NukeUI
+import Zip
 
 struct FeaturedView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var repoHandler: RepoHandler
     @State private var featured: [(Package,Featured)] = []
+    @State private var selectedTweak: Package? = nil
+    @State private var showSelectedTweak = false
+    @State private var showSettings = false
     
     var body: some View {
         NavigationView {
@@ -28,9 +32,9 @@ struct FeaturedView: View {
                                 Text("PureKFD").font(.system(size: 36, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
                             }
                             Spacer()
-                            NavigationLink(destination: SettingsView(), label: {
+                            NavigationLink(destination: SettingsView(), isActive: $showSettings, label: {
                                 Image(systemName: "gearshape").foregroundColor(.accentColor)
-                            }).buttonStyle(.borderedProminent).tint(.accent.opacity(0.3)).cornerRadius(50)//.clipShape(.circle)
+                            }).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.3)).cornerRadius(50)//.clipShape(.circle)
                         }.padding(.leading, 1)
                         if appData.featured.count >= 10 {
                             VStack(spacing: 10) {
@@ -50,12 +54,61 @@ struct FeaturedView: View {
                         } else {
                             ProgressView().tint(.accentColor)
                         }
+                        //
+                        NavigationLink(destination:
+                                        HStack {
+                            if let selectedTweak = selectedTweak {
+                                TweakView(tweak: selectedTweak)
+                            } else {
+                                ProgressView()
+                            }
+                        }.onDisappear() { selectedTweak = nil }, isActive: $showSelectedTweak, label: {Text("test")}).opacity(0.01).onTapGesture {}
+                        //
                     }.padding(.horizontal).padding(.bottom, 60)
                 }.ios16padding()
             }.onAppear() {
                 updateInstalledTweaks(appData)
                 repoHandler.updateRepos(appData)
             }.navigationBarTitleDisplayMode(.inline)
+            .onOpenURL(perform: { url in
+                if url.pathExtension == "purekfd" {
+                    showSelectedTweak = false
+                    showSettings = false
+                    url.startAccessingSecurityScopedResource()
+                    defer { url.stopAccessingSecurityScopedResource() }
+                    let fm = FileManager.default
+                    do {
+                        let tempURL = URL.documents.appendingPathComponent("temp")
+                        let tempFileURL = tempURL.appendingPathComponent("import.zip")
+                        try? fm.removeItem(at: tempURL)
+                        try fm.createDirectory(at: tempURL, withIntermediateDirectories: true)
+                        try fm.copyItem(at: url, to: tempFileURL)
+                        let output = try Zip.quickUnzipFile(tempFileURL)
+                        if let tweakFolder = findTweakFolder(in: output) {
+                            let bundleID = "\(tweakFolder.lastPathComponent)"
+                            let infoCacheURL = tweakFolder.appendingPathComponent("_info.json")
+                            let infoURL = tweakFolder.appendingPathComponent("info.json")
+                            if fm.fileExists(atPath: infoCacheURL.path),
+                               let data = try? Data(contentsOf: infoCacheURL),
+                               let tweakInfo = try? JSONSerialization.jsonObject(with: data, options: []) as? [String:Any] {
+                                selectedTweak = Package(tweakInfo, nil, nil)
+                            } else if fm.fileExists(atPath: infoURL.path),
+                                let data = try? Data(contentsOf: infoURL),
+                                      let tweakInfo = try? JSONSerialization.jsonObject(with: data, options: []) as? [String:Any] {
+                                selectedTweak = Package(tweakInfo, nil, nil)
+                            } else {
+                                selectedTweak = Package(["bundleid":bundleID], nil, nil)
+                            }
+                        } else {
+                            throw "No tweak folder!"
+                        }
+                        try? fm.removeItem(at: output)
+                        showSelectedTweak = true
+                    } catch {
+                        showPopup("Error", "Failed to import: \(error.localizedDescription)")
+                    }
+                }
+            })
         }.navigationViewStyle(.stack)
     }
 }

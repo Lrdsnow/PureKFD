@@ -79,6 +79,7 @@
 		65916F502C955960005C8462 /* minimuxer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65916F4F2C955960005C8462 /* minimuxer.swift */; };
 		65916F522C955967005C8462 /* minimuxer-helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65916F512C955967005C8462 /* minimuxer-helpers.swift */; };
 		65916F542C95596E005C8462 /* SwiftBridgeCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65916F532C95596E005C8462 /* SwiftBridgeCore.swift */; };
+		6595F3402C9BDC7800F00BD6 /* DirectWrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6595F33F2C9BDC7600F00BD6 /* DirectWrite.swift */; };
 		65ABD2D22C93D77F00DD01E8 /* TweakPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65ABD2D12C93D77C00DD01E8 /* TweakPath.swift */; };
 		65ABD2D32C93D77F00DD01E8 /* TweakPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65ABD2D12C93D77C00DD01E8 /* TweakPath.swift */; };
 		65B18D4C2C418B38002C6276 /* SwiftKFD in Frameworks */ = {isa = PBXBuildFile; productRef = 65B18D4B2C418B38002C6276 /* SwiftKFD */; };
@@ -174,6 +175,7 @@
 		65916F4F2C955960005C8462 /* minimuxer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = minimuxer.swift; path = SparseBox/include/minimuxer.swift; sourceTree = "<group>"; };
 		65916F512C955967005C8462 /* minimuxer-helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "minimuxer-helpers.swift"; path = "SparseBox/include/minimuxer-helpers.swift"; sourceTree = "<group>"; };
 		65916F532C95596E005C8462 /* SwiftBridgeCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftBridgeCore.swift; path = SparseBox/include/SwiftBridgeCore.swift; sourceTree = "<group>"; };
+		6595F33F2C9BDC7600F00BD6 /* DirectWrite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectWrite.swift; sourceTree = "<group>"; };
 		65ABD2D12C93D77C00DD01E8 /* TweakPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweakPath.swift; sourceTree = "<group>"; };
 		65B18D4D2C418B4A002C6276 /* KFD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KFD.swift; sourceTree = "<group>"; };
 		65C073832C2E571B0038E045 /* ImageHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageHandling.swift; sourceTree = "<group>"; };
@@ -448,6 +450,7 @@
 		65DA9E1A2C330BEE007D9AAA /* Exploit */ = {
 			isa = PBXGroup;
 			children = (
+				6595F33F2C9BDC7600F00BD6 /* DirectWrite.swift */,
 				650607A82C9474BC00E1848C /* VirtualEnviorment.swift */,
 				650607A62C9474B900E1848C /* MDC.swift */,
 				650607A42C9474AF00E1848C /* SparseRestore.swift */,
@@ -642,6 +645,7 @@
 				656C14C72C2D3DF00017F279 /* RepoHandler.swift in Sources */,
 				656C14DA2C2DC1680017F279 /* Package.swift in Sources */,
 				65916F2A2C9530EB005C8462 /* ByteBuffer-int.swift in Sources */,
+				6595F3402C9BDC7800F00BD6 /* DirectWrite.swift in Sources */,
 				65916F2B2C9530EB005C8462 /* ByteBuffer-conversions.swift in Sources */,
 				65916F2C2C9530EB005C8462 /* ByteBuffer-foundation.swift in Sources */,
 				65916F2D2C9530EB005C8462 /* IntegerTypes.swift in Sources */,
@@ -900,7 +904,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = $BUILD_DIR/Libraries;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = "6.0 Beta 5";
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purekfdiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -937,7 +941,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = $BUILD_DIR/Libraries;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = "6.0 Beta 5";
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purekfdiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

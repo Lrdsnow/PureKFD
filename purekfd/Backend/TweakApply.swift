@@ -43,11 +43,12 @@ public class TweakHandler {
         try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("apply.lock"))
     }
     
-    public static func applyTweaks(pkgs: [Package], _ exploit: Int) {
+    public static func applyTweaks(pkgs: [Package], _ exploit: Int, _ json: [String: String]) {
         try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("temp"))
+        try? FileManager.default.createDirectory(at: URL.documents.appendingPathComponent("temp"), withIntermediateDirectories: true)
         let loadingPopup = showLoadingPopup()
         Task.detached {
-            if let start_result = ExploitHandler.startExploit(exploit) {
+            if let start_result = ExploitHandler.startExploit(exploit, json: json) {
                 DispatchQueue.main.async {
                     loadingPopup.dismiss(animated: true) {
                         showPopup("Error", start_result)
@@ -59,7 +60,7 @@ public class TweakHandler {
                         self.applyTweak(pkg: pkg, exploit)
                     }
                 }
-                if let end_result = ExploitHandler.endExploit(exploit) {
+                if let end_result = ExploitHandler.endExploit(exploit, json: json) {
                     DispatchQueue.main.async {
                         loadingPopup.dismiss(animated: true) {
                             showPopup("Error", end_result)

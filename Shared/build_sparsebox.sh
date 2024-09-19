@@ -25,7 +25,7 @@ cd SparseBox
 echo """
 ARCHS := $ARCHS
 PACKAGE_FORMAT := ipa
-TARGET := $TARGET_PLATFORM
+TARGET := iphone:clang:latest:16.0
 
 include $THEOS/makefiles/common.mk
 

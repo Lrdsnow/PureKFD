@@ -11,7 +11,7 @@ import NukeUI
 
 struct RepoView: View {
     let repo: Repo
-    @State var bgColor: Color = .accent
+    @State var bgColor: Color = .accentColor
     @EnvironmentObject var appData: AppData
     
     var body: some View {

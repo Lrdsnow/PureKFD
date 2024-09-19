@@ -13,7 +13,7 @@ struct QueuedView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            Color.accent
+            Color.accentColor
                 .ignoresSafeArea(.all)
                 .opacity(0.07)
             ScrollView(.vertical) {

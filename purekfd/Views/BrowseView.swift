@@ -12,10 +12,11 @@ import NukeUI
 struct BrowseView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var repoHandler: RepoHandler
-    @State var bgColor: Color = .accent
+    @State var bgColor: Color = .accentColor
     @State private var searchText: String = ""
     @State private var showErrorSheet = false
     @State private var selectedRepo: Repo? = nil
+    @AppStorage("accentColor") private var accentColor: Color = Color(hex: "#D4A7FC")!
     
     var body: some View {
         NavigationView {
@@ -39,7 +40,7 @@ struct BrowseView: View {
                                 })
                             }, label: {
                                 Image(systemName: "plus").foregroundColor(.accentColor)
-                            }).buttonStyle(.borderedProminent).tint(.accent.opacity(0.3)).cornerRadius(50).frame(height: 32)//.clipShape(.circle)
+                            }).buttonStyle(.borderedProminent).tint(.accentColor.opacity(0.3)).cornerRadius(50).frame(height: 32)//.clipShape(.circle)
                         }.padding(.leading, 1)
                         // Search
                         HStack {
@@ -50,7 +51,7 @@ struct BrowseView: View {
                                 .overlay(
                                     HStack {
                                         Image(systemName: "magnifyingglass")
-                                            .foregroundColor(.accent.opacity(0.7))
+                                            .foregroundColor(.accentColor.opacity(0.7))
                                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                                             .padding(.leading, 15)
                                         
@@ -59,13 +60,13 @@ struct BrowseView: View {
                                                 self.searchText = ""
                                             }) {
                                                 Image(systemName: "multiply.circle.fill")
-                                                    .foregroundColor(.accent.opacity(0.7))
+                                                    .foregroundColor(.accentColor.opacity(0.7))
                                                     .padding(.trailing, 15)
                                             }
                                         }
                                     }
                                 )
-                        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accent.opacity(0.1)))
+                        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
                         //
                         VStack {
                             if searchText == "" {
@@ -126,7 +127,7 @@ struct BrowseView: View {
                 }.refreshable {
                     repoHandler.updateRepos(appData, true)
                 }.sheet(isPresented: $showErrorSheet) {
-                    ErrorInfoPageView(pkg: .constant(nil), repo: $selectedRepo)
+                    ErrorInfoPageView(pkg: .constant(nil), repo: $selectedRepo).accentColor(accentColor)
                 }
             }.animation(.easeInOut(duration: 0.25), value: bgColor)
         }.navigationViewStyle(.stack)

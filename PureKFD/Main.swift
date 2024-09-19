@@ -5,15 +5,16 @@
 //  Created by Lrdsnow on 6/26/24.
 //
 
-// PureKFD is NOT yet ready for use
-
 import UIKit
 import SwiftUI
+import CoreGraphics
 
 @main
 struct purekfdApp: App {
     @StateObject private var appData = AppData()
     @StateObject private var repoHandler = RepoHandler()
+    @State private var font: Font? = nil
+    @AppStorage("accentColor") private var accentColor: Color = Color(hex: "#D4A7FC")!
     
     init() {
         setenv("USBMUXD_SOCKET_ADDRESS", "127.0.0.1:60215", 1)
@@ -31,6 +32,8 @@ struct purekfdApp: App {
             ContentView()
                 .environmentObject(appData)
                 .environmentObject(repoHandler)
+                .accentColor(accentColor)
+                .preferredColorScheme(.dark)
         }
     }
 }
@@ -40,6 +43,7 @@ struct ContentView: View {
     @EnvironmentObject var repoHandler: RepoHandler
     @State private var installing = false
     @State private var selectedTab = 0
+    @AppStorage("accentColor") private var accentColor: Color = Color(hex: "#D4A7FC")!
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -47,12 +51,15 @@ struct ContentView: View {
                 FeaturedView()
                     .tabItem({Label("Featured", systemImage: "star.fill")})
                     .tag(0)
+                    .accentColor(accentColor)
                 BrowseView()
                     .tabItem({Label("Browse", systemImage: "square.grid.2x2")})
                     .tag(1)
+                    .accentColor(accentColor)
                 InstalledView(installing: $installing)
                     .tabItem({Label("Installed", systemImage: "square.and.arrow.down")})
                     .tag(2)
+                    .accentColor(accentColor)
             }
         }.onChange(of: selectedTab) { newValue in
             if installing {
@@ -80,4 +87,3 @@ struct ContentView: View {
         })
     }
 }
-
