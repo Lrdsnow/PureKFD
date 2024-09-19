@@ -9,7 +9,7 @@ import Foundation
 import JASON
 import SwiftUI
 
-public struct Repo: Codable {
+public struct Repo: Codable, Hashable {
     let name: String
     var description: String
     var url: URL?
@@ -23,6 +23,8 @@ public struct Repo: Codable {
     let defaultRowAccent: String?
     
     var error: String? = nil
+    
+    var filtered: Bool? = nil
     
     var iconURL: URL? {get { return self.icon.hasPrefix("https://") || self.icon.hasPrefix("http://") ? URL(string: self.icon) : self.url?.appendingPathComponent(self.icon) }}
     
@@ -103,5 +105,13 @@ public struct Repo: Codable {
             featured = nil
             packages = []
         }
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(fullURL)
+    }
+    
+    public static func == (lhs: Repo, rhs: Repo) -> Bool {
+        return lhs.fullURL == rhs.fullURL
     }
 }

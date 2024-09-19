@@ -49,17 +49,58 @@ struct RepoView: View {
                         ScrollView(.horizontal) {
                             HStack {
                                 ForEach(featured, id:\.bundleid) { tweak in
-                                    FeaturedViewCard((appData.pkgs.first(where: { $0.bundleid == tweak.bundleid}) ?? Package([:], nil, nil), tweak), false)
+                                    let linked_tweak = appData.pkgs.first(where: { $0.bundleid == tweak.bundleid}) ?? Package([:], nil, nil)
+                                    if linked_tweak.filtered != true || repo.filtered == true {
+                                        FeaturedViewCard((linked_tweak, tweak), false)
+                                    }
                                 }
                             }
                         }
                     }
                     ForEach(repo.packages, id:\.bundleid) { tweak in
-                        TweakListRowView(tweak: tweak)
+                        if tweak.filtered != true || repo.filtered == true {
+                            TweakListRowView(tweak: tweak)
+                        }
+                    }
+                    if repo.filtered != true {
+                        FilteredTweaksViewNavLink(repo: repo, bgColor: $bgColor)
                     }
                 }.padding()
             }
         }.animation(.easeInOut(duration: 0.25), value: bgColor).navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct FilteredTweaksViewNavLink: View {
+    let repo: Repo
+    @Binding var bgColor: Color
+    
+    var body: some View {
+        let filteredTweaks = repo.packages.filter({ $0.filtered == true })
+        if filteredTweaks.count > 0 {
+            VStack {
+                HStack {
+                    NavigationLink(destination: {
+                        ZStack {
+                            bgColor
+                                .ignoresSafeArea(.all)
+                                .opacity(0.07)
+                            ScrollView(.vertical) {
+                                VStack {
+                                    ForEach(filteredTweaks, id:\.bundleid) { tweak in
+                                        TweakListRowView(tweak: tweak)
+                                    }
+                                }.padding(.horizontal)
+                            }
+                        }
+                    }, label: {
+                        Text("\(filteredTweaks.count) Filtered Tweaks").foregroundColor(bgColor)
+                        Spacer()
+                        Image(systemName: "chevron.right").foregroundColor(bgColor).font(.footnote)
+                    })
+                }.padding()
+            }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(bgColor.opacity(0.1)))
+        }
     }
 }
 

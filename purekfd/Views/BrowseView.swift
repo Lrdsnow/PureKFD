@@ -12,7 +12,6 @@ import NukeUI
 struct BrowseView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var repoHandler: RepoHandler
-    @State var bgColor: Color = .accentColor
     @State private var searchText: String = ""
     @State private var showErrorSheet = false
     @State private var selectedRepo: Repo? = nil
@@ -21,7 +20,7 @@ struct BrowseView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                bgColor
+                Color.accentColor
                     .ignoresSafeArea(.all)
                     .opacity(0.07)
                 ScrollView(.vertical) {
@@ -70,74 +69,77 @@ struct BrowseView: View {
                         //
                         VStack {
                             if searchText == "" {
-                                ForEach(appData.repos.sorted(by: { $0.name < $1.name }), id: \.url) { repo in
-                                    RepoListRowView(repo: repo).listRowSeparator(.hidden).contextMenu {
-                                        if let url = repo.prettyURL {
-                                            Text(url).font(.footnote).minimumScaleFactor(0.5).lineLimit(1).opacity(0.5)
-                                        }
-                                        if repo.error != nil {
-                                            Button(action: {
-                                                selectedRepo = repo
-                                                showErrorSheet = true
-                                            }, label: {
-                                                HStack {
-                                                    Text("Error Info")
-                                                    Spacer()
-                                                    Image(systemName: "exclamationmark.circle.fill")
-                                                }
-                                            })
-                                        }
-                                        Button(action: {
-                                            if let url = repo.fullURL {
-                                                let pasteboard = UIPasteboard.general
-                                                pasteboard.string = url.absoluteString
-                                            }
-                                        }, label: {
-                                            HStack {
-                                                Text("Copy URL")
-                                                Spacer()
-                                                Image(systemName: "doc.on.clipboard")
-                                            }
-                                        })
-                                        Button(role: .destructive, action: {
-                                            if let url = repo.fullURL {
-                                                repoHandler.removeRepo(url, appData)
-                                            }
-                                        }, label: {
-                                            HStack {
-                                                Text("Delete Repo")
-                                                Spacer()
-                                                Image(systemName: "trash")
-                                            }
-                                        })
+                                ForEach(appData.repos.sorted(by: { $0.name < $1.name }), id: \.fullURL) { repo in
+                                    if repo.filtered != true {
+                                        RepoListRowView(repo: repo, showErrorSheet: $showErrorSheet, selectedRepo: $selectedRepo)
                                     }
                                 }
+                                FilteredReposViewNavLink(showErrorSheet: $showErrorSheet, selectedRepo: $selectedRepo)
                             } else {
                                 ForEach(appData.pkgs.filter({ $0.name.contains(searchText)}).sorted(by: { $0.name < $1.name }), id:\.bundleid) { tweak in
                                     TweakListRowView(tweak: tweak)
                                 }
                             }
                         }.refreshable {
-                            repoHandler.updateRepos(appData, true)
+                            repoHandler.updateRepos(appData)
                         }
                     }.padding(.horizontal).padding(.bottom, 60)
                 }.ios16padding().listStyle(.plain).navigationBarTitleDisplayMode(.inline).onAppear() {
                     updateInstalledTweaks(appData)
                     repoHandler.updateRepos(appData)
                 }.refreshable {
-                    repoHandler.updateRepos(appData, true)
+                    repoHandler.updateRepos(appData)
                 }.sheet(isPresented: $showErrorSheet) {
                     ErrorInfoPageView(pkg: .constant(nil), repo: $selectedRepo).accentColor(accentColor)
                 }
-            }.animation(.easeInOut(duration: 0.25), value: bgColor)
+            }
         }.navigationViewStyle(.stack)
+    }
+}
+
+struct FilteredReposViewNavLink: View {
+    @Binding var showErrorSheet: Bool
+    @Binding var selectedRepo: Repo?
+    
+    @EnvironmentObject var appData: AppData
+    
+    var body: some View {
+        let filteredRepos = Array(Set(appData.repos.filter( { $0.filtered == true } )))
+        if filteredRepos.count > 0 {
+            VStack {
+                HStack {
+                    NavigationLink(destination: {
+                        ZStack {
+                            Color.accentColor
+                                .ignoresSafeArea(.all)
+                                .opacity(0.07)
+                            ScrollView(.vertical) {
+                                VStack {
+                                    ForEach(filteredRepos.sorted(by: { $0.name < $1.name }), id: \.fullURL) { repo in
+                                        RepoListRowView(repo: repo, showErrorSheet: $showErrorSheet, selectedRepo: $selectedRepo)
+                                    }
+                                }.padding(.horizontal)
+                            }
+                        }
+                    }, label: {
+                        Text("\(filteredRepos.count) Filtered Repos")
+                        Spacer()
+                        Image(systemName: "chevron.right").foregroundColor(.accentColor).font(.footnote)
+                    })
+                }.padding()
+            }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        }
     }
 }
 
 struct RepoListRowView: View {
     let repo: Repo
+    @Binding var showErrorSheet: Bool
+    @Binding var selectedRepo: Repo?
+    
     @State private var accent: Color? = nil
     @EnvironmentObject var appData: AppData
+    @EnvironmentObject var repoHandler: RepoHandler
     
     var body: some View {
         HStack {
@@ -175,6 +177,45 @@ struct RepoListRowView: View {
                     Image(systemName: "chevron.right").foregroundColor(accent ?? repo.accentColor ?? .accentColor).font(.footnote)
                 }
             }.padding()
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor((accent ?? repo.accentColor ?? .accentColor).opacity(0.1)))
+        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor((accent ?? repo.accentColor ?? .accentColor).opacity(0.1))).listRowSeparator(.hidden).contextMenu {
+            if let url = repo.prettyURL {
+                Text(url).font(.footnote).minimumScaleFactor(0.5).lineLimit(1).opacity(0.5)
+            }
+            if repo.error != nil {
+                Button(action: {
+                    selectedRepo = repo
+                    showErrorSheet = true
+                }, label: {
+                    HStack {
+                        Text("Error Info")
+                        Spacer()
+                        Image(systemName: "exclamationmark.circle.fill")
+                    }
+                })
+            }
+            Button(action: {
+                if let url = repo.fullURL {
+                    let pasteboard = UIPasteboard.general
+                    pasteboard.string = url.absoluteString
+                }
+            }, label: {
+                HStack {
+                    Text("Copy URL")
+                    Spacer()
+                    Image(systemName: "doc.on.clipboard")
+                }
+            })
+            Button(role: .destructive, action: {
+                if let url = repo.fullURL {
+                    repoHandler.removeRepo(url, appData)
+                }
+            }, label: {
+                HStack {
+                    Text("Delete Repo")
+                    Spacer()
+                    Image(systemName: "trash")
+                }
+            })
+        }
     }
 }

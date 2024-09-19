@@ -24,6 +24,8 @@ public struct Package: Codable {
     let banner: URL?
     let category: String
     let depiction: URL?
+    //
+    var filtered: Bool? = nil
     // Install Values:
     var path: URL?
     var versions: [String: String]?

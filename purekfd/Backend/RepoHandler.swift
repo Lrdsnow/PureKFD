@@ -49,39 +49,48 @@ public class RepoHandler: ObservableObject {
         }
     }
     
-    func updateRepos(_ appData: AppData, _ overwrite: Bool = false) {
+    func updateRepos(_ appData: AppData) {
         for url in repo_urls {
-            let repoExists = appData.repos.contains { $0.url == url.deletingLastPathComponent() }
-            
-            // Proceed if overwrite is true or the repo doesn't already exist
-            if overwrite || !repoExists {
-                getRepo(url) { repo, error in
-                    if var repo = repo {
-                        
-                        // Filter packages if necessary
-                        if appData.filterPackages, ExploitHandler.exploits[appData.selectedExploit].varOnly {
-                            let filteredPackages = repo.packages.filter { $0.varonly == true }
-                            if filteredPackages.isEmpty {
-                                return // Skip to next repo
-                            }
-                            repo.packages = filteredPackages
-                        }
-
-                        // Handle overwriting or adding new repos
-                        if overwrite {
-                            if let index = appData.repos.firstIndex(where: { $0.url == url.deletingLastPathComponent() }) {
-                                appData.repos[index] = repo
+            getRepo(url) { repo, error in
+                if var repo = repo {
+                    
+                    // Filter packages if necessary
+                    if appData.filterPackages, ExploitHandler.exploits[appData.selectedExploit].varOnly {
+                        var newpkgs: [Package] = []
+                        repo.packages.forEach({ pkg in
+                            if pkg.varonly != true {
+                                var temp_pkg = pkg
+                                temp_pkg.filtered = true
+                                newpkgs.append(temp_pkg)
                             } else {
-                                appData.repos.append(repo)
+                                newpkgs.append(pkg)
                             }
-                        } else if !appData.repos.contains(where: { $0.url == repo.url }) {
+                        })
+                        repo.packages = newpkgs
+                        if !repo.packages.contains(where: { $0.filtered != true }) {
+                            repo.filtered = true
                             appData.repos.append(repo)
+                            return // Skip to next repo
                         }
-
-                        // Update packages and featured entries
-                        appData.pkgs = appData.repos.flatMap { $0.packages }
-                        appData.featured = appData.repos.flatMap { $0.featured ?? [] }
                     }
+                    
+                    var newfeatured: [Featured] = []
+                    repo.featured?.forEach({ feature in
+                        var temp_featured = feature
+                        if let pkg = repo.packages.first(where: { $0.bundleid == feature.bundleid }) {
+                            temp_featured.filtered = pkg.filtered
+                        }
+                    })
+
+                    if let index = appData.repos.firstIndex(where: { $0.fullURL == url }) {
+                        appData.repos[index] = repo
+                    } else {
+                        appData.repos.append(repo)
+                    }
+                    
+                    appData.repos = Array(Set(appData.repos))
+                    appData.pkgs = appData.repos.flatMap { $0.packages }
+                    appData.featured = appData.repos.flatMap { $0.featured ?? [] }
                 }
             }
         }

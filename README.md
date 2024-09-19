@@ -1,5 +1,5 @@
 <p align="right">
-  <img align="right" height="140" src="https://github.com/PureKFD/PureKFD/blob/main/Icon.png?raw=true" alt="PureKFD Logo" style="float: right; border-radius: 10px;"/>
+  <img align="right" height="140" src="https://github.com/PureKFD/PureKFD/blob/v6/Icon.png?raw=true" alt="PureKFD Logo" style="float: right; border-radius: 10px;"/>
 </p>
 
 <h1 align="left">PureKFD - The Purest iOS Toolbox</h1>
@@ -14,18 +14,17 @@
 
 ## Overview
 
-PureKFD is an exploit based Jailed Package Manager, supporting iOS versions 14.0 through 18.0rc using SparseRestore, KFD `CVE-2023-41974`, and MDC `CVE-2022-46689`. PureKFD allows users to customize their experience through a user-friendly interface, utilizing community-developed tweaks available from the community’s repositories.
+PureKFD is an exploit based Jailed Package Manager, supporting iOS versions 14.0 through 18.0 using SparseRestore, KFD `CVE-2023-41974`, and MDC `CVE-2022-46689`. PureKFD allows users to customize their experience through a user-friendly interface, utilizing community-developed tweaks available from the community’s repositories.
 
 ## Getting Started
 
-1. **Compatibility:** Ensure your iOS device is running an iOS version 14.0 through 18.0rc.
+1. **Compatibility:** Ensure your iOS device is running an iOS version 14.0 through 18.0.
 2. **Installation:** Download PureKFD from the [github releases](https://github.com/PureKFD/PureKFD/releases/latest) for the latest release or [our discord](https://discord.gg/cCSwxqdvzx) for the latest betas.
 3. **Customize:** Explore the vast array of tweaks, personalize your iOS experience, and make your device truly yours.
 
 ## Credits
 
-- Lrdsnow: Main Developer
-- dor4a: Icon/Tweak Creator
+- [Lrdsnow](https://github.com/lrdsnow): Main Developer
 - rest of the credits can be found in the License
 
 ### Disclaimer

@@ -188,7 +188,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		65486BAB2C8571A9002E2F28 /* purebox macOS */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "purebox macOS"; sourceTree = "<group>"; };
+		65486BAB2C8571A9002E2F28 /* PureKFD macOS */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "PureKFD macOS"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -251,7 +251,7 @@
 			children = (
 				65916EA42C9526F6005C8462 /* Shared */,
 				656C14AB2C2D32D60017F279 /* purekfd */,
-				65486BAB2C8571A9002E2F28 /* purebox macOS */,
+				65486BAB2C8571A9002E2F28 /* PureKFD macOS */,
 				656C14AA2C2D32D60017F279 /* Products */,
 				656C14E02C2DC3D00017F279 /* Frameworks */,
 			);
@@ -494,7 +494,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				65486BAB2C8571A9002E2F28 /* purebox macOS */,
+				65486BAB2C8571A9002E2F28 /* PureKFD macOS */,
 			);
 			name = PureRestore;
 			packageProductDependencies = (
@@ -558,7 +558,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 656C14A42C2D32D60017F279 /* Build configuration list for PBXProject "purebox" */;
+			buildConfigurationList = 656C14A42C2D32D60017F279 /* Build configuration list for PBXProject "PureKFD" */;
 			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -990,7 +990,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		656C14A42C2D32D60017F279 /* Build configuration list for PBXProject "purebox" */ = {
+		656C14A42C2D32D60017F279 /* Build configuration list for PBXProject "PureKFD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				656C14B52C2D32D80017F279 /* Debug */,

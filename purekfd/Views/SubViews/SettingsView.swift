@@ -209,7 +209,7 @@ struct ThemeRow: View {
             VStack {
                 ColorPicker(selection: $accentColor, label: { Text("Accent Color") }).foregroundColor(accentColor)
             }.padding(.bottom, 15).padding(.horizontal)
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1))).animation(.spring)
+        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
     }
 }
 
@@ -223,7 +223,7 @@ struct CreditViewNavLink: View {
                     Image(systemName: "chevron.right").foregroundColor(.accentColor).font(.footnote)
                 })
             }.padding()
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1))).animation(.spring)
+        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
     }
 }
 
