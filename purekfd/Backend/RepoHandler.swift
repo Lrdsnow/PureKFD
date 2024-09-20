@@ -54,7 +54,14 @@ public class RepoHandler: ObservableObject {
             getRepo(url) { repo, error in
                 if var repo = repo {
                     
-                    // Filter packages if necessary
+                    var new_pkgs: [Package] = []
+                    repo.packages.forEach({ pkg in
+                        var temp_pkg = pkg
+                        temp_pkg.feature = repo.featured?.first(where: { $0.bundleid == pkg.bundleid })
+                        new_pkgs.append(temp_pkg)
+                    })
+                    repo.packages = new_pkgs
+                    
                     if appData.filterPackages, ExploitHandler.exploits[appData.selectedExploit].varOnly {
                         var newpkgs: [Package] = []
                         repo.packages.forEach({ pkg in
@@ -73,14 +80,6 @@ public class RepoHandler: ObservableObject {
                             return // Skip to next repo
                         }
                     }
-                    
-                    var newfeatured: [Featured] = []
-                    repo.featured?.forEach({ feature in
-                        var temp_featured = feature
-                        if let pkg = repo.packages.first(where: { $0.bundleid == feature.bundleid }) {
-                            temp_featured.filtered = pkg.filtered
-                        }
-                    })
 
                     if let index = appData.repos.firstIndex(where: { $0.fullURL == url }) {
                         appData.repos[index] = repo

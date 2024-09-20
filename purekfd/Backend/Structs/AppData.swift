@@ -18,7 +18,7 @@ public class AppData: ObservableObject {
     
     // Exploit stuff
     @AppStorage("selectedExploit") var selectedExploit = 0
-    @AppStorage("FilterPackages") var filterPackages = false
+    @AppStorage("FilterPackages") var filterPackages = true
     @AppStorage("savedExploitSettings") var savedSettings: [String: String] = [:]
     
     static let shared = AppData()

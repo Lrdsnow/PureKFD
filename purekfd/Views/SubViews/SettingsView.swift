@@ -51,7 +51,7 @@ struct DeviceRow: View {
 
 struct ExploitRow: View {
     @AppStorage("selectedExploit") var exploit = 0
-    @AppStorage("FilterPackages") var filterPackages = false
+    @AppStorage("FilterPackages") var filterPackages = true
     @AppStorage("savedExploitSettings") var savedSettings: [String: String] = [:]
     let exploits = ExploitHandler.exploits
     

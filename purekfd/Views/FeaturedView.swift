@@ -16,6 +16,7 @@ struct FeaturedView: View {
     @State private var selectedTweak: Package? = nil
     @State private var showSelectedTweak = false
     @State private var showSettings = false
+    @AppStorage("FilterPackages") var filterPackages = true
     
     var body: some View {
         NavigationView {
@@ -43,7 +44,14 @@ struct FeaturedView: View {
                                 }
                             }.onAppear() {
                                 if featured.isEmpty {
-                                    let repo_featured = appData.featured.filter({ !($0.square ?? false) }).shuffled().prefix(10)
+                                    let repo_featured = appData.repos
+                                        .filter { $0.filtered != true } // Filter out repos that are marked as filtered
+                                        .flatMap { $0.packages ?? [] } // Flatten the packages from each repo
+                                        .filter { $0.filtered != true } // Ensure the package itself is not filtered
+                                        .compactMap { $0.feature } // Extract features, filtering out nils
+                                        .filter { !($0.square ?? false) } // Filter out features with square == true
+                                        .shuffled() // Shuffle the features
+                                        .prefix(10) // Get the first 10 features
                                     for feature in repo_featured {
                                         if let pkg = appData.pkgs.first(where: { $0.bundleid == feature.bundleid }) {
                                             featured.append((pkg, feature))
@@ -66,10 +74,15 @@ struct FeaturedView: View {
                         //
                     }.padding(.horizontal).padding(.bottom, 60)
                 }.ios16padding()
-            }.onAppear() {
-                updateInstalledTweaks(appData)
+            }
+            .onChange(of: filterPackages) { _ in
+                appData.repos = []
+                appData.featured = []
+                appData.pkgs = []
+                featured = []
                 repoHandler.updateRepos(appData)
-            }.navigationBarTitleDisplayMode(.inline)
+            }
+            .navigationBarTitleDisplayMode(.inline)
             .onOpenURL(perform: { url in
                 if url.pathExtension == "purekfd" {
                     showSelectedTweak = false

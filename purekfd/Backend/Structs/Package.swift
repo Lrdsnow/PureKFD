@@ -32,7 +32,7 @@ public struct Package: Codable {
     // Repo Values:
     let url: URL?
     var repo: Repo?
-    let feature: Featured?
+    var feature: Featured?
     // Installed values
     var disabled: Bool?
     var hasprefs: Bool

@@ -34,6 +34,9 @@ struct purekfdApp: App {
                 .environmentObject(repoHandler)
                 .accentColor(accentColor)
                 .preferredColorScheme(.dark)
+                .onAppear() {
+                    ExploitHandler.unsandbox(appData.selectedExploit)
+                }
         }
     }
 }
@@ -67,6 +70,8 @@ struct ContentView: View {
             }
         }.onAppear() {
             log("Running on an \(DeviceInfo.modelName) (\(DeviceInfo.cpu)) running \(DeviceInfo.osString) \(DeviceInfo.version) (\(DeviceInfo.build))")
+            updateInstalledTweaks(appData)
+            repoHandler.updateRepos(appData)
         }.onOpenURL(perform: { url in
             if url.pathExtension == "mobiledevicepairing" {
                 let loading = showLoadingPopup()

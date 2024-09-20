@@ -53,6 +53,12 @@
 		6576F8AE2C33CA6200678715 /* TweakApply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576F8AD2C33CA5E00678715 /* TweakApply.swift */; };
 		6576F8B02C33CA9E00678715 /* Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576F8AF2C33CA9D00678715 /* Debug.swift */; };
 		6576F8B22C33CAE700678715 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576F8B12C33CAE200678715 /* DataExtensions.swift */; };
+		657F802E2C9D23EA00EA91F8 /* MacDirtyCowSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657F802B2C9D23EA00EA91F8 /* MacDirtyCowSwift.swift */; };
+		657F802F2C9D23EA00EA91F8 /* Wrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657F802C2C9D23EA00EA91F8 /* Wrappers.swift */; };
+		657F80302C9D23EA00EA91F8 /* grant_full_disk_access.m in Sources */ = {isa = PBXBuildFile; fileRef = 657F80232C9D23EA00EA91F8 /* grant_full_disk_access.m */; };
+		657F80312C9D23EA00EA91F8 /* jit.m in Sources */ = {isa = PBXBuildFile; fileRef = 657F80272C9D23EA00EA91F8 /* jit.m */; };
+		657F80322C9D23EA00EA91F8 /* vm_unaligned_copy_switch_race.c in Sources */ = {isa = PBXBuildFile; fileRef = 657F80292C9D23EA00EA91F8 /* vm_unaligned_copy_switch_race.c */; };
+		657F80332C9D23EA00EA91F8 /* helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 657F80252C9D23EA00EA91F8 /* helpers.m */; };
 		658EBA052C3662E100826E0B /* ExploitHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658EBA042C3662DF00826E0B /* ExploitHandler.swift */; };
 		65916F0C2C952FBC005C8462 /* MobileDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65916F0A2C952FBC005C8462 /* MobileDevice.swift */; };
 		65916F112C952FC4005C8462 /* Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65916F0D2C952FC4005C8462 /* Backup.swift */; };
@@ -148,6 +154,16 @@
 		6576F8AD2C33CA5E00678715 /* TweakApply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweakApply.swift; sourceTree = "<group>"; };
 		6576F8AF2C33CA9D00678715 /* Debug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debug.swift; sourceTree = "<group>"; };
 		6576F8B12C33CAE200678715 /* DataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
+		657F80222C9D23EA00EA91F8 /* grant_full_disk_access.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = grant_full_disk_access.h; sourceTree = "<group>"; };
+		657F80232C9D23EA00EA91F8 /* grant_full_disk_access.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = grant_full_disk_access.m; sourceTree = "<group>"; };
+		657F80242C9D23EA00EA91F8 /* helpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = helpers.h; sourceTree = "<group>"; };
+		657F80252C9D23EA00EA91F8 /* helpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = helpers.m; sourceTree = "<group>"; };
+		657F80262C9D23EA00EA91F8 /* jit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = jit.h; sourceTree = "<group>"; };
+		657F80272C9D23EA00EA91F8 /* jit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = jit.m; sourceTree = "<group>"; };
+		657F80282C9D23EA00EA91F8 /* vm_unaligned_copy_switch_race.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vm_unaligned_copy_switch_race.h; sourceTree = "<group>"; };
+		657F80292C9D23EA00EA91F8 /* vm_unaligned_copy_switch_race.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vm_unaligned_copy_switch_race.c; sourceTree = "<group>"; };
+		657F802B2C9D23EA00EA91F8 /* MacDirtyCowSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDirtyCowSwift.swift; sourceTree = "<group>"; };
+		657F802C2C9D23EA00EA91F8 /* Wrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wrappers.swift; sourceTree = "<group>"; };
 		658EBA042C3662DF00826E0B /* ExploitHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploitHandler.swift; sourceTree = "<group>"; };
 		65916F0A2C952FBC005C8462 /* MobileDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileDevice.swift; sourceTree = "<group>"; };
 		65916F0D2C952FC4005C8462 /* Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backup.swift; sourceTree = "<group>"; };
@@ -341,9 +357,35 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		657F802A2C9D23EA00EA91F8 /* MDC */ = {
+			isa = PBXGroup;
+			children = (
+				657F80222C9D23EA00EA91F8 /* grant_full_disk_access.h */,
+				657F80232C9D23EA00EA91F8 /* grant_full_disk_access.m */,
+				657F80242C9D23EA00EA91F8 /* helpers.h */,
+				657F80252C9D23EA00EA91F8 /* helpers.m */,
+				657F80262C9D23EA00EA91F8 /* jit.h */,
+				657F80272C9D23EA00EA91F8 /* jit.m */,
+				657F80282C9D23EA00EA91F8 /* vm_unaligned_copy_switch_race.h */,
+				657F80292C9D23EA00EA91F8 /* vm_unaligned_copy_switch_race.c */,
+			);
+			path = MDC;
+			sourceTree = "<group>";
+		};
+		657F802D2C9D23EA00EA91F8 /* MDC+ */ = {
+			isa = PBXGroup;
+			children = (
+				657F802B2C9D23EA00EA91F8 /* MacDirtyCowSwift.swift */,
+				657F802C2C9D23EA00EA91F8 /* Wrappers.swift */,
+			);
+			path = "MDC+";
+			sourceTree = "<group>";
+		};
 		65916EA42C9526F6005C8462 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				657F802A2C9D23EA00EA91F8 /* MDC */,
+				657F802D2C9D23EA00EA91F8 /* MDC+ */,
 				65916ED52C952F3C005C8462 /* SparseRestore */,
 				65916F152C95301B005C8462 /* Bridge.h */,
 			);
@@ -678,6 +720,12 @@
 				650607A72C9474B900E1848C /* MDC.swift in Sources */,
 				656C14AF2C2D32D60017F279 /* Main.swift in Sources */,
 				65069B6E2C2F69D500A309C2 /* TweakView.swift in Sources */,
+				657F802E2C9D23EA00EA91F8 /* MacDirtyCowSwift.swift in Sources */,
+				657F802F2C9D23EA00EA91F8 /* Wrappers.swift in Sources */,
+				657F80302C9D23EA00EA91F8 /* grant_full_disk_access.m in Sources */,
+				657F80312C9D23EA00EA91F8 /* jit.m in Sources */,
+				657F80322C9D23EA00EA91F8 /* vm_unaligned_copy_switch_race.c in Sources */,
+				657F80332C9D23EA00EA91F8 /* helpers.m in Sources */,
 				65C073862C2E58B30038E045 /* ColorExtensions.swift in Sources */,
 				65916F0C2C952FBC005C8462 /* MobileDevice.swift in Sources */,
 				65619DAF2C920C1600BEE096 /* purePrefs.swift in Sources */,
