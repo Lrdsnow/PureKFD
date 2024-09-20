@@ -939,7 +939,8 @@
 				HEADER_SEARCH_PATHS = Shared/SparseBox/include;
 				INFOPLIST_FILE = purekfd/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PureKFD;
-				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "PureMDC uses the documents folder to store App Data";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = unsandbox;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "PureKFD uses the documents folder to store App Data";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -952,7 +953,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = $BUILD_DIR/Libraries;
-				MARKETING_VERSION = "6.0 Beta 5";
+				MARKETING_VERSION = "6.0 RC";
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purekfdiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -976,7 +977,8 @@
 				HEADER_SEARCH_PATHS = Shared/SparseBox/include;
 				INFOPLIST_FILE = purekfd/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PureKFD;
-				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "PureMDC uses the documents folder to store App Data";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = unsandbox;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "PureKFD uses the documents folder to store App Data";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -989,7 +991,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = $BUILD_DIR/Libraries;
-				MARKETING_VERSION = "6.0 Beta 5";
+				MARKETING_VERSION = "6.0 RC";
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purekfdiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

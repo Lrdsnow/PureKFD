@@ -9,6 +9,7 @@ import SwiftUI
 import Alamofire
 import Zip
 import JASON
+import SwiftKFD_objc
 
 struct InstalledView: View {
     @EnvironmentObject var appData: AppData
@@ -72,16 +73,49 @@ struct InstalledView: View {
                                     Spacer()
                                 }.padding()
                             }).background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.accentColor.opacity(0.1)))
+                            let reboot_action = ExploitHandler.exploits[appData.selectedExploit].reboot == true
                             Button(action: {
-                                
+                                if reboot_action {
+                                    let loading = showLoadingPopup()
+                                    Task.detached {
+                                        if let error = ExploitHandler.reboot(appData.selectedExploit) {
+                                            DispatchQueue.main.async {
+                                                loading.dismiss(animated: true) {
+                                                    showPopup("Error", error)
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    restartBackboard()
+                                }
                             }, label: {
                                 HStack {
                                     Spacer()
                                     Image(systemName: "arrow.clockwise")
-                                    Text("Respring").font(.headline.bold())
+                                    Text(reboot_action ? "Reboot" : "Respring").font(.headline.bold())
                                     Spacer()
                                 }.padding()
-                            }).background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.accentColor.opacity(0.1)))
+                            }).background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.accentColor.opacity(0.1))).contextMenu(menuItems: {
+                                Button(action: {
+                                    restartBackboard()
+                                }, label: {
+                                    HStack {
+                                        Image(systemName: "arrow.clockwise")
+                                        Text("Backboard Respring").font(.headline.bold())
+                                        Spacer()
+                                    }
+                                })
+                                Button(action: {
+                                    restartFrontboard()
+                                }, label: {
+                                    HStack {
+                                        Image(systemName: "arrow.clockwise")
+                                        Text("Frontboard Respring").font(.headline.bold())
+                                        Spacer()
+                                    }
+                                })
+                            })
                         }
                         if !appData.queued_pkgs.isEmpty {
                             Section(content: {
