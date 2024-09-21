@@ -20,6 +20,7 @@ struct InstalledView: View {
     @State private var selectedTweak: Package? = nil
     @State private var prefJSON: String = ""
     @State private var selectedPkg: Package? = nil
+    @AppStorage("saveEnv") var saveEnv: [String:String] = [:]
     @AppStorage("savedExploitSettings") var savedSettings: [String: String] = [:]
     @AppStorage("accentColor") private var accentColor: Color = Color(hex: "#D4A7FC")!
     
@@ -64,7 +65,7 @@ struct InstalledView: View {
                         }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1))).padding(.bottom, 2)
                         HStack {
                             Button(action: {
-                                TweakHandler.applyTweaks(pkgs: appData.installed_pkgs, appData.selectedExploit, savedSettings)
+                                TweakHandler.applyTweaks(pkgs: appData.installed_pkgs, appData.selectedExploit, savedSettings, saveEnv)
                             }, label: {
                                 HStack {
                                     Spacer()

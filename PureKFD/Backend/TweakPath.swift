@@ -12,22 +12,20 @@ class TweakPath {
     public static func parseSegment(_ input: String) -> (name: String, identifiers: [String], values: [String])? {
         let cleanedInput = input.trimmingCharacters(in: CharacterSet(charactersIn: "%"))
         guard let segmentRange = cleanedInput.range(of: "Segment") else {
-            print("Segment not found")
+            log("[!] Segment not found in string: \(input)")
             return nil
         }
         
         let segmentString = String(cleanedInput[segmentRange.lowerBound...])
         guard let nameRange = segmentString.range(of: "Name: '")?.upperBound,
               let endNameRange = segmentString.range(of: "'", range: nameRange..<segmentString.endIndex)?.lowerBound else {
-            print("Name not found")
+            log("[!] Name not found in string: \(input)")
             return nil
         }
         let name = String(segmentString[nameRange..<endNameRange])
         
         let identifiers = extractAttributes(from: segmentString, attribute: "Identifier")
         let values = extractAttributes(from: segmentString, attribute: "Value")
-        
-        print(name,  identifiers, values)
         
         return (name, identifiers, values)
     }
@@ -45,44 +43,29 @@ class TweakPath {
                 }
             }
         } catch {
-            print("Invalid regex pattern for \(attribute)")
+            log("[!] Invalid regex pattern for \(attribute)")
         }
         return attributes
     }
     
     public static func parseAppUUID(_ input: String) -> (appIdentifier: String, data: String)? {
-        // Trim the input
         let cleanedInput = input.trimmingCharacters(in: CharacterSet(charactersIn: "%"))
-        
-        // Ensure the "AppUUID{" exists
         guard let appUUIDRange = cleanedInput.range(of: "AppUUID{'") else {
-            log("AppUUID not found")
+            log("[!] AppUUID not found in string: \(input)")
             return nil
         }
-        
-        // Extract everything after "AppUUID{'"
         let appUUIDString = String(cleanedInput[appUUIDRange.upperBound...])
-        
-        // Find the closing quote of the first string (the app identifier)
         guard let endAppIdentifierRange = appUUIDString.range(of: "'")?.lowerBound else {
-            log("App Identifier not found")
+            log("[!] App Identifier not found in string: \(input)")
             return nil
         }
-        
-        // Extract the app identifier
         let appIdentifier = String(appUUIDString[..<endAppIdentifierRange])
-        
-        // Move past the first string to find the second string (data)
-        let remainingString = appUUIDString[endAppIdentifierRange...].dropFirst(3) // Skip "', '"
-        
-        // Extract the data
+        let remainingString = appUUIDString[endAppIdentifierRange...].dropFirst(3)
         let data = remainingString.replacingOccurrences(of: "'", with: "").replacingOccurrences(of: "}", with: "")
-        
-        log("\(appIdentifier) \(data)")
         return (appIdentifier, data)
     }
     
-    public static func processPath(_ url: URL, _ pkgpath: URL, _ exploit: Int = 0) -> (from: URL?, toPath: String)? {
+    public static func processPath(_ url: URL, _ pkgpath: URL, _ exploit: Int = 0, _ saveEnv: [String:String] = [:]) -> (from: URL?, toPath: String)? {
         var path = url.path
         var from: URL? = nil
         
@@ -93,6 +76,7 @@ class TweakPath {
            let _save = try? JSONSerialization.jsonObject(with: save_data) as? [String:Any] {
             save = _save
         }
+        save.merge(saveEnv.mapValues { $0 as Any }) { (_, new) in new }
         
         for temp_component in pathComponents {
             var component = temp_component
@@ -125,7 +109,7 @@ class TweakPath {
                         return nil
                     }
                 } catch {
-                    log(error)
+                    log("[!] pure_plist error: \(error)")
                     return nil
                 }
             } else if pure_text {
@@ -140,7 +124,7 @@ class TweakPath {
                     try contents.write(to: new_from, atomically: true, encoding: .utf8)
                     from = new_from
                 } catch {
-                    log(error)
+                    log("[!] pure_text error: \(error)")
                     return nil
                 }
             }

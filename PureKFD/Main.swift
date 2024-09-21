@@ -13,6 +13,7 @@ import CoreGraphics
 struct purekfdApp: App {
     @StateObject private var appData = AppData()
     @StateObject private var repoHandler = RepoHandler()
+    @StateObject private var saveEnv = SaveEnv()
     @State private var font: Font? = nil
     @AppStorage("accentColor") private var accentColor: Color = Color(hex: "#D4A7FC")!
     
@@ -69,7 +70,7 @@ struct ContentView: View {
                 selectedTab = 2
             }
         }.onAppear() {
-            log("Running on an \(DeviceInfo.modelName) (\(DeviceInfo.cpu)) running \(DeviceInfo.osString) \(DeviceInfo.version) (\(DeviceInfo.build))")
+            log("[i] \(DeviceInfo.modelName) (\(DeviceInfo.cpu)) on \(DeviceInfo.osString) \(DeviceInfo.version) (\(DeviceInfo.build))")
             updateInstalledTweaks(appData)
             repoHandler.updateRepos(appData)
         }.onOpenURL(perform: { url in

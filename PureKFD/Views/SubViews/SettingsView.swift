@@ -20,6 +20,7 @@ struct SettingsView: View {
                 DeviceRow()
                 ExploitRow()
                 ThemeRow()
+                EnvVarViewNavLink()
                 CreditViewNavLink()
             }.padding()
         }
@@ -210,6 +211,86 @@ struct ThemeRow: View {
                 ColorPicker(selection: $accentColor, label: { Text("Accent Color") }).foregroundColor(accentColor)
             }.padding(.bottom, 15).padding(.horizontal)
         }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+    }
+}
+
+struct EnvVarViewNavLink: View {
+    var body: some View {
+        VStack {
+            HStack {
+                NavigationLink(destination: EnvVarView(), label: {
+                    Text("Environment Variables")
+                    Spacer()
+                    Image(systemName: "chevron.right").foregroundColor(.accentColor).font(.footnote)
+                })
+            }.padding()
+        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+    }
+}
+
+struct EnvVarView: View {
+    @AppStorage("saveEnv") var env: [String:String] = [:]
+    @State private var newKey = ""
+    @State private var newValue = ""
+    
+    var body: some View {
+        ZStack {
+            Color.accentColor
+                .ignoresSafeArea(.all)
+                .opacity(0.07)
+            List {
+                ForEach(env.keys.sorted(), id: \.self) { key in
+                    HStack {
+                        TextField("Key", text: Binding(
+                            get: { key },
+                            set: { newKey in
+                                if let value = env.removeValue(forKey: key) {
+                                    env[newKey] = value
+                                }
+                            })
+                        )
+                        Spacer()
+                        TextField("Value", text: Binding(
+                            get: { env[key] ?? "" },
+                            set: { newValue in
+                                env[key] = newValue
+                            })
+                        )
+                    }.listRowBackground(Color.accentColor.opacity(0.1)).listRowSeparator(.hidden)
+                }
+                .onDelete { indexSet in
+                    for index in indexSet {
+                        let key = env.keys.sorted()[index]
+                        env.removeValue(forKey: key)
+                    }
+                }
+                Section {
+                    TextField("New Key", text: $newKey)
+                    TextField("New Value", text: $newValue)
+                    Button(action: {
+                        if !newKey.isEmpty && !newValue.isEmpty {
+                            env[newKey] = newValue
+                            newKey = ""
+                            newValue = ""
+                        }
+                    }) {
+                        Text("Add Variable")
+                    }
+                }.listRowBackground(Color.accentColor.opacity(0.1)).listRowSeparator(.hidden)
+                Section {
+                    Button(action: {
+                        showConfirmPopup("Confirm", "This will reset Environment Variables to default", completion: { confirmed in
+                            if confirmed {
+                                SaveEnv().reset()
+                            }
+                        })
+                    }, label: {
+                        Text("Reset Variables")
+                    })
+                }.listRowBackground(Color.accentColor.opacity(0.1)).listRowSeparator(.hidden)
+            }.listStyle(.insetGrouped)
+                .clearListBG()
+        }.navigationTitle("Environment Variables").navigationBarTitleDisplayMode(.inline)
     }
 }
 
