@@ -167,14 +167,17 @@ func applySaveToPlist(_ dictionary: [String: Any], _ save: [String:Any]) -> [Str
     var result = [String: Any]()
 
     for (key, value) in dictionary {
+        let keyComponents = key.components(separatedBy: ":")
         if let stringValue = value as? String {
             if save.keys.contains(stringValue) {
                 result[key] = save[stringValue] as? String ?? stringValue
+            } else if keyComponents.count == 2,
+                      save.keys.contains(keyComponents[1]) {
+                result[keyComponents[0]] = save[keyComponents[1]] as? String ?? stringValue
             } else {
                 result[key] = stringValue
             }
         } else if let boolValue = value as? Bool {
-            let keyComponents = key.components(separatedBy: ":")
             if keyComponents.count == 2 {
                 if save.keys.contains(keyComponents[1]) {
                     result[keyComponents[0]] = save[keyComponents[1]] as? Bool ?? boolValue
@@ -185,7 +188,6 @@ func applySaveToPlist(_ dictionary: [String: Any], _ save: [String:Any]) -> [Str
                 result[key] = boolValue
             }
         } else if let intValue = value as? Int {
-            let keyComponents = key.components(separatedBy: ":")
             if keyComponents.count == 2 {
                 if save.keys.contains(keyComponents[1]) {
                     result[keyComponents[0]] = save[keyComponents[1]] as? Int ?? intValue
@@ -196,7 +198,6 @@ func applySaveToPlist(_ dictionary: [String: Any], _ save: [String:Any]) -> [Str
                 result[key] = intValue
             }
         } else if let dataValue = value as? Data {
-            let keyComponents = key.components(separatedBy: ":")
             if keyComponents.count == 2 {
                 if save.keys.contains(keyComponents[1]) {
                     result[keyComponents[0]] = save[keyComponents[1]] as? Data ?? dataValue
