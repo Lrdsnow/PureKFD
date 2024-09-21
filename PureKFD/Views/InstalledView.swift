@@ -247,7 +247,7 @@ struct InstalledView: View {
             }.sheet(isPresented: $showErrorSheet) {
                 ErrorInfoPageView(pkg: $selectedPkg, repo: .constant(nil)).accentColor(accentColor)
             }
-        }
+        }.navigationViewStyle(.stack)
     }
     
     func findFileOrFolder(_ url: URL, _ names: [String]) -> [URL] {
@@ -300,6 +300,7 @@ struct InstalledView: View {
                                         }
                                     }
                                     var temp_tweak = tweak.0
+                                    try? fm.moveItem(at: temp_tweak.pkgpath.appendingPathComponent("overwrite"), to: temp_tweak.pkgpath.appendingPathComponent("Overwrite")) // fix common issue
                                     temp_tweak.repo = nil
                                     temp_tweak.installed = true
                                     let configJsonPath = pkg_dir.appendingPathComponent(config_filename).path

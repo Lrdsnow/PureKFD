@@ -32,7 +32,7 @@
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.text</string>
+				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Mobile Device Pairing File</string>
@@ -51,7 +51,7 @@
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.zip-archive</string>
+				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>PureKFD Tweak</string>

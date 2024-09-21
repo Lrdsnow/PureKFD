@@ -63,7 +63,7 @@ struct ContentView: View {
                     .tabItem({Label("Installed", systemImage: "square.and.arrow.down")})
                     .tag(2)
                     .accentColor(accentColor)
-            }
+            }.environment(\.horizontalSizeClass, .compact)
         }.onChange(of: selectedTab) { newValue in
             if installing {
                 selectedTab = 2
