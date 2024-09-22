@@ -14,13 +14,20 @@
 
 ## Overview
 
-PureKFD is an exploit based Jailed Package Manager, supporting iOS versions 14.0 through 18.0 using SparseRestore, KFD `CVE-2023-41974`, and MDC `CVE-2022-46689`. PureKFD allows users to customize their experience through a user-friendly interface, utilizing community-developed tweaks available from the community’s repositories.
+PureKFD is an exploit based Jailed Package Manager, supporting iOS versions 14.0 through 18.0/18.1b4 using SparseRestore, KFD `CVE-2023-41974`, and MDC `CVE-2022-46689`. PureKFD allows users to customize their experience through a user-friendly interface, utilizing community-developed tweaks available from the community’s repositories.
 
 ## Getting Started
 
-1. **Compatibility:** Ensure your iOS device is running an iOS version 14.0 through 18.0.
-2. **Installation:** Download PureKFD from the [github releases](https://github.com/PureKFD/PureKFD/releases/latest) for the latest release or [our discord](https://discord.gg/cCSwxqdvzx) for the latest betas.
-3. **Customize:** Explore the vast array of tweaks, personalize your iOS experience, and make your device truly yours.
+1. **Compatibility:** Ensure your iOS device is running an iOS version 14.0 through 18.0/18.1b4.
+3. **Installation:** Download PureKFD from the [github releases](https://github.com/PureKFD/PureKFD/releases/latest) for the latest release or [our discord](https://discord.gg/cCSwxqdvzx) for the latest betas.
+4. **Customize:** Explore the vast array of tweaks, personalize your iOS experience, and make your device truly yours.
+
+## Building
+
+1. install theos and ensure its in ~/.zshrc
+2. clone this repo recursively
+3. open in xcode
+4. build purekfd
 
 ## Credits
 
