@@ -26,6 +26,7 @@ public class RepoHandler: ObservableObject {
                     URL(string: "https://raw.githubusercontent.com/Lrdsnow/PureKFDRepo/main/v6/repo.json")!, // PureKFD v6 Repo
                     URL(string: "https://raw.githubusercontent.com/PureKFD/PureKFDRepo/main/repo.json")!, // PureKFD v5 Repo
                     URL(string: "https://raw.githubusercontent.com/dora727/doworarepo/master/Essentials/manifest.json")!, // MeowRepo - Built for PureKFD v6
+                    URL(string: "https://raw.githubusercontent.com/Lrdsnow/SnowRepo/refs/heads/main/v6/repo.json")!, // SnowRepo - Built for PureKFD v6
                     URL(string: "https://raw.githubusercontent.com/jailbreakdotparty/jailbreak.party-repo/refs/heads/main/v6/repo.json")!, // Jailbreak.party - Built for PureKFD v6
                     URL(string: "https://raw.githubusercontent.com/Dreel0akl/poopypoopermaybeworking/master/Essentials/manifest.json")!, // Poop Repo - Built for PureKFD
                     URL(string: "https://raw.githubusercontent.com/circularsprojects/circles-repo/main/purekfd.json")!, // Circular's Repo - Built for PureKFD
