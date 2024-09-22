@@ -36,12 +36,14 @@ public struct Package: Codable {
     // Installed values
     var disabled: Bool?
     var hasprefs: Bool
+    var hasRestore: Bool
     var error: String?
     var varonly: Bool?
     var pkgpath: URL {
         return URL.documents.appendingPathComponent("pkgs/\(bundleid)")
     }
     var installed: Bool
+    
     // JSON init stuff
     init(_ json: [String: Any], _ _repo: Repo?, _ _featured: [Featured]?) {
         name = json["name"] as? String ?? "Unknown Tweak"
@@ -110,19 +112,18 @@ public struct Package: Codable {
         let temp_pkgpath = URL.documents.appendingPathComponent("pkgs/\(bundleid)")
         installed = FileManager.default.fileExists(atPath: temp_pkgpath.path)
         hasprefs = json["hasprefs"] as? Bool ?? false
+        hasRestore = false
         if installed {
             if !hasprefs {
                 hasprefs = FileManager.default.fileExists(atPath: temp_pkgpath.appendingPathComponent(config_filename).path)
             }
-            if !hasprefs {
-                hasprefs = FileManager.default.fileExists(atPath: temp_pkgpath.appendingPathComponent("config.plist").path)
-            }
-            if !hasprefs {
-                hasprefs = FileManager.default.fileExists(atPath: temp_pkgpath.appendingPathComponent("prefs.json").path)
+            if !hasRestore {
+                hasRestore = FileManager.default.fileExists(atPath: temp_pkgpath.appendingPathComponent("Restore").path)
             }
         }
         feature = _featured?.first(where: { $0.bundleid == json["bundleid"] as? String ?? "" })
     }
+    
     public func save() {
         if let jsonData = try? JSONEncoder().encode(self) {
             try? jsonData.write(to: self.pkgpath.appendingPathComponent("_info.json"))

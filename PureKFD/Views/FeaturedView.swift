@@ -12,6 +12,7 @@ import Zip
 struct FeaturedView: View {
     @EnvironmentObject var appData: AppData
     @EnvironmentObject var repoHandler: RepoHandler
+    @Binding var selectedTab: Int
     @State private var featured: [(Package,Featured)] = []
     @State private var selectedTweak: Package? = nil
     @State private var showSelectedTweak = false
@@ -104,19 +105,32 @@ struct FeaturedView: View {
                             if fm.fileExists(atPath: infoCacheURL.path),
                                let data = try? Data(contentsOf: infoCacheURL),
                                let tweakInfo = try? JSONSerialization.jsonObject(with: data, options: []) as? [String:Any] {
-                                selectedTweak = Package(tweakInfo, nil, nil)
+                                var temp_pkg = Package(tweakInfo, nil, nil)
+                                temp_pkg.path = tempFileURL
+                                selectedTweak = temp_pkg
                             } else if fm.fileExists(atPath: infoURL.path),
                                 let data = try? Data(contentsOf: infoURL),
                                       let tweakInfo = try? JSONSerialization.jsonObject(with: data, options: []) as? [String:Any] {
-                                selectedTweak = Package(tweakInfo, nil, nil)
+                                var temp_pkg = Package(tweakInfo, nil, nil)
+                                temp_pkg.path = tempFileURL
+                                selectedTweak = temp_pkg
                             } else {
-                                selectedTweak = Package(["bundleid":bundleID], nil, nil)
+                                if let pkg = appData.pkgs.first(where: { $0.bundleid == bundleID }) {
+                                    var temp_pkg = pkg
+                                    temp_pkg.path = tempFileURL
+                                    selectedTweak = temp_pkg
+                                } else {
+                                    var temp_pkg = Package(["bundleid":bundleID], nil, nil)
+                                    temp_pkg.path = tempFileURL
+                                    selectedTweak = temp_pkg
+                                }
                             }
                         } else {
                             throw "No tweak folder!"
                         }
                         try? fm.removeItem(at: output)
                         showSelectedTweak = true
+                        selectedTab = 0
                     } catch {
                         showPopup("Error", "Failed to import: \(error.localizedDescription)")
                     }

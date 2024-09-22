@@ -81,25 +81,22 @@ class TweakPath {
         for temp_component in pathComponents {
             var component = temp_component
             let pure_plist = component.contains("?pure_plist.")
-            let pure_plist_noread = component.contains("?pure_plist_noread.")
             let pure_text = component.contains("?pure_text.")
-            if pure_plist || pure_plist_noread {
-                component = temp_component.replacingOccurrences(of: "?pure_plist.", with: "").replacingOccurrences(of: "?pure_plist_noread.", with: "")
-                path = path.replacingOccurrences(of: "?pure_plist.", with: "").replacingOccurrences(of: "?pure_plist_noread.", with: "")
+            if pure_plist {
+                component = temp_component.replacingOccurrences(of: "?pure_plist.", with: "")
+                path = path.replacingOccurrences(of: "?pure_plist.", with: "")
                 let new_from = URL.documents.appendingPathComponent("temp/\(component)")
                 var format = PropertyListSerialization.PropertyListFormat.xml
                 do {
                     let plistData = try Data(contentsOf: pkgpath.appendingPathComponent("Overwrite/\(url.path.replacingOccurrences(of: "//private/var", with: "var"))"))
                     if var plistObject = try PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [String: Any] {
                         plistObject = applySaveToPlist(plistObject, save)
-                        if pure_plist {
-                            let plistData2 = try Data(contentsOf: URL(fileURLWithPath: url.path.replacingOccurrences(of: "//private/var", with: "/var").replacingOccurrences(of: "?pure_plist.", with: "").replacingOccurrences(of: "?pure_plist_noread.", with: "")))
-                            if let plistObject2 = try PropertyListSerialization.propertyList(from: plistData2, options: [], format: &format) as? [String: Any] {
-                                let newPlist = mergeDictionaries(plistObject2, with: plistObject)
-                                let newData = try PropertyListSerialization.data(fromPropertyList: newPlist, format: format, options: 0)
-                                try newData.write(to: new_from)
-                                from = new_from
-                            }
+                        if let plistData2 = try? Data(contentsOf: URL(fileURLWithPath: url.path.replacingOccurrences(of: "//private/var", with: "/var").replacingOccurrences(of: "?pure_plist.", with: ""))),
+                            let plistObject2 = try? PropertyListSerialization.propertyList(from: plistData2, options: [], format: &format) as? [String: Any] {
+                            let newPlist = mergeDictionaries(plistObject2, with: plistObject)
+                            let newData = try PropertyListSerialization.data(fromPropertyList: newPlist, format: format, options: 0)
+                            try newData.write(to: new_from)
+                            from = new_from
                         } else {
                             let newData = try PropertyListSerialization.data(fromPropertyList: plistObject, format: format, options: 0)
                             try newData.write(to: new_from)
@@ -180,7 +177,7 @@ func applySaveToPlist(_ dictionary: [String: Any], _ save: [String:Any]) -> [Str
         } else if let boolValue = value as? Bool {
             if keyComponents.count == 2 {
                 if save.keys.contains(keyComponents[1]) {
-                    result[keyComponents[0]] = save[keyComponents[1]] as? Bool ?? boolValue
+                    result[keyComponents[0]] = save[keyComponents[1]] as? Bool ?? Bool(save[keyComponents[1]] as? String ?? "\(boolValue)") ?? boolValue
                 } else {
                     result[keyComponents[0]] = boolValue
                 }
@@ -190,7 +187,7 @@ func applySaveToPlist(_ dictionary: [String: Any], _ save: [String:Any]) -> [Str
         } else if let intValue = value as? Int {
             if keyComponents.count == 2 {
                 if save.keys.contains(keyComponents[1]) {
-                    result[keyComponents[0]] = save[keyComponents[1]] as? Int ?? intValue
+                    result[keyComponents[0]] = save[keyComponents[1]] as? Int ?? Int(save[keyComponents[1]] as? String ?? "\(intValue)") ?? intValue
                 } else {
                     result[keyComponents[0]] = intValue
                 }

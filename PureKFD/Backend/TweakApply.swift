@@ -9,6 +9,11 @@ import Foundation
 
 public class TweakHandler {
     
+    public enum ApplyMode {
+        case overwrite
+        case restore
+    }
+    
     public static func processOverwrite(_ dir: URL, _ ogDir: URL, _ exploit: Int, _ saveEnv: [String:String] = [:]) throws {
         let fm = FileManager.default
         let items = try fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
@@ -30,20 +35,26 @@ public class TweakHandler {
         }
     }
     
-    public static func applyTweak(pkg: Package, _ exploit: Int, _ saveEnv: [String:String] = [:]) {
-        try? Data().write(to: URL.documents.appendingPathComponent("apply.lock"))
+    public static func applyTweak(pkg: Package, _ exploit: Int, _ mode: ApplyMode = .overwrite, _ saveEnv: [String:String] = [:]) {
+        //try? Data().write(to: URL.documents.appendingPathComponent("apply.lock"))
         
-        do {
-            let overwriteDir = pkg.pkgpath.appendingPathComponent("Overwrite")
-            try processOverwrite(overwriteDir, overwriteDir, exploit, saveEnv)
-        } catch {
-            log("[!] Error applying tweak \(pkg.name) (\(pkg.bundleid)): \(error)")
+        let overwriteDir = pkg.pkgpath.appendingPathComponent(mode == .overwrite ? "Overwrite" : "Restore")
+        if FileManager.default.fileExists(atPath: overwriteDir.path) {
+            do {
+                try processOverwrite(overwriteDir, overwriteDir, exploit, saveEnv)
+            } catch {
+                log("[!] Error applying tweak \(pkg.name) (\(pkg.bundleid)): \(error)")
+            }
+        } else if mode == .overwrite {
+            log("[!] Error applying tweak \(pkg.name) (\(pkg.bundleid)): No Overwrite Folder!!!")
+        } else if mode == .restore {
+            log("[!] No Restore folder for tweak \(pkg.name) (\(pkg.bundleid)), Skipping")
         }
         
-        try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("apply.lock"))
+        //try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("apply.lock"))
     }
     
-    public static func applyTweaks(pkgs: [Package], _ exploit: Int, _ json: [String: String], _ saveEnv: [String:String] = [:]) {
+    public static func applyTweaks(pkgs: [Package], _ exploit: Int, _ mode: ApplyMode = .overwrite, _ json: [String: String], _ saveEnv: [String:String] = [:]) {
         try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("temp"))
         try? FileManager.default.createDirectory(at: URL.documents.appendingPathComponent("temp"), withIntermediateDirectories: true)
         let loadingPopup = showLoadingPopup()
@@ -58,7 +69,7 @@ public class TweakHandler {
             } else {
                 for pkg in pkgs {
                     if !(pkg.disabled ?? false) {
-                        self.applyTweak(pkg: pkg, exploit, saveEnv)
+                        self.applyTweak(pkg: pkg, exploit, mode, saveEnv)
                     }
                 }
                 log("[i] Ending Apply")

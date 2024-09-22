@@ -65,7 +65,7 @@ struct InstalledView: View {
                         }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1))).padding(.bottom, 2)
                         HStack {
                             Button(action: {
-                                TweakHandler.applyTweaks(pkgs: appData.installed_pkgs, appData.selectedExploit, savedSettings, saveEnv)
+                                TweakHandler.applyTweaks(pkgs: appData.installed_pkgs, appData.selectedExploit, .overwrite, savedSettings, saveEnv)
                             }, label: {
                                 HStack {
                                     Spacer()
@@ -73,7 +73,17 @@ struct InstalledView: View {
                                     Text("Apply").font(.headline.bold())
                                     Spacer()
                                 }.padding()
-                            }).background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.accentColor.opacity(0.1)))
+                            }).background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.accentColor.opacity(0.1))).contextMenu(menuItems: {
+                                Button(action: {
+                                    TweakHandler.applyTweaks(pkgs: appData.installed_pkgs, appData.selectedExploit, .restore, savedSettings, saveEnv)
+                                }, label: {
+                                    HStack {
+                                        Image(systemName: "arrow.counterclockwise")
+                                        Text("Restore All").font(.headline.bold())
+                                        Spacer()
+                                    }
+                                })
+                            })
                             let reboot_action = ExploitHandler.exploits[appData.selectedExploit].reboot == true
                             Button(action: {
                                 if reboot_action {
@@ -134,6 +144,15 @@ struct InstalledView: View {
                                                 }
                                             })
                                         }
+                                        Button(action: {
+                                            appData.queued_pkgs.removeAll(where: { $0.bundleid == tweak.0.bundleid })
+                                        }, label: {
+                                            HStack {
+                                                Text("Remove from Queue")
+                                                Spacer()
+                                                Image(systemName: "clock.fill")
+                                            }
+                                        })
                                     })
                                 }
                             }, header: {
@@ -147,7 +166,8 @@ struct InstalledView: View {
                         if !appData.installed_pkgs.isEmpty {
                             Section(content: {
                                 ForEach(appData.installed_pkgs, id:\.bundleid) { tweak in
-                                    TweakListRowView(tweak: tweak, navlink: false).opacity(tweak.disabled == true ? 0.7 : 1).contextMenu(menuItems: {
+                                    TweakListRowView(tweak: tweak, navlink: false).opacity(tweak.disabled == true ? 0.7 : 1)
+                                    .contextMenu(menuItems: {
                                         Button(action: {
                                             selectedPkg = tweak
                                             showErrorSheet = true
@@ -197,6 +217,18 @@ struct InstalledView: View {
                                                 Image(systemName: tweak.disabled == true ? "checkmark.circle" : "circle.slash")
                                             }
                                         })
+                                        
+                                        if tweak.hasRestore {
+                                            Button(action: {
+                                                TweakHandler.applyTweak(pkg: tweak, appData.selectedExploit, .restore, saveEnv)
+                                            }, label: {
+                                                HStack {
+                                                    Text("Restore Files")
+                                                    Spacer()
+                                                    Image(systemName: "arrow.counterclockwise")
+                                                }
+                                            })
+                                        }
                                         
                                         Button(role: .destructive, action: {
                                             showConfirmPopup("Confirm", "Are you sure you'd like to uninstall this tweak") { confirm in
@@ -300,8 +332,12 @@ struct InstalledView: View {
                                             throw "Tweak folder was not found in package!"
                                         }
                                     }
-                                    var temp_tweak = tweak.0
+                                    // less code, and we dont have to worry about optimization bcuz its the download process
+                                    let temp_tweak_json_data = (try? JSONEncoder().encode(tweak.0)) ?? Data()
+                                    var temp_tweak = Package((try? JSONSerialization.jsonObject(with: temp_tweak_json_data, options: []) as? [String: Any]) ?? [:], tweak.0.repo, nil)
+                                    //
                                     try? fm.moveItem(at: temp_tweak.pkgpath.appendingPathComponent("overwrite"), to: temp_tweak.pkgpath.appendingPathComponent("Overwrite")) // fix common issue
+                                    try? fm.moveItem(at: temp_tweak.pkgpath.appendingPathComponent("restore"), to: temp_tweak.pkgpath.appendingPathComponent("Restore")) // fix common issue 2
                                     temp_tweak.repo = nil
                                     temp_tweak.installed = true
                                     let configJsonPath = pkg_dir.appendingPathComponent(config_filename).path

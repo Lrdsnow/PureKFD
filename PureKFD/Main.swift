@@ -52,7 +52,7 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             TabView(selection: $selectedTab) {
-                FeaturedView()
+                FeaturedView(selectedTab: $selectedTab)
                     .tabItem({Label("Featured", systemImage: "star.fill")})
                     .tag(0)
                     .accentColor(accentColor)
