@@ -145,7 +145,7 @@ struct InstalledView: View {
                                             })
                                         }
                                         Button(action: {
-                                            appData.queued_pkgs.removeAll(where: { $0.bundleid == tweak.0.bundleid })
+                                            appData.queued_pkgs.removeAll(where: { $0.0.bundleid == tweak.0.bundleid })
                                         }, label: {
                                             HStack {
                                                 Text("Remove from Queue")
