@@ -22,6 +22,14 @@ PureKFD is an exploit based Jailed Package Manager, supporting iOS versions 14.0
 3. **Installation:** Download PureKFD from the [github releases](https://github.com/PureKFD/PureKFD/releases/latest) for the latest release or [our discord](https://discord.gg/cCSwxqdvzx) for the latest betas.
 4. **Customize:** Explore the vast array of tweaks, personalize your iOS experience, and make your device truly yours.
 
+## Getting Started With SparseRestore
+
+1. in purekfd settings switch exploit to "SparseRestore"
+2. get pairing file using a pc and [JitterbugPair](https://github.com/osy/Jitterbug/releases/tag/v1.3.1)
+3. import pairing file into PureKFD using share sheet or file importer in settings
+4. get [WireGuard](https://apps.apple.com/us/app/wireguard/id1441195209) and import the [SideStore WireGuard Config](https://github.com/sidestore/sidestore/releases/download/0.1.1/sidestore.conf)
+5. go into purekfd and apply your tweaks!
+
 ## Building
 
 1. install theos and ensure its in ~/.zshrc
