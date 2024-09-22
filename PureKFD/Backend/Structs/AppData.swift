@@ -18,6 +18,7 @@ public class AppData: ObservableObject {
     
     // Exploit stuff
     @AppStorage("selectedExploit") var selectedExploit = 0
+    @AppStorage("hasSetExploit") var hasSetExploit = false
     @AppStorage("FilterPackages") var filterPackages = true
     @AppStorage("savedExploitSettings") var savedSettings: [String: String] = [:]
     

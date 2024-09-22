@@ -1114,7 +1114,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = $BUILD_DIR/Libraries;
-				MARKETING_VERSION = "6.0 RC 2";
+				MARKETING_VERSION = 6.0.1;
 				NO_SPARSE = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purekfdiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1153,7 +1153,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = $BUILD_DIR/Libraries;
-				MARKETING_VERSION = "6.0 RC 2";
+				MARKETING_VERSION = 6.0.1;
 				NO_SPARSE = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purekfdiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1194,7 +1194,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = $BUILD_DIR/Libraries;
-				MARKETING_VERSION = "6.0 RC 2";
+				MARKETING_VERSION = 6.0.1;
 				NO_SPARSE = YES;
 				OTHER_SWIFT_FLAGS = "-DNO_SPARSE";
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purekfdiOS;
@@ -1236,7 +1236,7 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = $BUILD_DIR/Libraries;
-				MARKETING_VERSION = "6.0 RC 2";
+				MARKETING_VERSION = 6.0.1;
 				NO_SPARSE = YES;
 				OTHER_SWIFT_FLAGS = "-DNO_SPARSE";
 				PRODUCT_BUNDLE_IDENTIFIER = uwu.lrdsnow.purekfdiOS;

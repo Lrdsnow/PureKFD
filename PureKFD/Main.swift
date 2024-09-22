@@ -71,6 +71,10 @@ struct ContentView: View {
             }
         }.onAppear() {
             log("[i] \(DeviceInfo.modelName) (\(DeviceInfo.cpu)) on \(DeviceInfo.osString) \(DeviceInfo.version) (\(DeviceInfo.build))")
+            if !appData.hasSetExploit {
+                appData.selectedExploit = ExploitHandler.getBestExploitForDevice() ?? 0
+                appData.hasSetExploit = true
+            }
             updateInstalledTweaks(appData)
             repoHandler.updateRepos(appData)
         }.onOpenURL(perform: { url in
