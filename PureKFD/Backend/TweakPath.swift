@@ -142,6 +142,11 @@ class TweakPath {
                 // eta s0n
                 return nil
             } else if component.contains("AppUUID{") {
+                #if !NO_SPARSE
+                if path.contains("/var/mobile"), exploit == 2 {
+                    return (nil, path)
+                }
+                #endif
                 if let components = parseAppUUID(component),
                    let _path = ExploitHandler.getAppPath(components.appIdentifier, components.data, exploit) {
                     return (nil, _path+(path.components(separatedBy: ".app").last ?? ""))
