@@ -11,12 +11,14 @@ import NukeUI
 struct ContentView: View {
     @EnvironmentObject var appData: AppData
     @State var repoHandler = RepoHandler()
+    @State private var installing = false
     
     var body: some View {
         NavigationView {
             List {
-                NavigationLink(destination: HomeView(), label: {Label("Featured", systemImage: "star.fill")})
-                NavigationLink(destination: HomeView(), label: {Label("Installed", systemImage: "square.and.arrow.down")})
+                //NavigationLink(destination: HomeView(), label: {Label("Featured", systemImage: "star.fill")})
+                NavigationLink(destination: InstalledView(installing: $installing), label: {Label("Installed", systemImage: "square.and.arrow.down")})
+                NavigationLink(destination: SettingsView(), label: {Label("Settings", systemImage: "gear")})
                 Section("Repos") {
                     ForEach(appData.repos.sorted(by: { $0.name < $1.name }), id: \.url) { repo in
                         NavigationLink(destination: RepoView(repo: repo), label: {

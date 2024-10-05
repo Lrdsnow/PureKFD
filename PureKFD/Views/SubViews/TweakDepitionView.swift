@@ -302,7 +302,11 @@ struct TweakDepictionView: View {
                             }))
                         } else if let url = URL(string: action) {
                             ret = AnyView(Button(action: {
+                                #if os(macOS)
+                                NSWorkspace.shared.open(url)
+                                #else
                                 UIApplication.shared.open(url)
+                                #endif
                             }, label: {
                                 Text(title)
                             }))
@@ -343,7 +347,7 @@ struct TweakDepictionView: View {
         
         var body: some View {
             VStack {
-                #if os(macOS)
+                #if false//os(macOS)
                 TabView(selection: $page) {
                     ForEach(0..<tabs.count, id: \.self) { index in
                         tabs[index].1.tabItem { Text(tabs[index].0) }
@@ -393,6 +397,28 @@ struct TweakDepictionView: View {
 }
 
 // MARK: - Markdown Stuff
+
+#if os(macOS)
+extension NSColor {
+    static var secondaryLabel: NSColor {
+        return NSColor.secondaryLabelColor
+    }
+    static var label: NSColor {
+        return NSColor.labelColor
+    }
+}
+extension NSCoder {
+    static func cgSize(for key: String) -> CGSize {
+        let components = key.trimmingCharacters(in: CharacterSet(charactersIn: "{}")).components(separatedBy: ",")
+        guard components.count == 2,
+              let width = Double(components[0].trimmingCharacters(in: .whitespacesAndNewlines)),
+              let height = Double(components[1].trimmingCharacters(in: .whitespacesAndNewlines)) else {
+            return CGSize(width: 0.0, height: 0.0)
+        }
+        return CGSize(width: width, height: height)
+    }
+}
+#endif
 
 struct DepictionMarkdownView: View {
     @ObservedObject var viewModel: DepictionMarkdownViewModel
@@ -467,7 +493,7 @@ class DepictionMarkdownViewModel: ObservableObject {
         var blue = CGFloat(0)
         var alpha = CGFloat(0)
         #if os(macOS)
-        NSColor.accentColor.usingColorSpace(.deviceRGB)?.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        UIColor(Color.accentColor).usingColorSpace(.deviceRGB)!.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         #else
         UIColor(Color.accentColor).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         #endif

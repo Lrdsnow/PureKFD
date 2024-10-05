@@ -7,6 +7,7 @@
 
 import Foundation
 import AppKit
+import IOKit
 
 class DeviceInfo {
     static var build: String {
@@ -44,7 +45,43 @@ class DeviceInfo {
         return String(cString: modelIdentifier)
     }
     
-    static var prettyModel: String { return modelName }
+    static var serialNumber: String {
+      let platformExpert = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice") )
+      
+      guard platformExpert > 0 else {
+        return "0000000"
+      }
+      
+      guard let serialNumber = (IORegistryEntryCreateCFProperty(platformExpert, kIOPlatformSerialNumberKey as CFString, kCFAllocatorDefault, 0).takeUnretainedValue() as? String)?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) else {
+        return "0000000"
+      }
+        
+      IOObjectRelease(platformExpert)
+
+      return serialNumber
+    }
+    
+    static var prettyModel: String {
+        let plistPath = "\(NSHomeDirectory())/Library/Preferences/com.apple.SystemProfiler.plist"
+        
+        guard let plistData = FileManager.default.contents(atPath: plistPath) else {
+            return "Mac"
+        }
+
+        if let plistContent = try? PropertyListSerialization.propertyList(from: plistData, format: nil) as? [String:Any] {
+            if let cpuNames = plistContent["CPU Names"] as? [String: Any] {
+                let region = Locale.current.region?.identifier.uppercased() ?? "US"
+                let lang = Locale.current.language.languageCode?.identifier ?? "en"
+                let locale = NSLocale.current.identifier
+                if let prettyModelName = cpuNames["\(self.serialNumber.suffix(4))-\(locale)"] as? String {
+                    return prettyModelName
+                } else if let prettyModelName = cpuNames["\(self.serialNumber.suffix(4))-\(lang)-\(region)_\(region)"] as? String {
+                    return prettyModelName
+                }
+            }
+        }
+        return "Mac"
+    }
     
     static var osString: String {
         get {

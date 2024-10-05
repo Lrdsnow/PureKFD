@@ -59,7 +59,7 @@ struct TweakListRowView: View {
     
     var body: some View {
         HStack {
-            ConditionalNavigationLink(useNavlink: navlink, destination: AnyView(Text("")), label: AnyView(VStack {
+            ConditionalNavigationLink(useNavlink: navlink, destination: AnyView(TweakView(tweak: tweak)), label: AnyView(VStack {
                 HStack {
                     LazyImage(url: tweak.icon) { state in
                         if let image = state.image {

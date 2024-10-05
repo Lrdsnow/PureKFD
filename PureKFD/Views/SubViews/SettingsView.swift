@@ -13,16 +13,25 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack {
+            #if os(iOS)
             Color.accentColor
                 .ignoresSafeArea(.all)
                 .opacity(0.07)
+            #endif
             ScrollView(.vertical) {
                 DeviceRow()
                 ExploitRow()
+                #if os(iOS)
                 ThemeRow()
                 EnvVarViewNavLink()
                 CreditViewNavLink()
+                #elseif os(macOS)
+                CreditsView().padding(.top)
+                #endif
             }.padding()
+            #if os(macOS)
+                .navigationTitle("Settings")
+            #endif
         }
     }
 }
@@ -37,16 +46,38 @@ struct DeviceRow: View {
                             .resizable()
                             .scaledToFill()
                     }
-                }.frame(width: 80, height: 80).cornerRadius(11).padding(.trailing, 3)
+                }
+                #if os(macOS)
+                .frame(width: 120, height: 80)
+                #else
+                .frame(width: 80, height: 80)
+                #endif
+                .cornerRadius(11).padding(.trailing, 3)
                 VStack(alignment: .leading) {
-                    Text(DeviceInfo.prettyModel ?? DeviceInfo.modelName).font(.title3.weight(.bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
-                    Text("\(DeviceInfo.modelName) (\(DeviceInfo.cpu))").font(.subheadline.weight(.semibold)).minimumScaleFactor(0.8).lineLimit(1).opacity(0.8).foregroundColor(.accentColor)
-                    Text("\(DeviceInfo.osString) \(DeviceInfo.version)\(DeviceInfo.build == "" ? "" : " (\(DeviceInfo.build))")").font(.subheadline).minimumScaleFactor(0.8).lineLimit(1).opacity(0.7).foregroundColor(.accentColor)
+                    Text(DeviceInfo.prettyModel ?? DeviceInfo.modelName).font(.title3.weight(.bold)).minimumScaleFactor(0.8).lineLimit(1)
+#if os(iOS)
+                        .foregroundColor(.accentColor)
+                    #endif
+                    Text("\(DeviceInfo.modelName) (\(DeviceInfo.cpu))").font(.subheadline.weight(.semibold)).minimumScaleFactor(0.8).lineLimit(1).opacity(0.8)
+#if os(iOS)
+                        .foregroundColor(.accentColor)
+#endif
+                    Text("\(DeviceInfo.osString) \(DeviceInfo.version)\(DeviceInfo.build == "" ? "" : " (\(DeviceInfo.build))")").font(.subheadline).minimumScaleFactor(0.8).lineLimit(1).opacity(0.7)
+                    #if os(iOS)
+                        .foregroundColor(.accentColor)
+                    #endif
+                    #if !os(macOS)
                     Text("PureKFD v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0")").font(.subheadline).minimumScaleFactor(0.8).lineLimit(1).opacity(0.7).foregroundColor(.accentColor)
+                    #else
+                    Text("PureRestore v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0")").font(.subheadline).minimumScaleFactor(0.8).lineLimit(1).opacity(0.7)
+                    #endif
                 }
                 Spacer()
             }.padding()
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        }
+        #if os(iOS)
+        .background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        #endif
     }
 }
 
@@ -59,17 +90,24 @@ struct ExploitRow: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Exploit Settings").font(.title3.weight(.bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
+                Text("Exploit Settings").font(.title3.weight(.bold)).minimumScaleFactor(0.8).lineLimit(1)
+#if os(iOS)
+                    .foregroundColor(.accentColor)
+#endif
                 Spacer()
             }.padding(.horizontal).padding(.top).padding(.bottom, 7)
             
+#if os(iOS)
             if !ExploitHandler.isExploitCompatible(exploit) {
                 Text("\(Image(systemName: "exclamationmark.circle.fill")) Warning: Your device is not compatible with this exploit").foregroundColor(.accentColor).lineLimit(1).minimumScaleFactor(0.2).padding(.horizontal)
             }
+#endif
             
             HStack {
+#if os(iOS)
                 Text("Exploit").minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
                 Spacer()
+#endif
                 Picker(selection: $exploit, content: {
                     ForEach(exploits.indices, id:\.self) { _exploit in
                         Text(exploits[_exploit].name).tag(_exploit)
@@ -78,13 +116,20 @@ struct ExploitRow: View {
             }.padding(.leading)
             
             if exploits[exploit].varOnly {
-                Toggle("Filter Tweaks", isOn: $filterPackages)
-                    .padding(.horizontal)
-                    .foregroundColor(.accentColor)
-                    .tint(.accentColor)
+                HStack {
+                    Toggle("Filter Tweaks", isOn: $filterPackages)
+                        .padding(.horizontal)
+#if os(iOS)
+                        .foregroundColor(.accentColor)
+                        .tint(.accentColor)
+#endif
+                    #if os(macOS)
+                    Spacer()
+                    #endif
+                }
             }
             
-            VStack {
+            VStack(alignment: DeviceInfo.osString == "macOS" ? .leading : .center) {
                 let settings = exploits[exploit].settings
                 if !settings.isEmpty {
                     ForEach(settings.keys.sorted(), id: \.self) { key in
@@ -100,8 +145,10 @@ struct ExploitRow: View {
                                     set: { newValue in self.savedSettings[key] = newValue ? "true" : "false" }
                                 ))
                                 .padding(.horizontal)
+#if os(iOS)
                                 .foregroundColor(.accentColor)
                                 .tint(.accentColor)
+#endif
                                 
                             case let options where options.contains(","):
                                 let optionList = options.split(separator: ",").map(String.init)
@@ -109,7 +156,9 @@ struct ExploitRow: View {
                                     Text(name)
                                         .minimumScaleFactor(0.8)
                                         .lineLimit(1)
+#if os(iOS)
                                         .foregroundColor(.accentColor)
+#endif
                                     Spacer()
                                     Picker(name, selection: Binding(
                                         get: { self.savedSettings[key] ?? optionList.first ?? "" },
@@ -132,19 +181,25 @@ struct ExploitRow: View {
                                     Slider(value: doubleValue, in: 0...100)
                                     Text("Value: \(doubleValue.wrappedValue, specifier: "%.2f")")
                                 }
-                            
+                                
                             case "FilePicker":
                                 FilePickerButton(key: key).padding(.horizontal).padding(.vertical, 5)
-                            
+                                
                             default:
                                 Text("Unknown type for key: \(key)")
                             }
                         }
-                        
                     }
                 }
-            }.padding(.bottom, 15)
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1))).animation(.spring)
+            }
+#if os(iOS)
+            .padding(.bottom, 15)
+#endif
+        }
+#if os(iOS)
+        .background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+#endif
+        .animation(.spring)
     }
 }
 
@@ -210,7 +265,10 @@ struct ThemeRow: View {
             VStack {
                 ColorPicker(selection: $accentColor, label: { Text("Accent Color") }).foregroundColor(accentColor)
             }.padding(.bottom, 15).padding(.horizontal)
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        }
+        #if os(iOS)
+        .background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        #endif
     }
 }
 
@@ -224,7 +282,10 @@ struct EnvVarViewNavLink: View {
                     Image(systemName: "chevron.right").foregroundColor(.accentColor).font(.footnote)
                 })
             }.padding()
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        }
+#if os(iOS)
+        .background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        #endif
     }
 }
 
@@ -288,9 +349,16 @@ struct EnvVarView: View {
                         Text("Reset Variables")
                     })
                 }.listRowBackground(Color.accentColor.opacity(0.1)).listRowSeparator(.hidden)
-            }.listStyle(.insetGrouped)
-                .clearListBG()
-        }.navigationTitle("Environment Variables").navigationBarTitleDisplayMode(.inline)
+            }
+            #if os(iOS)
+            .listStyle(.insetGrouped)
+            #endif
+            .clearListBG()
+        }
+        .navigationTitle("Environment Variables")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 }
 
@@ -304,7 +372,10 @@ struct CreditViewNavLink: View {
                     Image(systemName: "chevron.right").foregroundColor(.accentColor).font(.footnote)
                 })
             }.padding()
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        }
+#if os(iOS)
+        .background(RoundedRectangle(cornerRadius: 25).foregroundColor(.accentColor.opacity(0.1)))
+        #endif
     }
 }
 
@@ -313,19 +384,38 @@ struct CreditsView: View {
     
     var body: some View {
         ZStack {
+            #if os(iOS)
             Color.accentColor
                 .ignoresSafeArea(.all)
                 .opacity(0.07)
+            #endif
             VStack {
+                #if os(macOS)
+                HStack {
+                    Text("Credits").font(.title3.weight(.bold)).minimumScaleFactor(0.8).lineLimit(1)
+                    Spacer()
+                }.padding(.horizontal).padding(.bottom, -5)
+                #endif
                 Button(action: {
                     if let url = URL(string: "https://github.com/Lrdsnow") {
+                        #if os(iOS)
                         UIApplication.shared.open(url)
+                        #elseif os(macOS)
+                        NSWorkspace.shared.open(url)
+                        #endif
                     }
                 }) {
                     CreditView(name: "Lrdsnow", role: "Developer", icon: URL(string: "https://github.com/lrdsnow.png")!)
                 }
+                #if os(macOS)
+                .buttonStyle(.plain)
+                #endif
                 Spacer()
-            }.padding().navigationBarTitle("Credits")
+            }
+            #if os(iOS)
+            .padding()
+            .navigationTitle("Credits")
+            #endif
         }
     }
 }
@@ -345,6 +435,7 @@ struct CreditView: View {
                             .resizable()
                             .scaledToFill()
                             .background(Color.black)
+#if os(iOS)
                             .onAppear() {
                                 if accent == nil,
                                    UserDefaults.standard.bool(forKey: "useAvgImageColors") {
@@ -354,22 +445,38 @@ struct CreditView: View {
                                     }
                                 }
                             }
+#endif
                     } else if state.error != nil {
+#if os(iOS)
                         appIconImage
                             .resizable()
                             .scaledToFill()
+#else
+                        ProgressView()
+                            .scaledToFit()
+#endif
                     } else {
                         ProgressView()
                             .scaledToFit()
                     }
                 }.frame(width: 45, height: 45).cornerRadius(11).padding(.trailing, 3)
                 VStack(alignment: .leading) {
-                    Text(name).font(.title3.weight(.bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(accent ?? .accentColor)
-                    Text(role).font(.subheadline).minimumScaleFactor(0.8).lineLimit(1).opacity(0.7).foregroundColor(accent ?? .accentColor)
+                    Text(name).font(.title3.weight(.bold)).minimumScaleFactor(0.8).lineLimit(1)
+#if os(iOS)
+                        .foregroundColor(accent ?? .accentColor)
+#endif
+                    Text(role).font(.subheadline).minimumScaleFactor(0.8).lineLimit(1).opacity(0.7)
+#if os(iOS)
+                        .foregroundColor(accent ?? .accentColor)
+#endif
                 }
                 Spacer()
                 Image(systemName: "chevron.right").foregroundColor(accent ?? .accentColor).font(.footnote)
-            }.padding()
-        }.background(RoundedRectangle(cornerRadius: 25).foregroundColor((accent ?? .accentColor).opacity(0.1)))
+            }
+            .padding()
+        }
+#if os(iOS)
+        .background(RoundedRectangle(cornerRadius: 25).foregroundColor((accent ?? .accentColor).opacity(0.1)))
+#endif
     }
 }

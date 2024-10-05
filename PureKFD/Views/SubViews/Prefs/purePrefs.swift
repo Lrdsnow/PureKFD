@@ -30,9 +30,11 @@ struct PrefView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
+#if os(iOS)
             Color.accentColor
                 .ignoresSafeArea(.all)
                 .opacity(0.07)
+            #endif
             
             if let pkg = selectedTweak {
                 let pkgpath: URL = URL.documents.appendingPathComponent("pkgs/\(pkg.bundleid)")
@@ -229,7 +231,11 @@ struct FullPrefView: View {
         }
         
         return ForEach(views.indices, id: \.self) { index in
-            views[index].padding(.vertical, 2.5).listRowBackground(Color.accentColor.opacity(0.1)).listRowSeparator(.hidden)
+            views[index].padding(.vertical, 2.5)
+            #if os(iOS)
+                .listRowBackground(Color.accentColor.opacity(0.1))
+            #endif
+                .listRowSeparator(.hidden)
         }
     }
     

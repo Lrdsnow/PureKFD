@@ -9,7 +9,13 @@ import SwiftUI
 import Alamofire
 import Zip
 import JASON
+#if canImport(SwiftKFD_objc)
 import SwiftKFD_objc
+#else
+extension String: LocalizedError {
+    public var errorDescription: String? { return self }
+}
+#endif
 
 struct InstalledView: View {
     @EnvironmentObject var appData: AppData
@@ -25,14 +31,17 @@ struct InstalledView: View {
     @AppStorage("accentColor") private var accentColor: Color = Color(hex: "#D4A7FC")!
     
     var body: some View {
-        NavigationView {
+        NavigationViewC {
             ZStack(alignment: .bottom) {
+#if !os(macOS)
                 Color.accentColor
                     .ignoresSafeArea(.all)
                     .opacity(0.07)
+#endif
                 
                 ScrollView(.vertical) {
                     VStack {
+#if !os(macOS)
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("Installed").font(.system(size: 36, weight: .bold)).minimumScaleFactor(0.8).lineLimit(1).foregroundColor(.accentColor)
@@ -91,9 +100,14 @@ struct InstalledView: View {
                                     Task.detached {
                                         if let error = ExploitHandler.reboot(appData.selectedExploit) {
                                             DispatchQueue.main.async {
+#if !os(macOS)
                                                 loading.dismiss(animated: true) {
                                                     showPopup("Error", error)
                                                 }
+#else
+                                                loading.window.orderOut(nil)
+                                                showPopup("Error", error)
+#endif
                                             }
                                         }
                                     }
@@ -128,6 +142,7 @@ struct InstalledView: View {
                                 })
                             })
                         }
+#endif
                         if !appData.queued_pkgs.isEmpty {
                             Section(content: {
                                 ForEach(appData.queued_pkgs, id:\.0.bundleid) { tweak in
@@ -157,106 +172,135 @@ struct InstalledView: View {
                                 }
                             }, header: {
                                 HStack {
+#if os(iOS)
                                     Image(systemName: "clock.fill")
+                                    #endif
                                     Text("Queued").font(.title2.bold())
                                     Spacer()
-                                }.foregroundColor(.accentColor).padding(.bottom, -2)
+                                }
+#if os(iOS)
+                                .foregroundColor(.accentColor).padding(.bottom, -2)
+                                #endif
                             }).padding(.bottom, 2)
                         }
                         if !appData.installed_pkgs.isEmpty {
                             Section(content: {
                                 ForEach(appData.installed_pkgs, id:\.bundleid) { tweak in
                                     TweakListRowView(tweak: tweak, navlink: false).opacity(tweak.disabled == true ? 0.7 : 1)
-                                    .contextMenu(menuItems: {
-                                        Button(action: {
-                                            selectedPkg = tweak
-                                            showErrorSheet = true
-                                        }, label: {
-                                            if tweak.error != nil {
-                                                HStack {
-                                                    Text("Error Info")
-                                                    Spacer()
-                                                    Image(systemName: "exclamationmark.circle.fill")
-                                                }
-                                            } else {
-                                                HStack {
-                                                    Text("Force Repair")
-                                                    Spacer()
-                                                    Image(systemName: "wrench.and.screwdriver.fill")
-                                                }
-                                            }
-                                        })
-                                        
-                                        if tweak.installed {
+                                        .contextMenu(menuItems: {
                                             Button(action: {
-                                                prefJSON = ""
-                                                selectedTweak = tweak
-                                                showTweakSettings = true
+                                                selectedPkg = tweak
+                                                showErrorSheet = true
                                             }, label: {
-                                                HStack {
-                                                    Text("Tweak Settings")
-                                                    Spacer()
-                                                    Image(systemName: "gearshape.fill")
-                                                }
-                                            })
-                                        }
-                                        
-                                        Button(action: {
-                                            if let index = appData.installed_pkgs.firstIndex(where: { $0.bundleid == tweak.bundleid }) {
-                                                if tweak.disabled == true {
-                                                    appData.installed_pkgs[index].disabled = false
+                                                if tweak.error != nil {
+                                                    HStack {
+                                                        Text("Error Info")
+                                                        Spacer()
+                                                        Image(systemName: "exclamationmark.circle.fill")
+                                                    }
                                                 } else {
-                                                    appData.installed_pkgs[index].disabled = true
-                                                }
-                                                appData.installed_pkgs[index].save()
-                                            }
-                                        }, label: {
-                                            HStack {
-                                                Text("\(tweak.disabled == true ? "Enable" : "Disable") Tweak")
-                                                Spacer()
-                                                Image(systemName: tweak.disabled == true ? "checkmark.circle" : "circle.slash")
-                                            }
-                                        })
-                                        
-                                        if tweak.hasRestore {
-                                            Button(action: {
-                                                TweakHandler.applyTweak(pkg: tweak, appData.selectedExploit, .restore, saveEnv)
-                                            }, label: {
-                                                HStack {
-                                                    Text("Restore Files")
-                                                    Spacer()
-                                                    Image(systemName: "arrow.counterclockwise")
+                                                    HStack {
+                                                        Text("Force Repair")
+                                                        Spacer()
+                                                        Image(systemName: "wrench.and.screwdriver.fill")
+                                                    }
                                                 }
                                             })
-                                        }
-                                        
-                                        Button(role: .destructive, action: {
-                                            showConfirmPopup("Confirm", "Are you sure you'd like to uninstall this tweak") { confirm in
-                                                if confirm {
-                                                    try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("pkgs").appendingPathComponent(tweak.bundleid))
-                                                    appData.installed_pkgs.removeAll(where: { $0.bundleid == tweak.bundleid })
+                                            
+                                            if tweak.installed {
+                                                Button(action: {
+                                                    prefJSON = ""
+                                                    selectedTweak = tweak
+                                                    showTweakSettings = true
+                                                }, label: {
+                                                    HStack {
+                                                        Text("Tweak Settings")
+                                                        Spacer()
+                                                        Image(systemName: "gearshape.fill")
+                                                    }
+                                                })
+                                            }
+                                            
+                                            Button(action: {
+                                                if let index = appData.installed_pkgs.firstIndex(where: { $0.bundleid == tweak.bundleid }) {
+                                                    if tweak.disabled == true {
+                                                        appData.installed_pkgs[index].disabled = false
+                                                    } else {
+                                                        appData.installed_pkgs[index].disabled = true
+                                                    }
+                                                    appData.installed_pkgs[index].save()
                                                 }
+                                            }, label: {
+                                                HStack {
+                                                    Text("\(tweak.disabled == true ? "Enable" : "Disable") Tweak")
+                                                    Spacer()
+                                                    Image(systemName: tweak.disabled == true ? "checkmark.circle" : "circle.slash")
+                                                }
+                                            })
+                                            
+                                            if tweak.hasRestore {
+                                                Button(action: {
+                                                    TweakHandler.applyTweak(pkg: tweak, appData.selectedExploit, .restore, saveEnv)
+                                                }, label: {
+                                                    HStack {
+                                                        Text("Restore Files")
+                                                        Spacer()
+                                                        Image(systemName: "arrow.counterclockwise")
+                                                    }
+                                                })
                                             }
-                                        }, label: {
-                                            HStack {
-                                                Text("Uninstall Tweak")
-                                                Spacer()
-                                                Image(systemName: "trash")
-                                            }
+                                            
+                                            Button(role: .destructive, action: {
+                                                showConfirmPopup("Confirm", "Are you sure you'd like to uninstall this tweak") { confirm in
+                                                    if confirm {
+                                                        try? FileManager.default.removeItem(at: URL.documents.appendingPathComponent("pkgs").appendingPathComponent(tweak.bundleid))
+                                                        appData.installed_pkgs.removeAll(where: { $0.bundleid == tweak.bundleid })
+                                                    }
+                                                }
+                                            }, label: {
+                                                HStack {
+                                                    Text("Uninstall Tweak")
+                                                    Spacer()
+                                                    Image(systemName: "trash")
+                                                }
+                                            })
                                         })
-                                    })
                                 }
                             }, header: {
+#if os(iOS)
                                 HStack {
                                     Image(systemName: "square.and.arrow.down.fill")
                                     Text("Installed").font(.title2.bold())
                                     Spacer()
-                                }.foregroundColor(.accentColor).padding(.bottom, -2)
+                                }
+                                .foregroundColor(.accentColor)
+                                .padding(.bottom, -2)
+#else
+                                if !appData.queued_pkgs.isEmpty {
+                                    HStack {
+                                        Text("Installed").font(.title2.bold())
+                                        Spacer()
+                                    }
+                                }
+#endif
                             })
                         }
+#if os(macOS)
+                        if appData.installed_pkgs.isEmpty && appData.queued_pkgs.isEmpty {
+                            Text("No Installed Tweaks")
+                        }
+#endif
                         NavigationLink(destination: PrefView(selectedTweak: $selectedTweak, jsonString: $prefJSON).onDisappear() { selectedTweak = nil }, isActive: $showTweakSettings, label: {Text("test")}).opacity(0.01).onTapGesture {}
-                    }.padding().padding(.top, 27).animation(.spring)
+                    }.padding()
+                    #if os(iOS)
+                        .padding(.top, 27)
+                    #endif
+                        .animation(.spring)
+#if os(macOS)
+                        .searchable(text: $searchText)
+#endif
                 }
+                #if !os(macOS)
                 if !appData.queued_pkgs.isEmpty {
                     Button(action: {
                         withAnimation(.spring) {
@@ -275,28 +319,72 @@ struct InstalledView: View {
                         }.padding()
                     }).background(RoundedRectangle(cornerRadius: 25).foregroundColor(Color.accentColor.opacity(0.1))).padding()
                 }
+                #endif
             }.onAppear() {
                 updateInstalledTweaks(appData)
             }.sheet(isPresented: $showErrorSheet) {
                 ErrorInfoPageView(pkg: $selectedPkg, repo: .constant(nil)).accentColor(accentColor)
             }
-        }.navigationViewStyle(.stack)
+        }
+#if os(macOS)
+        .navigationTitle("Installed")
+        .toolbar {
+            if !appData.queued_pkgs.isEmpty {
+                ToolbarItem {
+                    Button(action: {
+                        withAnimation(.spring) {
+                            installing = true
+                            installTweaks(appData, $installing)
+                        }
+                    }, label: {
+                        if installing {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Image(systemName: "square.and.arrow.down")
+                        }
+                    })
+                }
+            }
+            ToolbarItem {
+                Button(action: {
+                    TweakHandler.applyTweaks(pkgs: appData.installed_pkgs, appData.selectedExploit, .overwrite, savedSettings, saveEnv)
+                }, label: {
+                    Image(systemName: "sparkles")
+                }).help("Apply Tweaks")
+            }
+            ToolbarItem {
+                Button(action: {
+                    let loading = showLoadingPopup()
+                    Task.detached {
+                        if let error = ExploitHandler.reboot(appData.selectedExploit) {
+                            DispatchQueue.main.async {
+                                loading.window.orderOut(nil)
+                                showPopup("Error", error)
+                            }
+                        }
+                    }
+                }, label: {
+                    Image(systemName: "arrow.clockwise")
+                }).help("Reboot Device")
+            }
+        }
+#endif
     }
     
     func findFileOrFolder(_ url: URL, _ names: [String]) -> [URL] {
         var result = [URL]()
         let fileManager = FileManager.default
-
+        
         guard let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: nil) else {
             return result
         }
-
+        
         for case let fileURL as URL in enumerator {
             if names.contains(fileURL.lastPathComponent) {
                 result.append(fileURL)
             }
         }
-
+        
         return result
     }
     
