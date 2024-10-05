@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#if os(iOS)
 extension View {
     @ViewBuilder
     func ios16padding() -> some View {
@@ -17,6 +18,7 @@ extension View {
         }
     }
 }
+#endif
 
 struct ColorDivider: View {
     let color: Color

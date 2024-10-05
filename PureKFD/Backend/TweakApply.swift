@@ -62,9 +62,14 @@ public class TweakHandler {
             log("[i] Starting Apply using \(ExploitHandler.exploits[exploit].name)")
             if let start_result = ExploitHandler.startExploit(exploit, json: json) {
                 DispatchQueue.main.async {
+#if os(iOS)
                     loadingPopup.dismiss(animated: true) {
                         showPopup("Error", start_result)
                     }
+#else
+                    loadingPopup.window.orderOut(nil)
+                    showPopup("Error", start_result)
+#endif
                 }
             } else {
                 for pkg in pkgs {
@@ -75,15 +80,25 @@ public class TweakHandler {
                 log("[i] Ending Apply")
                 if let end_result = ExploitHandler.endExploit(exploit, json: json) {
                     DispatchQueue.main.async {
+#if os(iOS)
                         loadingPopup.dismiss(animated: true) {
                             showPopup("Error", end_result)
                         }
+#else
+                        loadingPopup.window.orderOut(nil)
+                        showPopup("Error", end_result)
+#endif
                     }
                 } else {
                     DispatchQueue.main.async {
+                        #if os(iOS)
                         loadingPopup.dismiss(animated: true) {
                             showPopup("Success", "Successfully applied")
                         }
+#else
+                        loadingPopup.window.orderOut(nil)
+                        showPopup("Success", "Successfully applied")
+#endif
                     }
                 }
                 log("[i] Finished Apply")

@@ -12,9 +12,13 @@ import SwiftUI
 import NukeUI
 import UniformTypeIdentifiers
 import PhotosUI
+#if os(iOS)
 import UIKit
+#else
+import AppKit
+#endif
 
- let config_filename = "purekfd_v6_config.json"
+let config_filename = "purekfd_v6_config.json"
 
 @available(iOS 15.0, *)
 struct PrefView: View {
@@ -133,7 +137,9 @@ struct FullPrefView: View {
                 generateView(from: config)
             }
         }
+        #if os(iOS)
         .navigationBarTitle("Preferences")
+        #endif
         .clearListBG()
         .onAppear {
             loadData()
@@ -256,9 +262,14 @@ struct FullPrefView: View {
                     .resizable()
                     .scaledToFill()
             } else if state.error != nil {
+                #if os(iOS)
                 Image(uiImage: UIImage(named: "DisplayAppIcon")!)
                     .resizable()
                     .scaledToFill()
+                #else
+                ProgressView()
+                    .scaledToFit()
+                #endif
             } else {
                 ProgressView()
                     .scaledToFit()
@@ -475,6 +486,7 @@ struct FullPrefView: View {
     
     func generateIntPadInput(label: String, key: String, variable: String) -> [AnyView] {
         var views: [AnyView] = []
+        #if os(iOS)
         views.append(AnyView(
             TextField(label, text: Binding(
                 get: {
@@ -488,11 +500,12 @@ struct FullPrefView: View {
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .keyboardType(.numberPad)
         ))
-
+        #endif
         return views
     }
     
     func generateImagePicker(label: String, key: String, array: [Any]) -> [AnyView] {
+#if os(iOS)
         let url = URL(fileURLWithPath: array.first as? String ?? "")
         let variable = TweakPath.parseSegment(url.lastPathComponent)?.name ?? url.lastPathComponent
         
@@ -534,9 +547,13 @@ struct FullPrefView: View {
                 ImagePickerView(label: label, image: image, imageSet: imageSet)
             )
         ]
+#else
+        return []
+#endif
     }
 
     func generateFilePicker(label: String, key: String, array: [Any]) -> [AnyView] {
+#if os(iOS)
         let url = URL(fileURLWithPath: array.first as? String ?? "")
         let variable = TweakPath.parseSegment(url.lastPathComponent)?.name ?? url.lastPathComponent
         let file_ext = variable.components(separatedBy: ".").last ?? ""
@@ -579,6 +596,9 @@ struct FullPrefView: View {
                 FilePickerView(label: _label, variable: variable, pkgpath: pkgpath, file_ext: file_ext, limit: limit, file: file, bytes: bytes)
             )
         ]
+#else
+        return []
+#endif
     }
 
     func generateNavLink(label: String, key: String, dict: [[String: Any]]) -> [AnyView] {
@@ -591,14 +611,22 @@ struct FullPrefView: View {
             List {
                 generateView(from: dict)
             }.navigationTitle(label)
+#if os(iOS)
                 .listStyle(.insetGrouped)
+#endif
                 .clearListBG()
         }
         
+        #if os(iOS)
         views.append(AnyView(
             NavigationLink(destination: navLinkDestination, label: {Text(label).brightness(0.3)}).isDetailLink(true)
         ))
-
+        #else
+        views.append(AnyView(
+            NavigationLink(destination: navLinkDestination, label: {Text(label).brightness(0.3)})
+        ))
+        #endif
+        
         return views
     }
     
@@ -739,6 +767,8 @@ extension Array {
     }
 }
 
+#if os(iOS)
+
 struct PhotoPicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
 
@@ -846,3 +876,5 @@ struct ImagePickerView: View {
     }
     
 }
+
+#endif

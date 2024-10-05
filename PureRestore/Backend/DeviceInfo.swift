@@ -44,6 +44,8 @@ class DeviceInfo {
         return String(cString: modelIdentifier)
     }
     
+    static var prettyModel: String { return modelName }
+    
     static var osString: String {
         get {
             return "macOS"

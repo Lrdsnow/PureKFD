@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct purekfd_macOSApp: App {
+struct PureRestoreApp: App {
     @StateObject private var appData = AppData()
     
     init() {

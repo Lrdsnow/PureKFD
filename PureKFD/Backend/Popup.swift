@@ -9,6 +9,16 @@ import Foundation
 #if os(watchOS)
 import WatchKit
 
+func showLoadingPopup() -> WKAlertAction {
+    let action = WKAlertAction(title: "Loading...", style: .default) {}
+    
+    if let controller = WKApplication.shared().rootInterfaceController {
+        controller.presentAlert(withTitle: "", message: nil, preferredStyle: .alert, actions: [action])
+    }
+    
+    return action
+}
+
 enum dummy_kbT {
     case URL
     case asciiCapable
@@ -314,5 +324,26 @@ func showDoubleTextInputPopup(_ title: String, _ placeholderText1: String, _ pla
     } else if response == .alertSecondButtonReturn {
         completion((textField1.stringValue, textField2.stringValue))
     }
+}
+
+func showLoadingPopup() -> NSAlert {
+    let alert = NSAlert()
+    alert.messageText = "Loading..."
+    alert.alertStyle = .informational
+    
+    // Create an NSProgressIndicator
+    let activityIndicator = NSProgressIndicator()
+    activityIndicator.isIndeterminate = true
+    activityIndicator.startAnimation(nil)
+    
+    // Set the accessory view of the alert to the activity indicator
+    alert.accessoryView = activityIndicator
+    
+    alert.addButton(withTitle: "Cancel") // Optional: add a cancel button if needed
+
+    // Present the alert
+    alert.beginSheetModal(for: NSApplication.shared.mainWindow!) // Assuming you have a main window
+    
+    return alert
 }
 #endif

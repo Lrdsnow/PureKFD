@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6500AC482CB1A526007DC109 /* Compat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65069B6F2C2FCAB400A309C2 /* Compat.swift */; };
+		6500AC492CB1A55E007DC109 /* purePrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65619DAE2C920C1600BEE096 /* purePrefs.swift */; };
+		6500AC4A2CB1A5EF007DC109 /* prefTranslate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65619DAC2C920C0500BEE096 /* prefTranslate.swift */; };
+		6500AC4B2CB1A694007DC109 /* Popup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DA9E152C3100DC007D9AAA /* Popup.swift */; };
 		650607A52C9474B200E1848C /* SparseRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650607A42C9474AF00E1848C /* SparseRestore.swift */; };
 		650607A72C9474B900E1848C /* MDC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650607A62C9474B900E1848C /* MDC.swift */; };
 		650607A92C9474BF00E1848C /* VirtualEnviorment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650607A82C9474BC00E1848C /* VirtualEnviorment.swift */; };
@@ -261,7 +265,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		65486BAB2C8571A9002E2F28 /* PureKFD macOS */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "PureKFD macOS"; sourceTree = "<group>"; };
+		65486BAB2C8571A9002E2F28 /* PureRestore */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PureRestore; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -338,7 +342,7 @@
 			children = (
 				65916EA42C9526F6005C8462 /* Shared */,
 				656C14AB2C2D32D60017F279 /* PureKFD */,
-				65486BAB2C8571A9002E2F28 /* PureKFD macOS */,
+				65486BAB2C8571A9002E2F28 /* PureRestore */,
 				656C14AA2C2D32D60017F279 /* Products */,
 				656C14E02C2DC3D00017F279 /* Frameworks */,
 			);
@@ -608,7 +612,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				65486BAB2C8571A9002E2F28 /* PureKFD macOS */,
+				65486BAB2C8571A9002E2F28 /* PureRestore */,
 			);
 			name = PureRestore;
 			packageProductDependencies = (
@@ -764,15 +768,19 @@
 				65486BBB2C85733E002E2F28 /* Repo.swift in Sources */,
 				65486BBC2C85733F002E2F28 /* DataExtensions.swift in Sources */,
 				65486BC32C857355002E2F28 /* Debug.swift in Sources */,
+				6500AC4B2CB1A694007DC109 /* Popup.swift in Sources */,
 				65486BBE2C857344002E2F28 /* StringExtensions.swift in Sources */,
 				65486BBF2C857350002E2F28 /* RepoHandler.swift in Sources */,
 				65486BBD2C857343002E2F28 /* JASON+Alamofire.swift in Sources */,
 				65486BC42C857357002E2F28 /* TweakApply.swift in Sources */,
+				6500AC4A2CB1A5EF007DC109 /* prefTranslate.swift in Sources */,
 				65486BC52C857359002E2F28 /* ExploitHandler.swift in Sources */,
 				65ABD2D32C93D77F00DD01E8 /* TweakPath.swift in Sources */,
+				6500AC492CB1A55E007DC109 /* purePrefs.swift in Sources */,
 				650607AC2C94772F00E1848C /* TweakTranslate.swift in Sources */,
 				65486BB92C85733A002E2F28 /* AppData.swift in Sources */,
 				65486BC72C8574A4002E2F28 /* ColorExtensions.swift in Sources */,
+				6500AC482CB1A526007DC109 /* Compat.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -912,11 +920,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "purebox macOS/purebox_macOS.entitlements";
+				CODE_SIGN_ENTITLEMENTS = PureRestore/PureRestore.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"purebox macOS/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 6Q625HQD73;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -942,11 +951,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "purebox macOS/purebox_macOS.entitlements";
+				CODE_SIGN_ENTITLEMENTS = PureRestore/PureRestore.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"purebox macOS/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 6Q625HQD73;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;

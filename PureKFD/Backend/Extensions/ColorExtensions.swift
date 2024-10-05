@@ -201,6 +201,10 @@ extension Color: RawRepresentable {
 extension UIColor {
     convenience init(_ color: Color) {
         let uiColor = UIColor(cgColor: color.cgColor ?? UIColor.black.cgColor)
+        #if os(iOS)
         self.init(cgColor: uiColor.cgColor)
+        #else
+        self.init(cgColor: uiColor!.cgColor)!
+        #endif
     }
 }
