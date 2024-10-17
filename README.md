@@ -24,6 +24,7 @@ PureKFD is an exploit based Jailed Package Manager, supporting iOS versions 14.0
 
 ## Getting Started With SparseRestore
 
+- please ensure to NOT sign PureKFD with a cert that is not specifically for PureKFD (for example, sideloading with a wildcard developer cert or enterprise cert)
 1. in purekfd settings switch exploit to "SparseRestore"
 2. get pairing file using a pc and [JitterbugPair](https://github.com/osy/Jitterbug/releases/tag/v1.3.1)
 3. import pairing file into PureKFD using share sheet or file importer in settings
